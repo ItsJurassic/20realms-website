@@ -38,7 +38,9 @@
         <h2 id="beta-form-title">Tell us where you fit at the table.</h2>
         <p>Send a quick beta request and tell us where you want to play 20Realms when early testing opens: mobile, PC, console, or all three.</p>
       </div>
-      <form class="beta-form" data-beta-form>
+      <form class="beta-form" id="beta-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <input type="hidden" name="_replyto" value="">
+        <input type="hidden" name="_subject" value="20Realms Beta Waitlist Request">
         <label>
           <span>Name</span>
           <input type="text" name="name" autocomplete="name" placeholder="Your adventuring name" required>
@@ -60,8 +62,8 @@
           <span>What are you hoping to test?</span>
           <textarea name="interest" rows="3" placeholder="Maps, campaigns, homebrew tools, console play..."></textarea>
         </label>
-        <button class="button primary" type="submit">Request beta access</button>
-        <p class="beta-note" data-beta-status>Submissions open a prefilled email so the list works on this static site.</p>
+        <button class="button primary" type="submit" id="beta-submit-btn">Request beta access</button>
+        <p class="beta-note" id="beta-status"></p>
       </form>
     </section>
   </main>
@@ -107,5 +109,43 @@
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    var form = document.getElementById('beta-form');
+    var btn = document.getElementById('beta-submit-btn');
+    var status = document.getElementById('beta-status');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+      status.textContent = '';
+      status.style.color = '';
+
+      var data = new FormData(form);
+
+      fetch(form.action, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      }).then(function (res) {
+        if (res.ok) {
+          form.reset();
+          btn.style.display = 'none';
+          status.textContent = "You're on the list. We'll be in touch when beta testing opens.";
+          status.style.color = '#7ec49e';
+        } else {
+          btn.disabled = false;
+          btn.textContent = 'Request beta access';
+          status.textContent = 'Something went wrong. Please try again.';
+          status.style.color = '#f4937a';
+        }
+      }).catch(function () {
+        btn.disabled = false;
+        btn.textContent = 'Request beta access';
+        status.textContent = 'Could not connect. Check your internet and try again.';
+        status.style.color = '#f4937a';
+      });
+    });
+  </script>
 </body>
 </html>
