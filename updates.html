@@ -38,7 +38,6 @@
           <button class="update-tab active" type="button" data-update-filter="all" aria-pressed="true">All</button>
           <button class="update-tab" type="button" data-update-filter="development" aria-pressed="false">Development</button>
           <button class="update-tab" type="button" data-update-filter="community" aria-pressed="false">Community</button>
-          <button class="update-tab" type="button" data-update-filter="site" aria-pressed="false">Site</button>
         </div>
       </div>
       <div class="updates-grid">
@@ -54,8 +53,8 @@
         <p>Progress posts, feature previews, and early community feedback will be collected through the 20Realms subreddit.</p>
         <time datetime="2026-07-19">July 19, 2026</time>
       </article>
-      <article class="update-card" data-update-type="site">
-        <span class="update-category">Site</span>
+      <article class="update-card" data-update-type="development">
+        <span class="update-category">Development</span>
         <h3>Social links added to every page</h3>
         <p>The footer now includes static icon links for TikTok, X, Facebook, Reddit, and Instagram while the official profiles are being prepared.</p>
         <time datetime="2026-07-19">July 19, 2026</time>
@@ -105,5 +104,24 @@
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var tabs = document.querySelectorAll('[data-update-filter]');
+      var cards = document.querySelectorAll('[data-update-type]');
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          var filter = tab.dataset.updateFilter;
+          tabs.forEach(function (t) {
+            var active = t === tab;
+            t.classList.toggle('active', active);
+            t.setAttribute('aria-pressed', String(active));
+          });
+          cards.forEach(function (card) {
+            card.classList.toggle('is-hidden', filter !== 'all' && card.dataset.updateType !== filter);
+          });
+        });
+      });
+    });
+  </script>
 </body>
 </html>
