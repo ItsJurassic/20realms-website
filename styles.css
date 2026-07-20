@@ -8,6 +8,7 @@
   --cream: #fffaf0;
   --line: rgba(23, 32, 27, 0.16);
   --shadow: 0 24px 70px rgba(23, 32, 27, 0.18);
+  --content-max: 1280px;
 }
 
 * {
@@ -34,7 +35,7 @@ a {
 
 .site-header,
 .site-footer {
-  width: min(1120px, calc(100% - 32px));
+  width: min(var(--content-max), calc(100% - 32px));
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -73,7 +74,7 @@ a {
 
 .hero,
 .section {
-  width: min(1120px, calc(100% - 32px));
+  width: min(var(--content-max), calc(100% - 32px));
   margin: 0 auto;
 }
 
@@ -234,6 +235,55 @@ h3 {
   font-size: 1.1rem;
 }
 
+.updates-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  gap: 24px;
+}
+
+.update-card {
+  min-height: 280px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 250, 240, 0.52);
+  display: flex;
+  flex-direction: column;
+}
+
+.update-card h3 {
+  font-family: "Fraunces", serif;
+  font-size: clamp(1.6rem, 3vw, 2.8rem);
+  font-weight: 600;
+  line-height: 1.08;
+  padding-bottom: 0.08em;
+  overflow-wrap: anywhere;
+  margin: 12px 0;
+}
+
+.update-category {
+  display: block;
+  color: var(--clay);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.update-card p {
+  color: var(--muted);
+  line-height: 1.75;
+  flex-grow: 1;
+}
+
+.update-card time {
+  display: block;
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin-top: 16px;
+}
+
 .contact {
   text-align: center;
 }
@@ -279,7 +329,8 @@ h3 {
   }
 
   .feature-grid,
-  .split {
+  .split,
+  .updates-grid {
     grid-template-columns: 1fr;
   }
 }
