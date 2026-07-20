@@ -117,5 +117,24 @@
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var tabs = document.querySelectorAll('[data-update-filter]');
+      var cards = document.querySelectorAll('[data-update-type]');
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          var filter = tab.dataset.updateFilter;
+          tabs.forEach(function (t) {
+            var active = t === tab;
+            t.classList.toggle('active', active);
+            t.setAttribute('aria-pressed', String(active));
+          });
+          cards.forEach(function (card) {
+            card.classList.toggle('is-hidden', filter !== 'all' && card.dataset.updateType !== filter);
+          });
+        });
+      });
+    });
+  </script>
 </body>
 </html>
