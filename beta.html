@@ -38,10 +38,7 @@
         <h2 id="beta-form-title">Tell us where you fit at the table.</h2>
         <p>Send a quick beta request and tell us where you want to play 20Realms when early testing opens: mobile, PC, console, or all three.</p>
       </div>
-      <form class="beta-form" action="https://formsubmit.co/support@20realms.net" method="POST">
-        <input type="hidden" name="_subject" value="20Realms beta waitlist request">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_captcha" value="false">
+      <form class="beta-form" data-beta-form>
         <label>
           <span>Name</span>
           <input type="text" name="name" autocomplete="name" placeholder="Your adventuring name" required>
@@ -64,7 +61,7 @@
           <textarea name="interest" rows="3" placeholder="Maps, campaigns, homebrew tools, console play..."></textarea>
         </label>
         <button class="button primary" type="submit">Request beta access</button>
-        <p class="beta-note">Submissions are sent directly to the 20Realms inbox.</p>
+        <p class="beta-note" data-beta-status>Submissions open a prefilled email so the list works on this static site.</p>
       </form>
     </section>
   </main>
@@ -88,10 +85,10 @@
       <a href="help.html">Help</a>
       <a href="https://www.reddit.com/r/20Realms/">Forums</a>
       <a href="legal.html">Legal &amp; Privacy</a>
-      <a href="user-agreement.html">User Agreement &amp; EULA</a>
+      <a href="user-agreement.html">User Agreement</a>
       <a href="privacy-cookies.html">Privacy &amp; Cookie Policy</a>
       <a href="updates.html">Online Service Updates</a>
-      <a href="security.html">Security</a>
+      <a href="#">Security</a>
     </nav>
     <div class="footer-controls">
       <label class="privacy-toggle">
