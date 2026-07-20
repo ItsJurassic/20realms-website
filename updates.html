@@ -32,25 +32,35 @@
       <p>Follow development progress, community notes, console availability updates, and site changes as the project takes shape.</p>
     </section>
 
-    <section class="section updates-grid updates-page-grid" aria-label="All 20Realms updates">
-      <article class="update-card featured">
+    <section class="section updates-page-grid" aria-label="All 20Realms updates">
+      <div class="updates-controls" style="grid-column:1/-1;display:flex;gap:8px;margin-bottom:8px">
+        <div class="update-tabs" role="tablist" aria-label="Update categories">
+          <button class="update-tab active" type="button" data-update-filter="all" aria-pressed="true">All</button>
+          <button class="update-tab" type="button" data-update-filter="development" aria-pressed="false">Development</button>
+          <button class="update-tab" type="button" data-update-filter="community" aria-pressed="false">Community</button>
+          <button class="update-tab" type="button" data-update-filter="site" aria-pressed="false">Site</button>
+        </div>
+      </div>
+      <div class="updates-grid">
+      <article class="update-card featured" data-update-type="development">
         <span class="update-category">Development</span>
         <h3>Subpages are live in the local build</h3>
         <p>The homepage now leads into dedicated pages for features, vision, contact, and updates, giving 20Realms room to grow across mobile, PC, and console without becoming one long scroll.</p>
         <time datetime="2026-07-19">July 19, 2026</time>
       </article>
-      <article class="update-card">
+      <article class="update-card" data-update-type="community">
         <span class="update-category">Community</span>
         <h3>Follow r/20Realms</h3>
         <p>Progress posts, feature previews, and early community feedback will be collected through the 20Realms subreddit.</p>
         <time datetime="2026-07-19">July 19, 2026</time>
       </article>
-      <article class="update-card">
+      <article class="update-card" data-update-type="site">
         <span class="update-category">Site</span>
         <h3>Social links added to every page</h3>
         <p>The footer now includes static icon links for TikTok, X, Facebook, Reddit, and Instagram while the official profiles are being prepared.</p>
         <time datetime="2026-07-19">July 19, 2026</time>
       </article>
+      </div>
     </section>
   </main>
 
