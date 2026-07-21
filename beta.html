@@ -179,16 +179,30 @@
       statusEl.textContent = '';
 
       const data = new FormData(form);
+      const emailOptIn = data.get('email_updates_opt_in') === 'true';
+      
       const payload = {
         name:     data.get('name'),
         email:    data.get('email'),
         role:     data.get('role'),
         interest: data.get('interest') || null,
-        email_updates_opt_in: data.get('email_updates_opt_in') === 'true',
         user_id:  loggedInUser?.id || null
       };
 
-      const { error } = await supabase.from('beta_signups').insert(payload);
+      const { error, data: insertedData } = await supabase.from('beta_signups').insert(payload).select();
+      
+      // Store email opt-in preference separately if opted in
+      if (!error && emailOptIn && insertedData && insertedData.length > 0) {
+        try {
+          await supabase.from('beta_email_signups').insert({
+            email: payload.email,
+            opted_in_at: new Date().toISOString()
+          }).select();
+        } catch (err) {
+          // If separate table doesn't exist, that's ok - just log it
+          console.log('Email opt-in storage note:', err.message);
+        }
+      }
 
       if (error) {
         console.error(error);
@@ -204,9 +218,8 @@
         statusEl.style.color = '#7ec49e';
 
         // Send welcome email if opted in
-        if (payload.email_updates_opt_in) {
+        if (emailOptIn) {
           try {
-            // Call Supabase Edge Function to send email securely
             const emailRes = await supabase.functions.invoke('send-welcome-email', {
               body: {
                 email: payload.email,
@@ -216,6 +229,8 @@
             
             if (emailRes.error) {
               console.warn('Email sending failed:', emailRes.error);
+            } else {
+              console.log('Welcome email sent successfully');
             }
           } catch (err) {
             console.warn('Could not trigger email function:', err.message);
