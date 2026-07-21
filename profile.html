@@ -37,7 +37,8 @@
       font-size: 2rem;
       font-weight: 700;
       color: var(--cream);
-      flex-shrink: 0;
+      width: 100%;
+      height: 100%;
     }
     .profile-identity h1 {
       font-size: clamp(1.6rem, 3vw, 2.4rem);
@@ -117,6 +118,9 @@
     .profile-avatar-upload {
       position: relative;
       cursor: pointer;
+      width: 80px;
+      height: 80px;
+      flex-shrink: 0;
     }
     .profile-avatar-upload:hover .profile-avatar,
     .profile-avatar-upload:hover img {
@@ -126,6 +130,8 @@
       display: none;
     }
     .profile-avatar-upload img {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
