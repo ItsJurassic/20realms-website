@@ -194,10 +194,24 @@
       // Store email opt-in preference separately if opted in
       if (!error && emailOptIn && insertedData && insertedData.length > 0) {
         try {
-          await supabase.from('beta_email_signups').insert({
+          const optinRecord = await supabase.from('beta_email_signups').insert({
             email: payload.email,
             opted_in_at: new Date().toISOString()
           }).select();
+
+          // Directly trigger welcome email via Vercel webhook
+          if (optinRecord && !optinRecord.error && optinRecord.data && optinRecord.data.length > 0) {
+            try {
+              const webhookResponse = await fetch('https://20realms-website-73fayutrk-bloodstone-forge.vercel.app/api/webhook-beta-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ record: optinRecord.data[0] })
+              });
+              console.log('Welcome email webhook triggered:', webhookResponse.status);
+            } catch (webhookErr) {
+              console.error('Webhook call error:', webhookErr);
+            }
+          }
         } catch (err) {
           // If separate table doesn't exist, that's ok - just log it
           console.log('Email opt-in storage note:', err.message);
@@ -217,8 +231,7 @@
         statusEl.textContent = "You're on the list. We'll be in touch when beta testing opens.";
         statusEl.style.color = '#7ec49e';
 
-        // Email sending is triggered via Supabase Database Webhooks
-        // (no client-side email function call needed)
+        // Welcome email is triggered immediately above when opt-in is checked
       }
     });
   </script>
