@@ -211,7 +211,10 @@
               console.log('Triggering webhook with record:', optinRecord.data[0]);
               const webhookResponse = await fetch('https://20realms-website-73fayutrk-bloodstone-forge.vercel.app/api/webhook-beta-email', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'x-vercel-protection-bypass': 'webhook-bypass-token-20realms'
+                },
                 body: JSON.stringify({ record: optinRecord.data[0] })
               });
               console.log('Welcome email webhook triggered:', webhookResponse.status);
