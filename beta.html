@@ -205,23 +205,23 @@
 
           console.log('beta_email_signups insert result:', { error: optinRecord?.error, dataCount: optinRecord?.data?.length });
 
-          // Directly trigger welcome email via Vercel webhook
+          // Directly trigger welcome email via Supabase Edge Function
           if (optinRecord && !optinRecord.error && optinRecord.data && optinRecord.data.length > 0) {
             try {
-              console.log('Triggering webhook with record:', optinRecord.data[0]);
-              const webhookResponse = await fetch('https://20realms-website-73fayutrk-bloodstone-forge.vercel.app/api/webhook-beta-email', {
+              console.log('Triggering Supabase email function with record:', optinRecord.data[0]);
+              const webhookResponse = await fetch('https://avcqqazytvvcfraowgsm.supabase.co/functions/v1/send-welcome-email', {
                 method: 'POST',
                 headers: { 
                   'Content-Type': 'application/json',
-                  'x-vercel-protection-bypass': 'webhook-bypass-token-20realms'
+                  'Authorization': 'Bearer sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0'
                 },
                 body: JSON.stringify({ record: optinRecord.data[0] })
               });
-              console.log('Welcome email webhook triggered:', webhookResponse.status);
+              console.log('Welcome email function triggered:', webhookResponse.status);
               const responseData = await webhookResponse.json();
-              console.log('Webhook response:', responseData);
+              console.log('Email function response:', responseData);
             } catch (webhookErr) {
-              console.error('Webhook call error:', webhookErr);
+              console.error('Email function call error:', webhookErr);
             }
           }
         } catch (err) {
