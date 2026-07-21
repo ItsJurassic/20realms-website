@@ -1,5 +1,5 @@
 const RESEND_API_KEY = 're_6pUDLEgC_NNsS5cd99xXXGfVuB4DzjNwF';
-const FROM_EMAIL = 'betaaccess@20realms.net';
+const FROM_EMAIL = 'onboarding@resend.dev'; // Using Resend's default verified email for testing
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
