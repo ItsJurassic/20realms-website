@@ -212,6 +212,10 @@
             Password
             <input type="password" id="signup-password" placeholder="8+ characters" autocomplete="new-password">
           </label>
+          <div class="email-optin-check">
+            <input type="checkbox" id="signup-email-optin" name="email_updates_opt_in" value="true">
+            <label for="signup-email-optin">Email me updates and news</label>
+          </div>
           <button class="button primary" id="btn-signup" type="button">Create account</button>
           <p class="auth-note">By creating an account you agree to the <a href="user-agreement.html" style="color:var(--muted);text-decoration:underline">User Agreement</a>.</p>
         </div>
@@ -327,13 +331,14 @@
       const username = document.getElementById('signup-username').value.trim();
       const email = document.getElementById('signup-email').value.trim();
       const password = document.getElementById('signup-password').value;
+      const emailOptIn = document.getElementById('signup-email-optin').checked;
       if (!username || !email || !password) { showMsg('signup-msg', 'Please fill in all fields.', 'error'); return; }
       if (password.length < 8) { showMsg('signup-msg', 'Password must be at least 8 characters.', 'error'); return; }
       const btn = document.getElementById('btn-signup');
       btn.textContent = 'Creating account…'; btn.disabled = true;
       const { error } = await supabase.auth.signUp({
         email, password,
-        options: { data: { username } }
+        options: { data: { username, email_updates_opt_in: emailOptIn } }
       });
       if (error) { showMsg('signup-msg', error.message, 'error'); btn.textContent = 'Create account'; btn.disabled = false; }
       else showMsg('signup-msg', 'Account created! Check your email to confirm, then sign in.', 'success');

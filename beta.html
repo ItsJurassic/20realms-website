@@ -79,6 +79,10 @@
           <span>What are you hoping to test?</span>
           <textarea name="interest" rows="3" placeholder="Maps, campaigns, homebrew tools, console play..."></textarea>
         </label>
+        <div class="email-optin-check">
+          <input type="checkbox" id="beta-email-optin" name="email_updates_opt_in" value="true">
+          <label for="beta-email-optin">Email me news and playtest updates</label>
+        </div>
         <button class="button primary" type="submit" id="beta-submit-btn">Request beta access</button>
         <p class="beta-note" id="beta-status"></p>
       </form>
@@ -180,6 +184,7 @@
         email:    data.get('email'),
         role:     data.get('role'),
         interest: data.get('interest') || null,
+        email_updates_opt_in: data.get('email_updates_opt_in') === 'true',
         user_id:  loggedInUser?.id || null
       };
 

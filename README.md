@@ -27,20 +27,32 @@ Then visit http://localhost:8000.
 3. In GitHub, open Settings > Pages.
 4. Under Build and deployment, choose Deploy from a branch.
 5. Select the `main` branch and `/root`, then save.
-6. In Custom domain, enter `www.20realms.net` and save.
+6. In Custom domain, enter `20realms.net` and save.
 
-The `CNAME` file is already included so GitHub Pages knows to use `www.20realms.net`.
+The `CNAME` file is already included so GitHub Pages knows to use `20realms.net`.
 
 ## Domain DNS
 
-At the domain provider for `20realms.net`, create this DNS record:
+At the domain provider for `20realms.net`, create these root/apex DNS records:
 
 ```text
-Type: CNAME
-Name/Host: www
-Value/Target: YOUR-GITHUB-USERNAME.github.io
+Type: A
+Name/Host: @
+Value: 185.199.108.153
+
+Type: A
+Name/Host: @
+Value: 185.199.109.153
+
+Type: A
+Name/Host: @
+Value: 185.199.110.153
+
+Type: A
+Name/Host: @
+Value: 185.199.111.153
 ```
 
-Replace `YOUR-GITHUB-USERNAME` with the GitHub account that owns the website repository.
+Remove the old Squarespace A records first if your DNS provider does not replace them automatically.
 
-After GitHub Pages is working for `www.20realms.net`, enable Enforce HTTPS in Settings > Pages.
+After GitHub Pages is working for `20realms.net`, enable Enforce HTTPS in Settings > Pages.
