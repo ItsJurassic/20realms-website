@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
   <style>
     .profile-wrap {
       width: min(900px, calc(100% - 32px));
@@ -158,6 +159,91 @@
       .profile-header { flex-direction: column; align-items: flex-start; }
       .profile-grid { grid-template-columns: 1fr; }
     }
+    /* Crop modal styles */
+    .crop-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(2px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .crop-modal.active {
+      display: flex;
+    }
+    .crop-container {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow: auto;
+    }
+    .crop-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--cream);
+    }
+    .crop-image-wrapper {
+      position: relative;
+      width: 100%;
+      margin-bottom: 20px;
+      max-height: 400px;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.3);
+    }
+    .crop-image-wrapper img {
+      max-width: 100%;
+      display: block;
+    }
+    .crop-controls {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    .crop-controls button {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 160ms;
+    }
+    .crop-controls .btn-cancel {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .crop-controls .btn-cancel:hover {
+      border-color: var(--clay);
+      color: var(--ink);
+    }
+    .crop-controls .btn-crop {
+      background: var(--clay);
+      color: var(--cream);
+    }
+    .crop-controls .btn-crop:hover {
+      opacity: 0.9;
+    }
+    .crop-controls .btn-crop:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .crop-info {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
   </style>
 </head>
 <body>
@@ -231,6 +317,21 @@
     <div id="loading-wrap" style="width:min(480px,calc(100% - 32px));margin:0 auto;padding:120px 0;text-align:center;color:var(--muted);">
       Loading…
     </div>
+
+    <!-- Crop Modal -->
+    <div class="crop-modal" id="crop-modal">
+      <div class="crop-container">
+        <h2 class="crop-title">Crop your photo</h2>
+        <p class="crop-info">Drag to reposition, scroll to zoom. Make sure your face is visible in the circle.</p>
+        <div class="crop-image-wrapper">
+          <img id="crop-image" src="" alt="Crop preview">
+        </div>
+        <div class="crop-controls">
+          <button class="btn-cancel" id="btn-crop-cancel" type="button">Cancel</button>
+          <button class="btn-crop" id="btn-crop-confirm" type="button">Use this photo</button>
+        </div>
+      </div>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -274,6 +375,7 @@
   </footer>
 
   <script src="script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script type="module">
     // Must match the values in community.html
     const SUPABASE_URL  = 'https://avcqqazytvvcfraowgsm.supabase.co';
@@ -322,37 +424,121 @@
           const file = e.target.files[0];
           if (!file) return;
 
-          const bucket = 'avatars';
-          const fileName = user.id + '/' + Date.now() + '_' + file.name;
+          // Read file and show crop modal
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const cropImage = document.getElementById('crop-image');
+            cropImage.src = event.target.result;
+            
+            // Initialize cropper if not already initialized
+            if (window.cropperInstance) {
+              window.cropperInstance.destroy();
+            }
+            
+            window.cropperInstance = new Cropper(cropImage, {
+              aspectRatio: 1,
+              viewMode: 1,
+              autoCropArea: 1,
+              responsive: true,
+              restore: true,
+              guides: true,
+              center: true,
+              highlight: true,
+              cropBoxMovable: true,
+              cropBoxResizable: true,
+              toggleDragModeOnDblclick: true,
+              background: false,
+            });
 
-          const { error: uploadError } = await supabase.storage.from(bucket).upload(fileName, file, { upsert: true });
+            document.getElementById('crop-modal').classList.add('active');
+          };
+          reader.readAsDataURL(file);
+        });
 
-          if (uploadError) {
-            console.error('Upload error:', uploadError);
-            alert('Failed to upload profile picture');
-            return;
+        // Crop modal handlers
+        document.getElementById('btn-crop-cancel').addEventListener('click', () => {
+          document.getElementById('crop-modal').classList.remove('active');
+          if (window.cropperInstance) {
+            window.cropperInstance.destroy();
+            window.cropperInstance = null;
           }
+          document.getElementById('avatar-upload').value = '';
+        });
 
-          const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(fileName);
+        document.getElementById('btn-crop-confirm').addEventListener('click', async () => {
+          if (!window.cropperInstance) return;
 
-          const { error: updateError } = await supabase.auth.updateUser({
-            data: { avatar_url: publicUrl }
+          const btn = document.getElementById('btn-crop-confirm');
+          btn.disabled = true;
+          btn.textContent = 'Uploading…';
+
+          // Get cropped canvas
+          const canvas = window.cropperInstance.getCroppedCanvas({
+            maxWidth: 400,
+            maxHeight: 400,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
           });
 
-          if (updateError) {
-            console.error('Update error:', updateError);
-            alert('Failed to save profile picture');
-            return;
-          }
+          // Convert canvas to blob
+          canvas.toBlob(async (blob) => {
+            if (!blob) {
+              alert('Failed to process image');
+              btn.disabled = false;
+              btn.textContent = 'Use this photo';
+              return;
+            }
 
-          avatarEl.style.display = 'none';
-          let img = avatarLabel.querySelector('img');
-          if (!img) {
-            img = document.createElement('img');
-            img.alt = username + ' profile picture';
-            avatarLabel.appendChild(img);
-          }
-          img.src = publicUrl;
+            const bucket = 'avatars';
+            const fileName = user.id + '/' + Date.now() + '_cropped.jpg';
+
+            const { error: uploadError } = await supabase.storage
+              .from(bucket)
+              .upload(fileName, blob, { upsert: true, contentType: 'image/jpeg' });
+
+            if (uploadError) {
+              console.error('Upload error:', uploadError);
+              alert('Failed to upload profile picture');
+              btn.disabled = false;
+              btn.textContent = 'Use this photo';
+              return;
+            }
+
+            const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(fileName);
+
+            const { error: updateError } = await supabase.auth.updateUser({
+              data: { avatar_url: publicUrl }
+            });
+
+            if (updateError) {
+              console.error('Update error:', updateError);
+              alert('Failed to save profile picture');
+              btn.disabled = false;
+              btn.textContent = 'Use this photo';
+              return;
+            }
+
+            // Update UI
+            avatarEl.style.display = 'none';
+            let img = avatarLabel.querySelector('img');
+            if (!img) {
+              img = document.createElement('img');
+              img.alt = username + ' profile picture';
+              avatarLabel.appendChild(img);
+            }
+            img.src = publicUrl;
+
+            // Close modal
+            document.getElementById('crop-modal').classList.remove('active');
+            if (window.cropperInstance) {
+              window.cropperInstance.destroy();
+              window.cropperInstance = null;
+            }
+            document.getElementById('avatar-upload').value = '';
+
+            btn.disabled = false;
+            btn.textContent = 'Use this photo';
+          }, 'image/jpeg', 0.9);
         });
       }
 
