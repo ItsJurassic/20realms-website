@@ -13,17 +13,14 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing email in webhook payload' });
     }
 
-    // Only send email if user opted in
-    if (!record.email_updates_opt_in) {
-      return res.status(200).json({
-        success: true,
-        message: 'User did not opt in to emails',
-        emailSent: false
-      });
-    }
-
-    const { email, name } = record;
-    const userName = name || email.split('@')[0];
+    // Get email and name from the webhook record
+    const { email } = record;
+    
+    // We need to get the user's name from the beta_signups table
+    // For now, we'll derive it from email if needed
+    // In a full implementation, you'd query your database here
+    
+    const userName = email.split('@')[0];
 
     // Send email via Resend
     const emailResponse = await fetch('https://api.resend.com/emails', {
