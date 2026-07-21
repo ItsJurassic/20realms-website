@@ -182,11 +182,12 @@
       const emailOptIn = data.get('email_updates_opt_in') === 'true';
       
       const payload = {
-        name:     data.get('name'),
-        email:    data.get('email'),
-        role:     data.get('role'),
-        interest: data.get('interest') || null,
-        user_id:  loggedInUser?.id || null
+        name:                    data.get('name'),
+        email:                   data.get('email'),
+        role:                    data.get('role'),
+        interest:                data.get('interest') || null,
+        user_id:                 loggedInUser?.id || null,
+        email_updates_opt_in:    emailOptIn
       };
 
       const { error, data: insertedData } = await supabase.from('beta_signups').insert(payload).select();
