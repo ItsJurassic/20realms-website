@@ -39,7 +39,7 @@
         <h2 id="beta-form-title">Tell us where you fit at the table.</h2>
         <p>Send a quick beta request and tell us where you want to play 20Realms when early testing opens: mobile, PC, console, or all three.</p>
       </div>
-      <form class="beta-form" id="beta-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <form class="beta-form" id="beta-form" novalidate>
         <input type="hidden" name="_replyto" value="">
         <input type="hidden" name="_subject" value="20Realms Beta Waitlist Request">
 
@@ -126,42 +126,78 @@
   </footer>
 
   <script src="script.js"></script>
-  <script>
-    var form = document.getElementById('beta-form');
-    var btn = document.getElementById('beta-submit-btn');
-    var status = document.getElementById('beta-status');
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const supabase = createClient('https://avcqqazytvvcfraowgsm.supabase.co', 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0');
 
-    form.addEventListener('submit', function (e) {
+    // ── Pre-fill account info if logged in ───────────────────────────────────
+    const { data: { session } } = await supabase.auth.getSession();
+    let loggedInUser = null;
+    if (session) {
+      loggedInUser = session.user;
+      const username = loggedInUser.user_metadata?.username || loggedInUser.email.split('@')[0];
+      const avatarUrl = loggedInUser.user_metadata?.avatar_url;
+
+      document.getElementById('field-name').style.display = 'none';
+      document.getElementById('field-name').querySelector('input').removeAttribute('required');
+      document.getElementById('field-email').style.display = 'none';
+      document.getElementById('field-email').querySelector('input').removeAttribute('required');
+      document.getElementById('field-account').style.display = '';
+
+      document.getElementById('beta-account-name').textContent = username;
+      document.getElementById('beta-account-email').textContent = loggedInUser.email;
+      document.getElementById('hidden-name').value = username;
+      document.getElementById('hidden-email').value = loggedInUser.email;
+
+      const avatarEl = document.getElementById('beta-avatar-initial');
+      if (avatarUrl) {
+        const img = document.createElement('img');
+        img.src = avatarUrl;
+        img.alt = username;
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;display:block';
+        avatarEl.appendChild(img);
+      } else {
+        avatarEl.textContent = username.charAt(0).toUpperCase();
+      }
+    }
+
+    // ── Form submit → Supabase ────────────────────────────────────────────────
+    const form = document.getElementById('beta-form');
+    const btn  = document.getElementById('beta-submit-btn');
+    const statusEl = document.getElementById('beta-status');
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+
       btn.disabled = true;
       btn.textContent = 'Submitting…';
-      status.textContent = '';
-      status.style.color = '';
+      statusEl.textContent = '';
 
-      var data = new FormData(form);
+      const data = new FormData(form);
+      const payload = {
+        name:     data.get('name'),
+        email:    data.get('email'),
+        role:     data.get('role'),
+        interest: data.get('interest') || null,
+        user_id:  loggedInUser?.id || null
+      };
 
-      fetch(form.action, {
-        method: 'POST',
-        body: data,
-        headers: { 'Accept': 'application/json' }
-      }).then(function (res) {
-        if (res.ok) {
-          form.reset();
-          btn.style.display = 'none';
-          status.textContent = "You're on the list. We'll be in touch when beta testing opens.";
-          status.style.color = '#7ec49e';
-        } else {
-          btn.disabled = false;
-          btn.textContent = 'Request beta access';
-          status.textContent = 'Something went wrong. Please try again.';
-          status.style.color = '#f4937a';
-        }
-      }).catch(function () {
+      const { error } = await supabase.from('beta_signups').insert(payload);
+
+      if (error) {
+        console.error(error);
         btn.disabled = false;
         btn.textContent = 'Request beta access';
-        status.textContent = 'Could not connect. Check your internet and try again.';
-        status.style.color = '#f4937a';
-      });
+        statusEl.textContent = error.code === '23505'
+          ? 'This email is already on the list.'
+          : 'Something went wrong. Please try again.';
+        statusEl.style.color = '#f4937a';
+      } else {
+        btn.style.display = 'none';
+        statusEl.textContent = "You're on the list. We'll be in touch when beta testing opens.";
+        statusEl.style.color = '#7ec49e';
+      }
     });
   </script>
   <script type="module" src="auth-nav.js"></script>
