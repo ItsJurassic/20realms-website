@@ -520,10 +520,12 @@ h3 {
 }
 
 .page-hero.features::after {
-  top: 58px;
+  top: 50%;
   right: min(4vw, 44px);
-  bottom: 42px;
+  bottom: auto;
+  transform: translateY(-50%);
   width: clamp(160px, 22vw, 250px);
+  height: clamp(160px, 22vw, 250px);
   border: 0;
   border-radius: 0;
   background: url("assets/features-art.png") center / contain no-repeat;
@@ -537,10 +539,11 @@ h3 {
 }
 
 .page-hero.vision::after {
-  top: 58px;
+  top: 50%;
   right: min(3vw, 32px);
-  bottom: 42px;
+  bottom: auto;
   width: clamp(220px, 28vw, 320px);
+  height: clamp(220px, 28vw, 320px);
   border: 0;
   border-radius: 0;
   background: url("assets/vision-sword.png") center / contain no-repeat;
@@ -551,7 +554,7 @@ h3 {
     drop-shadow(-1px 0 0 rgba(255, 250, 240, 0.95))
     drop-shadow(0 18px 28px rgba(0, 0, 0, 0.42));
   opacity: 0.92;
-  transform: rotate(-45deg);
+  transform: translateY(-50%) rotate(-45deg);
   transform-origin: center;
 }
 
@@ -561,10 +564,12 @@ h3 {
 }
 
 .page-hero.updates-page::after {
-  top: 58px;
+  top: 50%;
   right: min(4vw, 44px);
-  bottom: 42px;
+  bottom: auto;
+  transform: translateY(-50%);
   width: clamp(170px, 24vw, 280px);
+  height: clamp(170px, 24vw, 280px);
   border: 0;
   border-radius: 0;
   background: url("assets/updates-book.jpg") center / contain no-repeat;
