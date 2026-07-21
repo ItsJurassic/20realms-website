@@ -217,25 +217,8 @@
         statusEl.textContent = "You're on the list. We'll be in touch when beta testing opens.";
         statusEl.style.color = '#7ec49e';
 
-        // Send welcome email if opted in
-        if (emailOptIn) {
-          try {
-            const emailRes = await supabase.functions.invoke('send-welcome-email', {
-              body: {
-                email: payload.email,
-                name: payload.name
-              }
-            });
-            
-            if (emailRes.error) {
-              console.warn('Email sending failed:', emailRes.error);
-            } else {
-              console.log('Welcome email sent successfully');
-            }
-          } catch (err) {
-            console.warn('Could not trigger email function:', err.message);
-          }
-        }
+        // Email sending is triggered via Supabase Database Webhooks
+        // (no client-side email function call needed)
       }
     });
   </script>
