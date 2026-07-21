@@ -60,19 +60,9 @@
         </div>
       </div>
 
-      <div class="updates-grid">
-        <article class="update-card featured" data-update-type="development">
-          <span class="update-category">Development</span>
-          <h3>Subpages are live in the local build</h3>
-          <p>The homepage now leads into dedicated pages for features, vision, and contact, giving 20Realms room to grow without becoming one long scroll.</p>
-          <time datetime="2026-07-19">July 19, 2026</time>
-        </article>
-        <article class="update-card" data-update-type="community">
-          <span class="update-category">Community</span>
-          <h3>Follow r/20Realms</h3>
-          <p>Progress posts, feature previews, and early community feedback will be collected through the 20Realms subreddit.</p>
-          <time datetime="2026-07-19">July 19, 2026</time>
-        </article>
+      <div class="updates-grid" id="updates-grid">
+        <!-- Posts will be loaded here by JavaScript -->
+        <div style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: var(--muted);">Loading updates…</div>
       </div>
     </section>
   </main>
@@ -118,20 +108,58 @@
   </footer>
 
   <script src="script.js"></script>
-  <script>
+  <script type="module">
+    const SUPABASE_URL  = 'https://avcqqazytvvcfraowgsm.supabase.co';
+    const SUPABASE_ANON = 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0';
+
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    // Fetch and render posts
+    const { data: posts, error } = await supabase
+      .from('posts')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    const grid = document.getElementById('updates-grid');
+
+    if (error || !posts || posts.length === 0) {
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: var(--muted);">No updates yet. Check back soon!</div>';
+    } else {
+      grid.innerHTML = posts.map((post, idx) => {
+        const date = new Date(post.created_at);
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const isoDate = date.toISOString().split('T')[0];
+        const categoryLower = post.category ? post.category.toLowerCase() : 'updates';
+        const isFeatured = idx === 0;
+        
+        return `
+          <article class="update-card ${isFeatured ? 'featured' : ''}" data-update-type="${categoryLower}">
+            <span class="update-category">${post.category || 'Updates'}</span>
+            <h3>${post.title}</h3>
+            <p>${post.content}</p>
+            <time datetime="${isoDate}">${dateStr}</time>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // Filter functionality
     document.addEventListener('DOMContentLoaded', function () {
-      var tabs = document.querySelectorAll('[data-update-filter]');
-      var cards = document.querySelectorAll('[data-update-type]');
+      const tabs = document.querySelectorAll('[data-update-filter]');
+      const cards = document.querySelectorAll('[data-update-type]');
+      
       tabs.forEach(function (tab) {
         tab.addEventListener('click', function () {
-          var filter = tab.dataset.updateFilter;
+          const filter = tab.dataset.updateFilter;
           tabs.forEach(function (t) {
-            var active = t === tab;
+            const active = t === tab;
             t.classList.toggle('active', active);
             t.setAttribute('aria-pressed', String(active));
           });
           cards.forEach(function (card) {
-            card.classList.toggle('is-hidden', filter !== 'all' && card.dataset.updateType !== filter);
+            const shouldHide = filter !== 'all' && card.dataset.updateType !== filter;
+            card.classList.toggle('is-hidden', shouldHide);
           });
         });
       });
