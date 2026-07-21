@@ -118,19 +118,9 @@
       position: relative;
       cursor: pointer;
     }
-    .profile-avatar-upload:hover::after {
-      content: 'Change';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0,0,0,0.8);
-      color: var(--cream);
-      padding: 4px 12px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      white-space: nowrap;
+    .profile-avatar-upload:hover .profile-avatar,
+    .profile-avatar-upload:hover img {
+      opacity: 0.75;
     }
     .profile-avatar-upload input {
       display: none;
@@ -140,6 +130,23 @@
       height: 100%;
       object-fit: cover;
       border-radius: 50%;
+    }
+    .profile-avatar-upload::after {
+      content: '+';
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--clay);
+      color: var(--cream);
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 22px;
+      text-align: center;
+      border: 2px solid var(--paper);
+      pointer-events: none;
     }
     @media (max-width: 600px) {
       .profile-header { flex-direction: column; align-items: flex-start; }
