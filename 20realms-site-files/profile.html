@@ -114,33 +114,6 @@
       border-color: var(--clay);
       color: var(--ink);
     }
-    .profile-avatar-upload {
-      position: relative;
-      cursor: pointer;
-    }
-    .profile-avatar-upload:hover::after {
-      content: 'Change';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0,0,0,0.8);
-      color: var(--cream);
-      padding: 4px 12px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    .profile-avatar-upload input {
-      display: none;
-    }
-    .profile-avatar-upload img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-    }
     @media (max-width: 600px) {
       .profile-header { flex-direction: column; align-items: flex-start; }
       .profile-grid { grid-template-columns: 1fr; }
@@ -158,7 +131,6 @@
       <a href="beta.html">Beta Access</a>
       <a href="features.html">Features</a>
       <a href="vision.html">Vision</a>
-      <a href="community.html" class="nav-player-icon" title="Community & Profile">👤</a>
       <a href="contact.html">Contact</a>
     </nav>
   </header>
@@ -166,10 +138,7 @@
   <main>
     <div class="profile-wrap" id="profile-wrap" style="display:none">
       <div class="profile-header">
-        <label class="profile-avatar-upload" id="avatar-upload-label">
-          <div class="profile-avatar" id="avatar-initial">?</div>
-          <input type="file" id="avatar-upload" accept="image/*" />
-        </label>
+        <div class="profile-avatar" id="avatar-initial">?</div>
         <div class="profile-identity">
           <h1 id="profile-username">Loading…</h1>
           <p id="profile-email"></p>
@@ -263,8 +232,8 @@
   <script src="script.js"></script>
   <script type="module">
     // Must match the values in community.html
-    const SUPABASE_URL  = 'https://avcqqazytvvcfraowgsm.supabase.co';
-    const SUPABASE_ANON = 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0';
+    const SUPABASE_URL  = 'YOUR_SUPABASE_URL';
+    const SUPABASE_ANON = 'YOUR_SUPABASE_ANON_KEY';
 
     const configured = SUPABASE_URL !== 'YOUR_SUPABASE_URL';
 
@@ -282,65 +251,13 @@
         const username = user.user_metadata?.username || user.email.split('@')[0];
         const initial = username.charAt(0).toUpperCase();
         const joined = new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        const avatarUrl = user.user_metadata?.avatar_url;
 
-        const avatarEl = document.getElementById('avatar-initial');
-        const avatarLabel = document.getElementById('avatar-upload-label');
-
-        if (avatarUrl) {
-          avatarEl.style.display = 'none';
-          if (!avatarLabel.querySelector('img')) {
-            const img = document.createElement('img');
-            img.src = avatarUrl;
-            img.alt = username + ' profile picture';
-            avatarLabel.appendChild(img);
-          }
-        } else {
-          avatarEl.textContent = initial;
-        }
-
+        document.getElementById('avatar-initial').textContent = initial;
         document.getElementById('profile-username').textContent = username;
         document.getElementById('profile-email').textContent = user.email;
         document.getElementById('member-since').textContent = joined;
         document.getElementById('loading-wrap').style.display = 'none';
         document.getElementById('profile-wrap').style.display = '';
-
-        document.getElementById('avatar-upload').addEventListener('change', async (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
-
-          const bucket = 'avatars';
-          const fileName = user.id + '/' + Date.now() + '_' + file.name;
-
-          const { error: uploadError } = await supabase.storage.from(bucket).upload(fileName, file, { upsert: true });
-
-          if (uploadError) {
-            console.error('Upload error:', uploadError);
-            alert('Failed to upload profile picture');
-            return;
-          }
-
-          const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(fileName);
-
-          const { error: updateError } = await supabase.auth.updateUser({
-            data: { avatar_url: publicUrl }
-          });
-
-          if (updateError) {
-            console.error('Update error:', updateError);
-            alert('Failed to save profile picture');
-            return;
-          }
-
-          avatarEl.style.display = 'none';
-          let img = avatarLabel.querySelector('img');
-          if (!img) {
-            img = document.createElement('img');
-            img.alt = username + ' profile picture';
-            avatarLabel.appendChild(img);
-          }
-          img.src = publicUrl;
-        });
       }
 
       document.getElementById('btn-signout').addEventListener('click', async () => {

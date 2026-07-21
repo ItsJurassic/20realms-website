@@ -117,6 +117,24 @@ a {
   border-color: var(--clay);
 }
 
+.nav-player-icon {
+  font-size: 1.4rem !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  transition: background 160ms;
+}
+
+.nav-player-icon:hover {
+  background: rgba(181, 76, 47, 0.15);
+  border-color: transparent !important;
+}
+
 .hero,
 .section {
   width: min(1120px, calc(100% - 32px));

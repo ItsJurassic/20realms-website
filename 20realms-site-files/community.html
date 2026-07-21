@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Join the 20Realms community. Create an account or sign in to access your profile.">
+  <title>Community | 20Realms</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .auth-wrap {
+      width: min(480px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 80px 0 100px;
+    }
+    .auth-tabs {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px;
+      background: rgba(255,250,240,0.04);
+      margin-bottom: 32px;
+      width: fit-content;
+    }
+    .auth-tab {
+      padding: 8px 24px;
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 160ms, color 160ms;
+    }
+    .auth-tab.active {
+      background: var(--clay);
+      color: var(--cream);
+    }
+    .auth-form {
+      display: grid;
+      gap: 16px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background:
+        radial-gradient(circle at 16% 20%, rgba(217,164,65,0.1), transparent 28%),
+        linear-gradient(160deg, rgba(255,250,240,0.07), rgba(255,250,240,0.02)),
+        rgba(11,15,22,0.76);
+      box-shadow: 0 18px 44px rgba(0,0,0,0.2);
+    }
+    .auth-form label {
+      display: grid;
+      gap: 8px;
+      color: var(--cream);
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+    .auth-form input {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 14px;
+      border: 1px solid rgba(247,239,226,0.2);
+      border-radius: 8px;
+      color: var(--cream);
+      background: rgba(255,250,240,0.07);
+      font: inherit;
+      font-size: 0.98rem;
+    }
+    .auth-form input:focus {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+      border-color: transparent;
+    }
+    .auth-form input::placeholder {
+      color: rgba(247,239,226,0.35);
+    }
+    .auth-form .button {
+      width: 100%;
+      margin-top: 4px;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+    }
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+    .auth-divider::before,
+    .auth-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+    .auth-msg {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: none;
+    }
+    .auth-msg.error {
+      display: block;
+      background: rgba(181,76,47,0.18);
+      border: 1px solid rgba(181,76,47,0.4);
+      color: #f4937a;
+    }
+    .auth-msg.success {
+      display: block;
+      background: rgba(31,81,58,0.22);
+      border: 1px solid rgba(31,81,58,0.4);
+      color: #7ec49e;
+    }
+    .auth-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.6;
+      text-align: center;
+    }
+    .panel-section {
+      display: none;
+    }
+    .panel-section.visible {
+      display: contents;
+    }
+    .auth-setup-banner {
+      margin: 0 auto 24px;
+      padding: 12px 16px;
+      border: 1px solid rgba(217,164,65,0.3);
+      border-radius: 8px;
+      background: rgba(217,164,65,0.08);
+      color: var(--gold);
+      font-size: 0.86rem;
+      font-weight: 600;
+      line-height: 1.5;
+      text-align: center;
+    }
+    .auth-setup-banner a {
+      color: var(--gold);
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand-group">
+      <a class="brand" href="index.html" aria-label="Home">20Realms</a>
+      <a class="home-link" href="index.html">Home</a>
+    </div>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="updates.html">Updates</a>
+      <a href="beta.html">Beta Access</a>
+      <a href="features.html">Features</a>
+      <a href="vision.html">Vision</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="auth-wrap">
+      <p class="eyebrow" style="margin-bottom:8px">Community</p>
+      <h1 style="font-size:clamp(2.2rem,5vw,3.8rem);margin-bottom:28px">Your realm.<br>Your profile.</h1>
+
+      <div id="setup-banner" class="auth-setup-banner" style="display:none">
+        ⚠️ Auth is not configured yet. Add your Supabase keys to <code>community.html</code> to enable accounts.
+      </div>
+
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab active" id="tab-signin" role="tab" aria-selected="true" aria-controls="panel-signin">Sign in</button>
+        <button class="auth-tab" id="tab-signup" role="tab" aria-selected="false" aria-controls="panel-signup">Create account</button>
+      </div>
+
+      <!-- Sign in -->
+      <div class="auth-form" id="panel-signin" role="tabpanel">
+        <div id="signin-msg" class="auth-msg" role="alert"></div>
+        <div class="panel-section visible" id="signin-fields">
+          <label>
+            Email
+            <input type="email" id="signin-email" placeholder="you@example.com" autocomplete="email">
+          </label>
+          <label>
+            Password
+            <input type="password" id="signin-password" placeholder="••••••••" autocomplete="current-password">
+          </label>
+          <button class="button primary" id="btn-signin" type="button">Sign in</button>
+          <p class="auth-note"><a href="#" id="link-forgot" style="color:var(--muted);text-decoration:underline">Forgot password?</a></p>
+        </div>
+      </div>
+
+      <!-- Sign up -->
+      <div class="auth-form" id="panel-signup" role="tabpanel" style="display:none">
+        <div id="signup-msg" class="auth-msg" role="alert"></div>
+        <div class="panel-section visible" id="signup-fields">
+          <label>
+            Username
+            <input type="text" id="signup-username" placeholder="TavernKeeper" autocomplete="username">
+          </label>
+          <label>
+            Email
+            <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email">
+          </label>
+          <label>
+            Password
+            <input type="password" id="signup-password" placeholder="8+ characters" autocomplete="new-password">
+          </label>
+          <button class="button primary" id="btn-signup" type="button">Create account</button>
+          <p class="auth-note">By creating an account you agree to the <a href="user-agreement.html" style="color:var(--muted);text-decoration:underline">User Agreement</a>.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-branding">
+      <strong>20Realms</strong>
+      <span>&copy; <span id="year"></span> 20Realms</span>
+      <span>Mobile, PC, and console.</span>
+    </div>
+    <nav class="social-links" aria-label="Social media links">
+      <a href="#" aria-label="TikTok"><span class="sr-only">TikTok</span><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 3h3.1c.2 1.4 1 2.6 2.1 3.5.7.5 1.4.8 2.1.9v3.2c-1.4-.1-2.7-.5-3.9-1.2v6.2c0 3.1-2.4 5.4-5.6 5.4-3 0-5.3-2.1-5.3-5 0-3.2 2.7-5.4 6.1-5v3.3c-1.4-.4-2.7.3-2.7 1.6 0 1 .8 1.7 1.9 1.7 1.2 0 2.1-.8 2.1-2.3V3z"/></svg></a>
+      <a href="#" aria-label="X"><span class="sr-only">X</span><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.2 3h4.4l4.1 5.8L17.7 3H22l-7.2 8.3L22.5 21h-4.4l-5.4-7.1L6.8 21H2.5l8.1-9.3L4.2 3zm3.1 2.3L18.8 18.8h.7L8 5.3h-.7z"/></svg></a>
+      <a href="https://www.facebook.com/share/1FAyCrvvNk/" aria-label="Facebook"><span class="sr-only">Facebook</span><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.2 8.6V6.8c0-.8.5-1 1-1H18V2.4c-.5-.1-2.1-.2-3.6-.2-3.5 0-5.2 2-5.2 5.4v1H6v3.8h3.2V22h4.1v-9.6h3.2l.6-3.8h-3z"/></svg></a>
+      <a href="https://www.reddit.com/r/20Realms/s/Ydxfo6GGOH" aria-label="Reddit"><span class="sr-only">Reddit</span><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 10.7c.8.7 1.2 1.6 1.2 2.6 0 3.2-4.3 5.8-9.7 5.8s-9.7-2.6-9.7-5.8c0-1 .4-1.9 1.2-2.6-.2-.4-.4-.8-.4-1.3 0-1.3 1-2.3 2.3-2.3.7 0 1.4.3 1.8.9 1.1-.4 2.4-.7 3.8-.8l1-4.7 5 .9c.2-.7.8-1.1 1.6-1.1.9 0 1.6.7 1.6 1.6s-.7 1.6-1.6 1.6c-.6 0-1.1-.3-1.4-.8l-3.6-.7-.7 3.5c1.5.1 2.9.3 4.1.8.4-.6 1.1-.9 1.8-.9 1.3 0 2.3 1 2.3 2.3 0 .5-.2.9-.5 1.3zM8.8 12.8c0 .8.6 1.4 1.4 1.4s1.4-.6 1.4-1.4-.6-1.4-1.4-1.4-1.4.6-1.4 1.4zm6.7 3.3c.3-.3.3-.7 0-.9-.3-.3-.7-.3-.9 0-.5.5-1.4.8-2.6.8s-2.1-.3-2.6-.8c-.3-.3-.7-.3-.9 0-.3.3-.3.7 0 .9.8.9 2 1.3 3.5 1.3s2.7-.4 3.5-1.3zm-1.7-3.3c0 .8.6 1.4 1.4 1.4s1.4-.6 1.4-1.4-.6-1.4-1.4-1.4-1.4.6-1.4 1.4z"/></svg></a>
+      <a href="https://www.instagram.com/20_realms/" aria-label="Instagram"><span class="sr-only">Instagram</span><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.3 2h9.4C19.6 2 22 4.4 22 7.3v9.4c0 2.9-2.4 5.3-5.3 5.3H7.3C4.4 22 2 19.6 2 16.7V7.3C2 4.4 4.4 2 7.3 2zm0 3C6 5 5 6 5 7.3v9.4C5 18 6 19 7.3 19h9.4c1.3 0 2.3-1 2.3-2.3V7.3C19 6 18 5 16.7 5H7.3zm4.7 2.6a4.4 4.4 0 1 1 0 8.8 4.4 4.4 0 0 1 0-8.8zm0 2.7a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4zm4.8-2.9a1 1 0 1 1 0 2.1 1 1 0 0 1 0-2.1z"/></svg></a>
+    </nav>
+    <nav class="footer-links" aria-label="Footer links">
+      <a href="vision.html">About</a>
+      <a href="accessibility.html">Accessibility</a>
+      <a href="help.html">Help</a>
+      <a href="https://www.reddit.com/r/20Realms/">Forums</a>
+      <a href="legal.html">Legal &amp; Privacy</a>
+      <a href="user-agreement.html">User Agreement</a>
+      <a href="privacy-cookies.html">Privacy &amp; Cookie Policy</a>
+      <a href="updates.html">Online Service Updates</a>
+      <a href="security.html">Security</a>
+    </nav>
+    <div class="footer-controls">
+      <label class="privacy-toggle">
+        <input type="checkbox" aria-label="Your Privacy Choices">
+        <span class="privacy-switch" aria-hidden="true"></span>
+        <span>Your Privacy Choices</span>
+      </label>
+      <label class="language-select">
+        <span>Language</span>
+        <select aria-label="Language">
+          <option>United States</option>
+        </select>
+      </label>
+    </div>
+    <img class="footer-logo" src="assets/bloodstone-forge-logo.png" alt="Bloodstone Forge">
+  </footer>
+
+  <script src="script.js"></script>
+  <script type="module">
+    // ─── SUPABASE CONFIG ────────────────────────────────────────────────────────
+    // 1. Create a free project at https://supabase.com
+    // 2. Go to Project Settings → API
+    // 3. Replace the two values below with your Project URL and anon/public key
+    const SUPABASE_URL  = 'YOUR_SUPABASE_URL';
+    const SUPABASE_ANON = 'YOUR_SUPABASE_ANON_KEY';
+    // ────────────────────────────────────────────────────────────────────────────
+
+    const configured = SUPABASE_URL !== 'YOUR_SUPABASE_URL';
+
+    if (!configured) {
+      document.getElementById('setup-banner').style.display = 'block';
+    }
+
+    let supabase;
+    if (configured) {
+      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+      supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+      // Redirect already-signed-in users to profile
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) window.location.href = 'profile.html';
+    }
+
+    // Tab switching
+    const tabSignin = document.getElementById('tab-signin');
+    const tabSignup = document.getElementById('tab-signup');
+    const panelSignin = document.getElementById('panel-signin');
+    const panelSignup = document.getElementById('panel-signup');
+
+    tabSignin.addEventListener('click', () => {
+      tabSignin.classList.add('active'); tabSignin.setAttribute('aria-selected', 'true');
+      tabSignup.classList.remove('active'); tabSignup.setAttribute('aria-selected', 'false');
+      panelSignin.style.display = ''; panelSignup.style.display = 'none';
+    });
+    tabSignup.addEventListener('click', () => {
+      tabSignup.classList.add('active'); tabSignup.setAttribute('aria-selected', 'true');
+      tabSignin.classList.remove('active'); tabSignin.setAttribute('aria-selected', 'false');
+      panelSignup.style.display = ''; panelSignin.style.display = 'none';
+    });
+
+    function showMsg(id, text, type) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'auth-msg ' + type;
+    }
+
+    // Sign in
+    document.getElementById('btn-signin').addEventListener('click', async () => {
+      if (!configured) { showMsg('signin-msg', 'Auth is not configured yet. Add your Supabase keys.', 'error'); return; }
+      const email = document.getElementById('signin-email').value.trim();
+      const password = document.getElementById('signin-password').value;
+      if (!email || !password) { showMsg('signin-msg', 'Please fill in all fields.', 'error'); return; }
+      const btn = document.getElementById('btn-signin');
+      btn.textContent = 'Signing in…'; btn.disabled = true;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) { showMsg('signin-msg', error.message, 'error'); btn.textContent = 'Sign in'; btn.disabled = false; }
+      else window.location.href = 'profile.html';
+    });
+
+    // Sign up
+    document.getElementById('btn-signup').addEventListener('click', async () => {
+      if (!configured) { showMsg('signup-msg', 'Auth is not configured yet. Add your Supabase keys.', 'error'); return; }
+      const username = document.getElementById('signup-username').value.trim();
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value;
+      if (!username || !email || !password) { showMsg('signup-msg', 'Please fill in all fields.', 'error'); return; }
+      if (password.length < 8) { showMsg('signup-msg', 'Password must be at least 8 characters.', 'error'); return; }
+      const btn = document.getElementById('btn-signup');
+      btn.textContent = 'Creating account…'; btn.disabled = true;
+      const { error } = await supabase.auth.signUp({
+        email, password,
+        options: { data: { username } }
+      });
+      if (error) { showMsg('signup-msg', error.message, 'error'); btn.textContent = 'Create account'; btn.disabled = false; }
+      else showMsg('signup-msg', 'Account created! Check your email to confirm, then sign in.', 'success');
+    });
+
+    // Forgot password
+    document.getElementById('link-forgot').addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (!configured) { showMsg('signin-msg', 'Auth is not configured yet.', 'error'); return; }
+      const email = document.getElementById('signin-email').value.trim();
+      if (!email) { showMsg('signin-msg', 'Enter your email above first.', 'error'); return; }
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/profile.html' });
+      if (error) showMsg('signin-msg', error.message, 'error');
+      else showMsg('signin-msg', 'Password reset email sent.', 'success');
+    });
+  </script>
+</body>
+</html>

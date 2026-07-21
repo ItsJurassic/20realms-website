@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Explore 20Realms features for players, Dungeon Masters, and homebrew creators on mobile, PC, and console.">
-  <title>Features | 20Realms</title>
+  <meta name="description" content="Read the latest 20Realms development and community updates for mobile, PC, and console.">
+  <title>Updates | 20Realms</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
@@ -17,34 +17,49 @@
       <a class="home-link" href="index.html">Home</a>
     </div>
     <nav class="nav" aria-label="Main navigation">
-      <a href="updates.html">Updates</a>
+      <a href="updates.html" aria-current="page">Updates</a>
       <a href="beta.html">Beta Access</a>
-      <a href="features.html" aria-current="page">Features</a>
+      <a href="features.html">Features</a>
       <a href="vision.html">Vision</a>
-      <a href="community.html" class="nav-player-icon" title="Community & Profile">👤</a><a href="contact.html">Contact</a>
+      <a href="community.html">Community</a><a href="contact.html">Contact</a>
     </nav>
   </header>
 
   <main>
-    <section class="page-hero features" aria-labelledby="features-title">
-      <p class="eyebrow">Core pillars</p>
-      <h1 id="features-title">Built for creative campaigns.</h1>
-      <p>20Realms is being shaped around the tools remote tables actually need: fast character play, flexible DM control, console support, and room for homebrew worlds.</p>
+    <section class="page-hero updates-page" aria-labelledby="updates-page-title">
+      <p class="eyebrow">Updates</p>
+      <h1 id="updates-page-title">Latest from 20Realms.</h1>
+      <p>Follow development progress, community notes, console availability updates, and site changes as the project takes shape.</p>
     </section>
 
-    <section class="section feature-grid" aria-label="20Realms feature groups">
-      <article class="feature-card">
-        <h2>For players</h2>
-        <p>Create a custom hero, choose your view, roll physical dice, and jump into community-made worlds from mobile, PC, or console.</p>
+    <section class="section updates-page-grid" aria-label="All 20Realms updates">
+      <div class="updates-controls" style="grid-column:1/-1;display:flex;gap:8px;margin-bottom:8px">
+        <div class="update-tabs" role="tablist" aria-label="Update categories">
+          <button class="update-tab active" type="button" data-update-filter="all" aria-pressed="true">All</button>
+          <button class="update-tab" type="button" data-update-filter="development" aria-pressed="false">Development</button>
+          <button class="update-tab" type="button" data-update-filter="community" aria-pressed="false">Community</button>
+        </div>
+      </div>
+      <div class="updates-grid">
+      <article class="update-card featured" data-update-type="development">
+        <span class="update-category">Development</span>
+        <h3>Subpages are live in the local build</h3>
+        <p>The homepage now leads into dedicated pages for features, vision, contact, and updates, giving 20Realms room to grow across mobile, PC, and console without becoming one long scroll.</p>
+        <time datetime="2026-07-19">July 19, 2026</time>
       </article>
-      <article class="feature-card">
-        <h2>For Dungeon Masters</h2>
-        <p>Shape maps, encounters, loot, enemies, survival systems, and the feel of every scene without forcing every table into the same rules.</p>
+      <article class="update-card" data-update-type="community">
+        <span class="update-category">Community</span>
+        <h3>Follow r/20Realms</h3>
+        <p>Progress posts, feature previews, and early community feedback will be collected through the 20Realms subreddit.</p>
+        <time datetime="2026-07-19">July 19, 2026</time>
       </article>
-      <article class="feature-card">
-        <h2>The Homebrew Lab</h2>
-        <p>Build and share custom items, buildings, maps, and campaign content with the community as the project grows.</p>
+      <article class="update-card" data-update-type="development">
+        <span class="update-category">Development</span>
+        <h3>Social links added to every page</h3>
+        <p>The footer now includes static icon links for TikTok, X, Facebook, Reddit, and Instagram while the official profiles are being prepared.</p>
+        <time datetime="2026-07-19">July 19, 2026</time>
       </article>
+      </div>
     </section>
   </main>
 
@@ -89,5 +104,24 @@
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var tabs = document.querySelectorAll('[data-update-filter]');
+      var cards = document.querySelectorAll('[data-update-type]');
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          var filter = tab.dataset.updateFilter;
+          tabs.forEach(function (t) {
+            var active = t === tab;
+            t.classList.toggle('active', active);
+            t.setAttribute('aria-pressed', String(active));
+          });
+          cards.forEach(function (card) {
+            card.classList.toggle('is-hidden', filter !== 'all' && card.dataset.updateType !== filter);
+          });
+        });
+      });
+    });
+  </script>
 </body>
 </html>
