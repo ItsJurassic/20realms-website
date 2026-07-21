@@ -1,7 +1,18 @@
 const RESEND_API_KEY = 're_6pUDLEgC_NNsS5cd99xXXGfVuB4DzjNwF';
 const FROM_EMAIL = 'onboarding@resend.dev'; // Using Resend's default verified email for testing
+const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || 'webhook-bypass-token-20realms';
 
 export default async function handler(req, res) {
+  // Add CORS headers for browser requests
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-webhook-secret');
+
+  // Handle OPTIONS requests (CORS preflight)
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
