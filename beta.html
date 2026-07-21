@@ -180,6 +180,7 @@
 
       const data = new FormData(form);
       const emailOptIn = data.get('email_updates_opt_in') === 'true';
+      console.log('Form debug - emailOptIn:', emailOptIn, 'raw value:', data.get('email_updates_opt_in'));
       
       const payload = {
         name:     data.get('name'),
@@ -189,32 +190,39 @@
         user_id:  loggedInUser?.id || null
       };
 
+      console.log('Inserting to beta_signups:', payload);
       const { error, data: insertedData } = await supabase.from('beta_signups').insert(payload).select();
+      console.log('beta_signups insert result:', { error, dataCount: insertedData?.length });
       
       // Store email opt-in preference separately if opted in
       if (!error && emailOptIn && insertedData && insertedData.length > 0) {
         try {
+          console.log('Inserting to beta_email_signups for:', payload.email);
           const optinRecord = await supabase.from('beta_email_signups').insert({
             email: payload.email,
             opted_in_at: new Date().toISOString()
           }).select();
 
+          console.log('beta_email_signups insert result:', { error: optinRecord?.error, dataCount: optinRecord?.data?.length });
+
           // Directly trigger welcome email via Vercel webhook
           if (optinRecord && !optinRecord.error && optinRecord.data && optinRecord.data.length > 0) {
             try {
+              console.log('Triggering webhook with record:', optinRecord.data[0]);
               const webhookResponse = await fetch('https://20realms-website-73fayutrk-bloodstone-forge.vercel.app/api/webhook-beta-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ record: optinRecord.data[0] })
               });
               console.log('Welcome email webhook triggered:', webhookResponse.status);
+              const responseData = await webhookResponse.json();
+              console.log('Webhook response:', responseData);
             } catch (webhookErr) {
               console.error('Webhook call error:', webhookErr);
             }
           }
         } catch (err) {
-          // If separate table doesn't exist, that's ok - just log it
-          console.log('Email opt-in storage note:', err.message);
+          console.error('Email opt-in storage error:', err);
         }
       }
 
