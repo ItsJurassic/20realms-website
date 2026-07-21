@@ -214,8 +214,10 @@
       // Swap fields
       document.getElementById('field-name').style.display = 'none';
       document.getElementById('field-name').querySelector('input').removeAttribute('required');
+      document.getElementById('field-name').querySelector('input').disabled = true;
       document.getElementById('field-email').style.display = 'none';
       document.getElementById('field-email').querySelector('input').removeAttribute('required');
+      document.getElementById('field-email').querySelector('input').disabled = true;
       document.getElementById('field-account').style.display = '';
 
       // Fill account card
