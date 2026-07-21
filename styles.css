@@ -135,6 +135,14 @@ a {
   border-color: transparent !important;
 }
 
+.nav-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
 .hero,
 .section {
   width: min(1120px, calc(100% - 32px));
