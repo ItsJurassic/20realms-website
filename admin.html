@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin — 20Realms</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #0b0f16;
+      --ink: #f7efe2;
+      --muted: #c9beb0;
+      --forest: #1f513a;
+      --clay: #b54c2f;
+      --gold: #d9a441;
+      --cream: #fffaf0;
+      --line: rgba(247, 239, 226, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Manrope", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(135deg, #05070b, #0d0f16);
+      min-height: 100vh;
+      padding: 60px 20px;
+    }
+
+    .admin-wrap {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-family: "Fraunces", serif;
+      font-size: 2rem;
+      margin: 0 0 8px;
+      color: var(--cream);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0 0 32px;
+      font-size: 0.95rem;
+    }
+
+    /* Auth gate */
+    .auth-gate {
+      display: none;
+      padding: 40px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background:
+        radial-gradient(circle at 16% 20%, rgba(217,164,65,0.1), transparent 28%),
+        linear-gradient(160deg, rgba(255,250,240,0.07), rgba(255,250,240,0.02)),
+        rgba(11,15,22,0.76);
+      text-align: center;
+    }
+
+    .auth-gate.active {
+      display: block;
+    }
+
+    .auth-gate h2 {
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+      color: var(--gold);
+    }
+
+    .auth-gate p {
+      margin: 12px 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .auth-gate a {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 10px 20px;
+      background: var(--clay);
+      color: var(--cream);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: opacity 160ms;
+    }
+
+    .auth-gate a:hover {
+      opacity: 0.9;
+    }
+
+    /* Admin panel */
+    .admin-panel {
+      display: none;
+    }
+
+    .admin-panel.active {
+      display: block;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .admin-user {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .admin-user strong {
+      color: var(--gold);
+    }
+
+    .btn-signout {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 160ms;
+    }
+
+    .btn-signout:hover {
+      border-color: var(--clay);
+      color: var(--ink);
+    }
+
+    .admin-section {
+      margin-bottom: 40px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(217,164,65,0.08), transparent 32%),
+        linear-gradient(160deg, rgba(255,250,240,0.07), rgba(255,250,240,0.02)),
+        rgba(11,15,22,0.65);
+    }
+
+    .admin-section h3 {
+      margin: 0 0 20px;
+      font-size: 1.1rem;
+      color: var(--clay);
+      font-weight: 700;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    input, textarea, select {
+      font-family: "Manrope", sans-serif;
+      font-size: 1rem;
+      color: var(--ink);
+      background: rgba(247, 239, 226, 0.06);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px 14px;
+      transition: border-color 160ms;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    select option {
+      background: #0d0b09;
+    }
+
+    button[type="submit"] {
+      padding: 12px 24px;
+      background: var(--clay);
+      color: var(--cream);
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: opacity 160ms;
+    }
+
+    button[type="submit"]:hover {
+      opacity: 0.9;
+    }
+
+    button[type="submit"]:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .date-display {
+      font-size: 1rem;
+      color: var(--gold);
+      font-weight: 700;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(217, 164, 65, 0.08);
+    }
+
+    .status-msg {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: none;
+      margin-top: 12px;
+    }
+
+    .status-msg.success {
+      display: block;
+      background: rgba(31, 81, 58, 0.22);
+      border: 1px solid rgba(31, 81, 58, 0.4);
+      color: #7ec49e;
+    }
+
+    .status-msg.error {
+      display: block;
+      background: rgba(181, 76, 47, 0.18);
+      border: 1px solid rgba(181, 76, 47, 0.4);
+      color: #f4937a;
+    }
+
+    .admin-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .admin-item {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 250, 240, 0.04);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-item-email {
+      color: var(--cream);
+      font-weight: 600;
+    }
+
+    .admin-item-date {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .btn-remove {
+      padding: 4px 12px;
+      background: transparent;
+      border: 1px solid rgba(244, 147, 122, 0.5);
+      color: #f4937a;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all 160ms;
+    }
+
+    .btn-remove:hover {
+      background: rgba(244, 147, 122, 0.1);
+      border-color: #f4937a;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-wrap">
+    <h1>Admin Panel</h1>
+    <p class="subtitle">Manage 20Realms content and settings</p>
+
+    <!-- Auth Gate -->
+    <div id="auth-gate" class="auth-gate active">
+      <h2>Access Denied</h2>
+      <p>This page is for administrators only.</p>
+      <p id="gate-message" style="color: var(--muted); font-size: 0.9rem;"></p>
+      <a href="index.html">← Back to home</a>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="admin-panel">
+      <div class="admin-header">
+        <div class="admin-user">
+          Logged in as <strong id="admin-email"></strong>
+        </div>
+        <button class="btn-signout" id="btn-admin-signout">Sign out</button>
+      </div>
+
+      <!-- Post Update Section -->
+      <div class="admin-section">
+        <h3>📝 Create News Post</h3>
+        <form id="post-form" novalidate>
+          <label>
+            Category
+            <select name="category" required>
+              <option value="">Select a category…</option>
+              <option value="Development">Development</option>
+              <option value="Community">Community</option>
+              <option value="Updates">Updates</option>
+            </select>
+          </label>
+          <label>
+            Title
+            <input type="text" name="title" placeholder="Post title" required>
+          </label>
+          <label>
+            Content
+            <textarea name="content" placeholder="Post content…" required></textarea>
+          </label>
+          <label>
+            Date
+            <div class="date-display" id="post-date"></div>
+          </label>
+          <button type="submit">Publish Post</button>
+          <div id="post-status" class="status-msg"></div>
+        </form>
+      </div>
+
+      <!-- Admin Users Section -->
+      <div class="admin-section">
+        <h3>🔐 Manage Admin Users</h3>
+        <p style="color: var(--muted); margin-bottom: 20px; font-size: 0.9rem;">
+          Add email addresses that should have admin access to this panel.
+        </p>
+        <form id="admin-user-form" novalidate>
+          <label>
+            Add Admin Email
+            <input type="email" name="admin_email" placeholder="email@example.com" required>
+          </label>
+          <button type="submit">Grant Admin Access</button>
+          <div id="admin-status" class="status-msg"></div>
+        </form>
+
+        <div style="margin-top: 24px;">
+          <h4 style="color: var(--muted); margin: 0 0 12px; font-size: 0.9rem;">Current Admins</h4>
+          <div id="admin-list" class="admin-list">
+            <div style="color: var(--muted); text-align: center; padding: 20px;">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const SUPABASE_URL  = 'https://avcqqazytvvcfraowgsm.supabase.co';
+    const SUPABASE_ANON = 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0';
+
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    const authGate = document.getElementById('auth-gate');
+    const adminPanel = document.getElementById('admin-panel');
+
+    // ─── CHECK AUTH & ADMIN STATUS ───────────────────────────────────────
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      document.getElementById('gate-message').textContent = 'Please sign in to continue.';
+      const link = document.querySelector('#auth-gate a');
+      link.href = 'community.html';
+      link.textContent = '← Go to sign in';
+    } else {
+      const userEmail = session.user.email;
+      
+      // Check if user is in admin_users table
+      const { data: adminCheck, error } = await supabase
+        .from('admin_users')
+        .select('id')
+        .eq('email', userEmail)
+        .single();
+
+      if (adminCheck && adminCheck.id) {
+        // Admin access granted
+        authGate.classList.remove('active');
+        adminPanel.classList.add('active');
+        document.getElementById('admin-email').textContent = userEmail;
+
+        // Load admin list
+        await loadAdminList();
+
+        // ─── POST FORM ───────────────────────────────────────────────────
+        const today = new Date().toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+        document.getElementById('post-date').textContent = today;
+
+        document.getElementById('post-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const btn = e.target.querySelector('button[type="submit"]');
+          btn.disabled = true;
+          btn.textContent = 'Publishing…';
+
+          const formData = new FormData(e.target);
+          const { error } = await supabase.from('posts').insert({
+            category: formData.get('category'),
+            title: formData.get('title'),
+            content: formData.get('content'),
+            created_at: new Date().toISOString(),
+            author_id: session.user.id
+          });
+
+          const statusEl = document.getElementById('post-status');
+          if (error) {
+            statusEl.textContent = error.message;
+            statusEl.classList.add('error');
+            statusEl.classList.remove('success');
+          } else {
+            statusEl.textContent = '✓ Post published successfully!';
+            statusEl.classList.add('success');
+            statusEl.classList.remove('error');
+            e.target.reset();
+            setTimeout(() => statusEl.classList.remove('success'), 3000);
+          }
+          btn.disabled = false;
+          btn.textContent = 'Publish Post';
+        });
+
+        // ─── ADMIN USER FORM ────────────────────────────────────────────
+        document.getElementById('admin-user-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const btn = e.target.querySelector('button[type="submit"]');
+          btn.disabled = true;
+          btn.textContent = 'Adding…';
+
+          const newEmail = e.target.querySelector('input[name="admin_email"]').value.trim();
+          const { error } = await supabase.from('admin_users').insert({
+            email: newEmail
+          });
+
+          const statusEl = document.getElementById('admin-status');
+          if (error) {
+            if (error.code === '23505') {
+              statusEl.textContent = 'This email is already an admin.';
+            } else {
+              statusEl.textContent = error.message;
+            }
+            statusEl.classList.add('error');
+            statusEl.classList.remove('success');
+          } else {
+            statusEl.textContent = '✓ Admin access granted!';
+            statusEl.classList.add('success');
+            statusEl.classList.remove('error');
+            e.target.reset();
+            await loadAdminList();
+            setTimeout(() => statusEl.classList.remove('success'), 3000);
+          }
+          btn.disabled = false;
+          btn.textContent = 'Grant Admin Access';
+        });
+
+        // ─── LOAD ADMIN LIST ────────────────────────────────────────────
+        async function loadAdminList() {
+          const { data, error } = await supabase
+            .from('admin_users')
+            .select('email, created_at')
+            .order('created_at', { ascending: false });
+
+          const listEl = document.getElementById('admin-list');
+          if (error || !data || data.length === 0) {
+            listEl.innerHTML = '<div style="color: var(--muted); text-align: center; padding: 20px;">No admins yet.</div>';
+            return;
+          }
+
+          listEl.innerHTML = data.map(admin => {
+            const date = new Date(admin.created_at).toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric', 
+              year: 'numeric' 
+            });
+            return `
+              <div class="admin-item">
+                <div>
+                  <div class="admin-item-email">${admin.email}</div>
+                  <div class="admin-item-date">Added ${date}</div>
+                </div>
+                <button type="button" class="btn-remove" data-email="${admin.email}">Remove</button>
+              </div>
+            `;
+          }).join('');
+
+          // Remove admin handlers
+          listEl.querySelectorAll('.btn-remove').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              const email = e.target.dataset.email;
+              if (confirm(`Remove admin access for ${email}?`)) {
+                await supabase.from('admin_users').delete().eq('email', email);
+                await loadAdminList();
+              }
+            });
+          });
+        }
+
+      } else {
+        // Not an admin
+        document.getElementById('gate-message').textContent = `Your account (${userEmail}) does not have admin access.`;
+      }
+    }
+
+    // ─── SIGN OUT ────────────────────────────────────────────────────────
+    document.getElementById('btn-admin-signout').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>
