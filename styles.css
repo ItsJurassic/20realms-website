@@ -448,6 +448,60 @@ h3 {
   line-height: 1.6;
 }
 
+.beta-account-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 250, 240, 0.04);
+}
+
+.beta-account-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 38% 38%, rgba(217,164,65,0.22), transparent 52%),
+    linear-gradient(135deg, rgba(181,76,47,0.3), rgba(31,81,58,0.3)),
+    rgba(11,15,22,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Fraunces", serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--cream);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.beta-account-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.beta-account-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.beta-account-info span:first-child {
+  font-weight: 700;
+  color: var(--cream);
+  font-size: 0.95rem;
+}
+
+.beta-account-info span:last-child {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
