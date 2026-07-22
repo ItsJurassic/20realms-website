@@ -118,14 +118,16 @@ function generateWelcomeEmail(name) {
 
           <p>In the meantime, check out what we're building:</p>
 
-          <a href="https://20realms.net" class="cta-button">Explore 20Realms</a>
+          <a href="https://20realms.net/index.html" target="_blank" rel="noopener noreferrer" class="cta-button">Explore 20Realms</a>
 
-          <p style="margin-top: 30px; font-size: 0.95rem;">Questions? <a href="https://20realms.net/contact.html" style="color: #d9a441;">Get in touch with us</a>.</p>
+          <p style="margin-top: 12px; font-size: 0.9rem; color: #c9beb0;">If the button does not open, copy and paste this URL into your browser:<br><a href="https://20realms.net/index.html" style="color: #d9a441; word-break: break-all;">https://20realms.net/index.html</a></p>
+
+          <p style="margin-top: 30px; font-size: 0.95rem;">Questions? <a href="https://20realms.net/contact.html" target="_blank" rel="noopener noreferrer" style="color: #d9a441;">Get in touch with us</a>.</p>
         </div>
 
         <div class="footer">
           <p>20Realms — Mobile, PC, and Console. Built by Bloodstone Forge.</p>
-          <p><a href="https://20realms.net/privacy-cookies.html">Privacy Policy</a> • <a href="https://20realms.net/contact.html">Contact</a></p>
+          <p><a href="https://20realms.net/privacy-cookies.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a> • <a href="https://20realms.net/contact.html" target="_blank" rel="noopener noreferrer">Contact</a></p>
         </div>
       </div>
     </body>
