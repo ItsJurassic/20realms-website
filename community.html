@@ -350,7 +350,7 @@
       if (!configured) { showMsg('signin-msg', 'Auth is not configured yet.', 'error'); return; }
       const email = document.getElementById('signin-email').value.trim();
       if (!email) { showMsg('signin-msg', 'Enter your email above first.', 'error'); return; }
-      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/profile.html' });
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/reset-password.html' });
       if (error) showMsg('signin-msg', error.message, 'error');
       else showMsg('signin-msg', 'Password reset email sent.', 'success');
     });
