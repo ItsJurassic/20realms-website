@@ -205,7 +205,8 @@
       statusEl.textContent = '';
 
       const data = new FormData(form);
-      const emailOptIn = data.get('email_updates_opt_in') === 'true';
+      const optInRaw = data.get('email_updates_opt_in');
+      const emailOptIn = optInRaw === 'true' || optInRaw === 'on';
       let emailTriggerFailed = false;
       let emailTriggerError = '';
       const rawInterest = data.get('interest') || '';
