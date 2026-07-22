@@ -205,8 +205,7 @@
       statusEl.textContent = '';
 
       const data = new FormData(form);
-      const optInRaw = data.get('email_updates_opt_in');
-      const emailOptIn = optInRaw === 'true' || optInRaw === 'on';
+      const emailOptIn = document.getElementById('beta-email-optin')?.checked === true;
       let emailTriggerFailed = false;
       let emailTriggerError = '';
       const rawInterest = data.get('interest') || '';
