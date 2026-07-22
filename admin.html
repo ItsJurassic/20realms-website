@@ -645,6 +645,15 @@
         let allSignups = [];
         let currentFilter = 'all';
 
+        function isOptedIn(signup) {
+          if (signup && typeof signup.email_updates_opt_in === 'boolean') {
+            return signup.email_updates_opt_in;
+          }
+
+          const interestText = (signup?.interest || '').toString().toLowerCase();
+          return interestText.includes('[optin:true]');
+        }
+
         async function loadBetaSignups() {
           const { data, error } = await supabase
             .from('beta_signups')
@@ -666,9 +675,9 @@
           
           let filtered = allSignups;
           if (currentFilter === 'optin-yes') {
-            filtered = allSignups.filter(s => s.email_updates_opt_in === true);
+            filtered = allSignups.filter((s) => isOptedIn(s));
           } else if (currentFilter === 'optin-no') {
-            filtered = allSignups.filter(s => s.email_updates_opt_in === false);
+            filtered = allSignups.filter((s) => !isOptedIn(s));
           }
 
           if (filtered.length === 0) {
@@ -682,7 +691,8 @@
               day: 'numeric', 
               year: 'numeric' 
             });
-            const optinBadge = signup.email_updates_opt_in 
+            const optedIn = isOptedIn(signup);
+            const optinBadge = optedIn
               ? '<span class="optin-badge optin-yes">✓ Yes</span>'
               : '<span class="optin-badge optin-no">✗ No</span>';
             
@@ -700,7 +710,7 @@
 
         function updateSignupCount() {
           const total = allSignups.length;
-          const optedIn = allSignups.filter(s => s.email_updates_opt_in).length;
+          const optedIn = allSignups.filter((s) => isOptedIn(s)).length;
           document.getElementById('signup-count').textContent = 
             `${total} total signup${total !== 1 ? 's' : ''} • ${optedIn} opted in`;
         }

@@ -208,12 +208,16 @@
       const emailOptIn = data.get('email_updates_opt_in') === 'true';
       let emailTriggerFailed = false;
       let emailTriggerError = '';
+      const rawInterest = data.get('interest') || '';
+      const interestWithOptIn = emailOptIn
+        ? `${rawInterest}${rawInterest ? '\n' : ''}[optin:true]`
+        : rawInterest;
       
       const payload = {
         name:     data.get('name'),
         email:    data.get('email'),
         role:     data.get('role'),
-        interest: data.get('interest') || null,
+        interest: interestWithOptIn || null,
         user_id:  loggedInUser?.id || null
       };
 
