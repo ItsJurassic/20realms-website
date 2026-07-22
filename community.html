@@ -346,14 +346,33 @@
     });
 
     // Forgot password
-    document.getElementById('link-forgot').addEventListener('click', async (e) => {
+    const forgotLink = document.getElementById('link-forgot');
+
+    function setForgotBusy(isBusy) {
+      forgotLink.style.pointerEvents = isBusy ? 'none' : '';
+      forgotLink.style.opacity = isBusy ? '0.6' : '';
+    }
+
+    forgotLink.addEventListener('click', async (e) => {
       e.preventDefault();
       if (!configured) { showMsg('signin-msg', 'Auth is not configured yet.', 'error'); return; }
       const email = document.getElementById('signin-email').value.trim();
       if (!email) { showMsg('signin-msg', 'Enter your email above first.', 'error'); return; }
+      setForgotBusy(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: RESET_PASSWORD_REDIRECT });
-      if (error) showMsg('signin-msg', error.message, 'error');
-      else showMsg('signin-msg', 'Password reset email sent.', 'success');
+      if (error) {
+        const isRateLimited = (error.message || '').toLowerCase().includes('rate limit');
+        if (isRateLimited) {
+          showMsg('signin-msg', 'Too many reset requests. Please wait about a minute, then try again.', 'error');
+          setTimeout(() => setForgotBusy(false), 60000);
+        } else {
+          showMsg('signin-msg', error.message, 'error');
+          setForgotBusy(false);
+        }
+      } else {
+        showMsg('signin-msg', 'Password reset email sent.', 'success');
+        setTimeout(() => setForgotBusy(false), 15000);
+      }
     });
   </script>
   <script type="module" src="auth-nav.js"></script>
