@@ -31,8 +31,8 @@ serve(async (req) => {
       })
     }
 
-    const { email } = record
-    const userName = email.split("@")[0]
+    const { email, name } = record
+    const userName = (name || email.split("@")[0]).toString()
 
     // Send email via Resend
     const emailResponse = await fetch("https://api.resend.com/emails", {
@@ -62,7 +62,6 @@ serve(async (req) => {
     }
 
     const emailData = await emailResponse.json()
-    console.log("Email sent successfully:", emailData.id)
 
     return new Response(JSON.stringify({ success: true, emailId: emailData.id }), {
       status: 200,

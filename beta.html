@@ -208,7 +208,6 @@
       const emailOptIn = data.get('email_updates_opt_in') === 'true';
       let emailTriggerFailed = false;
       let emailTriggerError = '';
-      console.log('Form debug - emailOptIn:', emailOptIn, 'raw value:', data.get('email_updates_opt_in'));
       
       const payload = {
         name:     data.get('name'),
@@ -218,27 +217,20 @@
         user_id:  loggedInUser?.id || null
       };
 
-      console.log('Inserting to beta_signups:', payload);
       const { error, data: insertedData } = await supabase.from('beta_signups').insert(payload).select();
-      console.log('beta_signups insert result:', { error, dataCount: insertedData?.length });
       
       // Store email opt-in preference separately if opted in
       if (!error && emailOptIn && insertedData && insertedData.length > 0) {
         try {
-          console.log('Inserting to beta_email_signups for:', payload.email);
           const optinRecord = await supabase.from('beta_email_signups').insert({
             email: payload.email,
             opted_in_at: new Date().toISOString()
           }).select();
 
-          console.log('beta_email_signups insert result:', { error: optinRecord?.error, dataCount: optinRecord?.data?.length });
-
           // Directly trigger welcome email via Supabase Edge Function
           if (optinRecord && !optinRecord.error && optinRecord.data && optinRecord.data.length > 0) {
             try {
-              console.log('Triggering Supabase email function with record:', optinRecord.data[0]);
-              const responseData = await triggerWelcomeEmail(optinRecord.data[0]);
-              console.log('Email function response:', responseData);
+              await triggerWelcomeEmail(optinRecord.data[0]);
             } catch (webhookErr) {
               console.error('Email function call error:', webhookErr);
               emailTriggerFailed = true;
