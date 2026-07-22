@@ -384,6 +384,36 @@
       font-size: 0.9rem;
       margin-bottom: 12px;
     }
+
+    .post-item {
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .post-item-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .post-item-title {
+      color: var(--cream);
+      font-weight: 700;
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+
+    .post-item-meta {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 8px;
+    }
+
+    .post-item-excerpt {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      word-break: break-word;
+    }
   </style>
 </head>
 <body>
@@ -436,6 +466,13 @@
           <button type="submit">Publish Post</button>
           <div id="post-status" class="status-msg"></div>
         </form>
+
+        <div style="margin-top: 24px;">
+          <h4 style="color: var(--muted); margin: 0 0 12px; font-size: 0.9rem;">Manage Posts</h4>
+          <div id="posts-list" class="admin-list">
+            <div style="color: var(--muted); text-align: center; padding: 20px;">Loading posts…</div>
+          </div>
+        </div>
       </div>
 
       <!-- Admin Users Section -->
@@ -527,6 +564,9 @@
         // Load admin list
         await loadAdminList();
 
+        // Load posts list
+        await loadPostsList();
+
         // ─── POST FORM ───────────────────────────────────────────────────
         const today = new Date().toLocaleDateString('en-US', { 
           month: 'short', 
@@ -560,11 +600,83 @@
             statusEl.classList.add('success');
             statusEl.classList.remove('error');
             e.target.reset();
+            await loadPostsList();
             setTimeout(() => statusEl.classList.remove('success'), 3000);
           }
           btn.disabled = false;
           btn.textContent = 'Publish Post';
         });
+
+        // ─── LOAD POSTS LIST ────────────────────────────────────────────
+        async function loadPostsList() {
+          const listEl = document.getElementById('posts-list');
+          const { data, error } = await supabase
+            .from('posts')
+            .select('id, category, title, content, created_at')
+            .order('created_at', { ascending: false })
+            .limit(50);
+
+          if (error) {
+            listEl.innerHTML = `<div style="color: #f4937a; text-align: center; padding: 20px;">${error.message}</div>`;
+            return;
+          }
+
+          if (!data || data.length === 0) {
+            listEl.innerHTML = '<div style="color: var(--muted); text-align: center; padding: 20px;">No posts yet.</div>';
+            return;
+          }
+
+          listEl.innerHTML = data.map((post) => {
+            const date = new Date(post.created_at).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric'
+            });
+            const excerpt = (post.content || '').toString().trim().slice(0, 140);
+            return `
+              <div class="admin-item post-item">
+                <div class="post-item-main">
+                  <div class="post-item-title">${post.title || 'Untitled post'}</div>
+                  <div class="post-item-meta">${post.category || 'Updates'} • ${date}</div>
+                  <div class="post-item-excerpt">${excerpt}${excerpt.length === 140 ? '…' : ''}</div>
+                </div>
+                <button type="button" class="btn-remove" data-post-id="${post.id}" data-post-title="${(post.title || 'Untitled post').replace(/"/g, '&quot;')}">Delete</button>
+              </div>
+            `;
+          }).join('');
+
+          listEl.querySelectorAll('[data-post-id]').forEach((btn) => {
+            btn.addEventListener('click', async (e) => {
+              const postId = e.currentTarget.dataset.postId;
+              const postTitle = e.currentTarget.dataset.postTitle || 'this post';
+
+              if (!confirm(`Delete post "${postTitle}"?`)) {
+                return;
+              }
+
+              e.currentTarget.disabled = true;
+              const { error: deleteError } = await supabase
+                .from('posts')
+                .delete()
+                .eq('id', postId);
+
+              const statusEl = document.getElementById('post-status');
+              if (deleteError) {
+                statusEl.textContent = deleteError.message;
+                statusEl.classList.add('error');
+                statusEl.classList.remove('success');
+                e.currentTarget.disabled = false;
+                return;
+              }
+
+              statusEl.textContent = '✓ Post deleted.';
+              statusEl.classList.add('success');
+              statusEl.classList.remove('error');
+              await loadPostsList();
+              setTimeout(() => statusEl.classList.remove('success'), 3000);
+            });
+          });
+        }
 
         // ─── ADMIN USER FORM ────────────────────────────────────────────
         document.getElementById('admin-user-form').addEventListener('submit', async (e) => {
