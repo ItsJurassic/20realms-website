@@ -219,28 +219,32 @@
 
       const { error, data: insertedData } = await supabase.from('beta_signups').insert(payload).select();
       
-      // Store email opt-in preference separately if opted in
+      // Trigger welcome email for opted-in users. If the opt-in table is unavailable,
+      // still send the email so signup flow remains functional.
       if (!error && emailOptIn && insertedData && insertedData.length > 0) {
+        let emailRecord = { email: payload.email, name: payload.name };
+
         try {
           const optinRecord = await supabase.from('beta_email_signups').insert({
             email: payload.email,
             opted_in_at: new Date().toISOString()
           }).select();
 
-          // Directly trigger welcome email via Supabase Edge Function
-          if (optinRecord && !optinRecord.error && optinRecord.data && optinRecord.data.length > 0) {
-            try {
-              await triggerWelcomeEmail(optinRecord.data[0]);
-            } catch (webhookErr) {
-              console.error('Email function call error:', webhookErr);
-              emailTriggerFailed = true;
-              emailTriggerError = webhookErr?.message || 'Email function request failed.';
-            }
+          if (!optinRecord.error && optinRecord.data && optinRecord.data.length > 0) {
+            emailRecord = optinRecord.data[0];
+          } else if (optinRecord.error) {
+            console.error('Email opt-in storage warning:', optinRecord.error);
           }
         } catch (err) {
-          console.error('Email opt-in storage error:', err);
+          console.error('Email opt-in storage warning:', err);
+        }
+
+        try {
+          await triggerWelcomeEmail(emailRecord);
+        } catch (webhookErr) {
+          console.error('Email function call error:', webhookErr);
           emailTriggerFailed = true;
-          emailTriggerError = err?.message || 'Email opt-in storage failed.';
+          emailTriggerError = webhookErr?.message || 'Email function request failed.';
         }
       }
 
