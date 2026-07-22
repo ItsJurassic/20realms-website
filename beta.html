@@ -170,6 +170,32 @@
     const btn  = document.getElementById('beta-submit-btn');
     const statusEl = document.getElementById('beta-status');
 
+    async function triggerWelcomeEmail(record) {
+      const webhookResponse = await fetch('https://avcqqazytvvcfraowgsm.supabase.co/functions/v1/send-welcome-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0',
+          'apikey': 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0'
+        },
+        body: JSON.stringify({ record })
+      });
+
+      let responseData = null;
+      try {
+        responseData = await webhookResponse.json();
+      } catch {
+        responseData = null;
+      }
+
+      if (!webhookResponse.ok) {
+        const detail = responseData?.details?.message || responseData?.error || `HTTP ${webhookResponse.status}`;
+        throw new Error(detail);
+      }
+
+      return responseData;
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!form.checkValidity()) { form.reportValidity(); return; }
@@ -180,6 +206,8 @@
 
       const data = new FormData(form);
       const emailOptIn = data.get('email_updates_opt_in') === 'true';
+      let emailTriggerFailed = false;
+      let emailTriggerError = '';
       console.log('Form debug - emailOptIn:', emailOptIn, 'raw value:', data.get('email_updates_opt_in'));
       
       const payload = {
@@ -209,80 +237,63 @@
           if (optinRecord && !optinRecord.error && optinRecord.data && optinRecord.data.length > 0) {
             try {
               console.log('Triggering Supabase email function with record:', optinRecord.data[0]);
-              const webhookResponse = await fetch('https://avcqqazytvvcfraowgsm.supabase.co/functions/v1/send-welcome-email', {
-                method: 'POST',
-                headers: { 
-                  'Content-Type': 'application/json',
-                  'Authorization': 'Bearer sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0'
-                },
-                body: JSON.stringify({ record: optinRecord.data[0] })
-              });
-              console.log('Welcome email function triggered:', webhookResponse.status);
-              const responseData = await webhookResponse.json();
+              const responseData = await triggerWelcomeEmail(optinRecord.data[0]);
               console.log('Email function response:', responseData);
             } catch (webhookErr) {
               console.error('Email function call error:', webhookErr);
+              emailTriggerFailed = true;
+              emailTriggerError = webhookErr?.message || 'Email function request failed.';
             }
           }
         } catch (err) {
           console.error('Email opt-in storage error:', err);
+          emailTriggerFailed = true;
+          emailTriggerError = err?.message || 'Email opt-in storage failed.';
         }
       }
 
       if (error) {
         console.error(error);
+
+        // Duplicate email: keep signup behavior clear and optionally resend welcome email.
+        if (error.code === '23505') {
+          if (emailOptIn) {
+            try {
+              await triggerWelcomeEmail({ email: payload.email, name: payload.name });
+              statusEl.textContent = 'This email is already on the list. We re-sent your welcome email.';
+              statusEl.style.color = '#7ec49e';
+            } catch (resendErr) {
+              console.error('Duplicate resend error:', resendErr);
+              statusEl.textContent = 'This email is already on the list. We could not resend the welcome email right now.';
+              statusEl.style.color = '#f4c27a';
+            }
+          } else {
+            statusEl.textContent = 'This email is already on the list.';
+            statusEl.style.color = '#f4937a';
+          }
+
+          btn.disabled = false;
+          btn.textContent = 'Request beta access';
+          return;
+        }
+
         btn.disabled = false;
         btn.textContent = 'Request beta access';
-        statusEl.textContent = error.code === '23505'
-          ? 'This email is already on the list.'
-          : 'Something went wrong. Please try again.';
+        statusEl.textContent = 'Something went wrong. Please try again.';
         statusEl.style.color = '#f4937a';
       } else {
         btn.style.display = 'none';
-        statusEl.textContent = "You're on the list. We'll be in touch when beta testing opens.";
-        statusEl.style.color = '#7ec49e';
+        if (emailOptIn && emailTriggerFailed) {
+          statusEl.textContent = `You're on the list, but we could not send the welcome email yet (${emailTriggerError}).`;
+          statusEl.style.color = '#f4c27a';
+        } else {
+          statusEl.textContent = "You're on the list. We'll be in touch when beta testing opens.";
+          statusEl.style.color = '#7ec49e';
+        }
 
         // Welcome email is triggered immediately above when opt-in is checked
       }
     });
   </script>
   <script type="module" src="auth-nav.js"></script>
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    const supabase = createClient('https://avcqqazytvvcfraowgsm.supabase.co', 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0');
-
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-      const user = session.user;
-      const username = user.user_metadata?.username || user.email.split('@')[0];
-      const avatarUrl = user.user_metadata?.avatar_url;
-
-      // Swap fields
-      document.getElementById('field-name').style.display = 'none';
-      document.getElementById('field-name').querySelector('input').removeAttribute('required');
-      document.getElementById('field-name').querySelector('input').disabled = true;
-      document.getElementById('field-email').style.display = 'none';
-      document.getElementById('field-email').querySelector('input').removeAttribute('required');
-      document.getElementById('field-email').querySelector('input').disabled = true;
-      document.getElementById('field-account').style.display = '';
-
-      // Fill account card
-      document.getElementById('beta-account-name').textContent = username;
-      document.getElementById('beta-account-email').textContent = user.email;
-      document.getElementById('hidden-name').value = username;
-      document.getElementById('hidden-email').value = user.email;
-
-      // Avatar
-      const avatarEl = document.getElementById('beta-avatar-initial');
-      if (avatarUrl) {
-        const img = document.createElement('img');
-        img.src = avatarUrl;
-        img.alt = username;
-        img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;display:block';
-        avatarEl.appendChild(img);
-      } else {
-        avatarEl.textContent = username.charAt(0).toUpperCase();
-      }
-    }
-  </script>
 </html>

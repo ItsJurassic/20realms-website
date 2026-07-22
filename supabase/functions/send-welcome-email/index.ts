@@ -1,21 +1,33 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_6pUDLEgC_NNsS5cd99xXXGfVuB4DzjNwF"
-const FROM_EMAIL = "onboarding@resend.dev"
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || ""
+const FROM_EMAIL = "betaaccess@20realms.net"
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "authorization, apikey, content-type",
+}
 
 serve(async (req) => {
   // Handle CORS
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: { "Access-Control-Allow-Origin": "*" } })
+    return new Response("ok", { headers: CORS_HEADERS })
   }
 
   try {
+    if (!RESEND_API_KEY) {
+      return new Response(JSON.stringify({ error: "Missing RESEND_API_KEY secret" }), {
+        status: 500,
+        headers: CORS_HEADERS,
+      })
+    }
+
     const { record } = await req.json()
 
     if (!record || !record.email) {
       return new Response(JSON.stringify({ error: "Missing email" }), {
         status: 400,
-        headers: { "Access-Control-Allow-Origin": "*" },
+        headers: CORS_HEADERS,
       })
     }
 
@@ -44,7 +56,7 @@ serve(async (req) => {
         JSON.stringify({ error: "Failed to send email", details: error }),
         {
           status: emailResponse.status,
-          headers: { "Access-Control-Allow-Origin": "*" },
+          headers: CORS_HEADERS,
         }
       )
     }
@@ -54,13 +66,13 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ success: true, emailId: emailData.id }), {
       status: 200,
-      headers: { "Access-Control-Allow-Origin": "*" },
+      headers: CORS_HEADERS,
     })
   } catch (error) {
     console.error("Webhook error:", error)
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { "Access-Control-Allow-Origin": "*" },
+      headers: CORS_HEADERS,
     })
   }
 })
