@@ -271,6 +271,7 @@
     // 3. Replace the two values below with your Project URL and anon/public key
     const SUPABASE_URL  = 'https://avcqqazytvvcfraowgsm.supabase.co';
     const SUPABASE_ANON = 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0';
+    const RESET_PASSWORD_REDIRECT = 'https://20realms.net/reset-password.html';
     // ────────────────────────────────────────────────────────────────────────────
 
     const configured = SUPABASE_URL !== 'YOUR_SUPABASE_URL';
@@ -350,7 +351,7 @@
       if (!configured) { showMsg('signin-msg', 'Auth is not configured yet.', 'error'); return; }
       const email = document.getElementById('signin-email').value.trim();
       if (!email) { showMsg('signin-msg', 'Enter your email above first.', 'error'); return; }
-      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/reset-password.html' });
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: RESET_PASSWORD_REDIRECT });
       if (error) showMsg('signin-msg', error.message, 'error');
       else showMsg('signin-msg', 'Password reset email sent.', 'success');
     });
