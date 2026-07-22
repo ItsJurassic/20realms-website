@@ -1,8 +1,0 @@
-{
-  "functions": {
-    "api/webhook-beta-email.js": {
-      "maxDuration": 30
-    }
-  },
-  "bypassToken": "webhook-bypass-token-20realms"
-}
