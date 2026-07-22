@@ -215,7 +215,7 @@
       
       const payload = {
         name:     data.get('name'),
-        email:    data.get('email'),
+        email:    (data.get('email') || '').toString().trim().toLowerCase(),
         role:     data.get('role'),
         interest: interestWithOptIn || null,
         user_id:  loggedInUser?.id || null
@@ -255,22 +255,10 @@
       if (error) {
         console.error(error);
 
-        // Duplicate email: keep signup behavior clear and optionally resend welcome email.
+        // Duplicate email: enforce one signup per email.
         if (error.code === '23505') {
-          if (emailOptIn) {
-            try {
-              await triggerWelcomeEmail({ email: payload.email, name: payload.name });
-              statusEl.textContent = 'This email is already on the list. We re-sent your welcome email.';
-              statusEl.style.color = '#7ec49e';
-            } catch (resendErr) {
-              console.error('Duplicate resend error:', resendErr);
-              statusEl.textContent = 'This email is already on the list. We could not resend the welcome email right now.';
-              statusEl.style.color = '#f4c27a';
-            }
-          } else {
-            statusEl.textContent = 'This email is already on the list.';
-            statusEl.style.color = '#f4937a';
-          }
+          statusEl.textContent = 'This email is already on the beta list.';
+          statusEl.style.color = '#f4937a';
 
           btn.disabled = false;
           btn.textContent = 'Request beta access';

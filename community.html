@@ -330,19 +330,30 @@
     document.getElementById('btn-signup').addEventListener('click', async () => {
       if (!configured) { showMsg('signup-msg', 'Auth is not configured yet. Add your Supabase keys.', 'error'); return; }
       const username = document.getElementById('signup-username').value.trim();
-      const email = document.getElementById('signup-email').value.trim();
+      const email = document.getElementById('signup-email').value.trim().toLowerCase();
       const password = document.getElementById('signup-password').value;
       const emailOptIn = document.getElementById('signup-email-optin').checked;
       if (!username || !email || !password) { showMsg('signup-msg', 'Please fill in all fields.', 'error'); return; }
       if (password.length < 8) { showMsg('signup-msg', 'Password must be at least 8 characters.', 'error'); return; }
       const btn = document.getElementById('btn-signup');
       btn.textContent = 'Creating account…'; btn.disabled = true;
-      const { error } = await supabase.auth.signUp({
+      const { data: signUpData, error } = await supabase.auth.signUp({
         email, password,
         options: { data: { username, email_updates_opt_in: emailOptIn } }
       });
-      if (error) { showMsg('signup-msg', error.message, 'error'); btn.textContent = 'Create account'; btn.disabled = false; }
-      else showMsg('signup-msg', 'Account created! Check your email to confirm, then sign in.', 'success');
+      if (error) {
+        const msg = (error.message || '').toLowerCase();
+        const isDuplicate = msg.includes('already') || msg.includes('registered') || msg.includes('exists');
+        showMsg('signup-msg', isDuplicate ? 'An account with this email already exists. Please sign in.' : error.message, 'error');
+        btn.textContent = 'Create account';
+        btn.disabled = false;
+      } else if (Array.isArray(signUpData?.user?.identities) && signUpData.user.identities.length === 0) {
+        showMsg('signup-msg', 'An account with this email already exists. Please sign in.', 'error');
+        btn.textContent = 'Create account';
+        btn.disabled = false;
+      } else {
+        showMsg('signup-msg', 'Account created! Check your email to confirm, then sign in.', 'success');
+      }
     });
 
     // Forgot password
