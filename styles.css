@@ -359,6 +359,27 @@ h3 {
   opacity: 0.84;
 }
 
+.legal-content {
+  width: min(980px, calc(100% - 32px));
+  display: grid;
+  gap: 48px;
+}
+
+.legal-card h2 {
+  margin-bottom: 18px;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.08;
+}
+
+.legal-card p,
+.legal-card li {
+  line-height: 1.65;
+}
+
+.legal-card > :last-child {
+  margin-bottom: 0;
+}
+
 .beta-signup {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1fr);
