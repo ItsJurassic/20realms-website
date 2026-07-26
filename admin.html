@@ -655,14 +655,23 @@
               }
 
               e.currentTarget.disabled = true;
-              const { error: deleteError } = await supabase
+              const { data: deletedRows, error: deleteError } = await supabase
                 .from('posts')
                 .delete()
-                .eq('id', postId);
+                .eq('id', postId)
+                .select('id');
 
               const statusEl = document.getElementById('post-status');
               if (deleteError) {
                 statusEl.textContent = deleteError.message;
+                statusEl.classList.add('error');
+                statusEl.classList.remove('success');
+                e.currentTarget.disabled = false;
+                return;
+              }
+
+              if (!deletedRows || deletedRows.length === 0) {
+                statusEl.textContent = 'Delete was not permitted or the post no longer exists.';
                 statusEl.classList.add('error');
                 statusEl.classList.remove('success');
                 e.currentTarget.disabled = false;
