@@ -1022,7 +1022,8 @@
             });
             const result = await response.json().catch(() => ({}));
             if (!response.ok) {
-              throw new Error(result.error || `Email service returned HTTP ${response.status}`);
+              const details = typeof result.details === 'string' ? result.details : '';
+              throw new Error(details ? `${result.error}: ${details}` : result.error || `Email service returned HTTP ${response.status}`);
             }
 
             if (testOnly) {

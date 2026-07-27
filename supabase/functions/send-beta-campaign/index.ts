@@ -85,7 +85,10 @@ serve(async (request) => {
     if (testOnly) {
       const testResult = await sendBatch([{ email: user.email, name: user.user_metadata?.username || "Admin" }], subject, message, audience)
       if (testResult.failed > 0) {
-        return jsonResponse({ error: "Test email failed to send" }, 502)
+        return jsonResponse({
+          error: "Test email failed to send",
+          details: testResult.error || "Resend did not accept the message",
+        }, 502)
       }
       return jsonResponse({ success: true, testOnly: true, sent: 1 })
     }
@@ -203,11 +206,12 @@ async function sendBatch(
   })
 
   if (!response.ok) {
-    console.error("Resend batch error:", await response.text())
-    return { sent: 0, failed: recipients.length }
+    const error = await response.text()
+    console.error("Resend batch error:", error)
+    return { sent: 0, failed: recipients.length, error }
   }
 
-  return { sent: recipients.length, failed: 0 }
+  return { sent: recipients.length, failed: 0, error: "" }
 }
 
 function generateCampaignEmail(name: string, message: string, audience: "all" | "opted-in") {
