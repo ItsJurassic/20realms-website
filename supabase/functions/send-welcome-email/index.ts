@@ -126,7 +126,7 @@ function generateWelcomeEmail(name) {
         </div>
 
         <div class="footer">
-          <p>20Realms — Mobile, PC, and Console. Built by Bloodstone Forge.</p>
+          <p>20Realms — Mobile, PC, and Console.</p>
           <p><a href="https://20realms.net/privacy-cookies.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a> • <a href="https://20realms.net/contact.html" target="_blank" rel="noopener noreferrer">Contact</a></p>
         </div>
       </div>
