@@ -1560,6 +1560,39 @@ h3 {
   }
 }
 
+@media (min-width: 3000px) {
+  .hero {
+    min-height: calc(86vh - 92px);
+    grid-template-columns: minmax(0, 1.1fr) minmax(420px, 0.95fr);
+    gap: 42px;
+    padding: 46px max(36px, calc((100vw - 1480px) / 2)) 64px;
+  }
+
+  h1 {
+    max-width: 720px;
+    font-size: clamp(3.8rem, 4vw, 7rem);
+  }
+
+  .hero-copy {
+    max-width: 640px;
+    font-size: 1.2rem;
+    line-height: 1.8;
+  }
+
+  .hero-panel {
+    max-width: 500px;
+    padding: 28px;
+  }
+
+  .hero-panel strong {
+    font-size: clamp(2rem, 2.3vw, 3.2rem);
+  }
+
+  .nav a {
+    font-size: 1.04rem;
+  }
+}
+
 /* Email opt-in checkbox */
 .email-optin-check {
   display: flex;
