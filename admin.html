@@ -586,58 +586,10 @@
       </div>
 
       <nav class="admin-nav" aria-label="Admin sections">
-        <a class="active" href="admin.html">Overview</a>
+        <a class="active" href="admin.html">Management</a>
         <a href="admin-communications.html">Emails &amp; updates</a>
         <a href="admin-shop-inventory.html">Shop inventory</a>
       </nav>
-
-      <div class="workspace-grid">
-        <a class="workspace-card" href="admin-communications.html">
-          <strong>Emails &amp; updates</strong>
-          <span>Draft update notes, coordinate launches, and plan message sends.</span>
-        </a>
-        <a class="workspace-card" href="admin-shop-inventory.html">
-          <strong>Shop inventory</strong>
-          <span>Track products, pricing, stock status, and launch notes.</span>
-        </a>
-      </div>
-
-      <!-- Post Update Section -->
-      <div class="admin-section">
-        <h3>📝 Create News Post</h3>
-        <form id="post-form" novalidate>
-          <label>
-            Category
-            <select name="category" required>
-              <option value="">Select a category…</option>
-              <option value="Development">Development</option>
-              <option value="Community">Community</option>
-              <option value="Updates">Updates</option>
-            </select>
-          </label>
-          <label>
-            Title
-            <input type="text" name="title" placeholder="Post title" required>
-          </label>
-          <label>
-            Content
-            <textarea name="content" placeholder="Post content…" required></textarea>
-          </label>
-          <label>
-            Date
-            <div class="date-display" id="post-date"></div>
-          </label>
-          <button type="submit">Publish Post</button>
-          <div id="post-status" class="status-msg"></div>
-        </form>
-
-        <div style="margin-top: 24px;">
-          <h4 style="color: var(--muted); margin: 0 0 12px; font-size: 0.9rem;">Manage Posts</h4>
-          <div id="posts-list" class="admin-list">
-            <div style="color: var(--muted); text-align: center; padding: 20px;">Loading posts…</div>
-          </div>
-        </div>
-      </div>
 
       <!-- Admin Users Section -->
       <div class="admin-section">
@@ -657,41 +609,6 @@
         <div style="margin-top: 24px;">
           <h4 style="color: var(--muted); margin: 0 0 12px; font-size: 0.9rem;">Current Admins</h4>
           <div id="admin-list" class="admin-list">
-            <div style="color: var(--muted); text-align: center; padding: 20px;">Loading…</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Beta Email Campaign Section -->
-      <div class="admin-section">
-        <h3>✉️ Send Beta Email</h3>
-        <form id="campaign-form" novalidate>
-          <label>
-            Recipients
-            <select id="campaign-audience" name="audience" required>
-              <option value="opted-in">Email opt-ins</option>
-              <option value="all">All beta enrollees — access notices only</option>
-            </select>
-          </label>
-          <div id="campaign-recipient-preview" class="campaign-recipient-preview">Loading recipients…</div>
-          <label>
-            Subject
-            <input type="text" name="subject" maxlength="150" placeholder="20Realms beta update" required>
-          </label>
-          <label>
-            Message
-            <textarea name="message" maxlength="10000" rows="8" placeholder="Write the email message…" required></textarea>
-          </label>
-          <div class="campaign-actions">
-            <button type="button" class="btn-test-email" id="btn-test-campaign">Send Test to Me</button>
-            <button type="submit" id="btn-send-campaign">Send Email</button>
-          </div>
-          <div id="campaign-status" class="status-msg" role="status" aria-live="polite"></div>
-        </form>
-
-        <div style="margin-top: 24px;">
-          <h4 style="color: var(--muted); margin: 0 0 12px; font-size: 0.9rem;">Recent Campaigns</h4>
-          <div id="campaign-history" class="campaign-history">
             <div style="color: var(--muted); text-align: center; padding: 20px;">Loading…</div>
           </div>
         </div>
@@ -729,7 +646,6 @@
   <script type="module">
     const SUPABASE_URL  = 'https://avcqqazytvvcfraowgsm.supabase.co';
     const SUPABASE_ANON = 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0';
-    const CAMPAIGN_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/send-beta-campaign`;
 
     const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
@@ -768,129 +684,6 @@
 
         // Load admin list
         await loadAdminList();
-
-        // Load posts list
-        await loadPostsList();
-
-        // ─── POST FORM ───────────────────────────────────────────────────
-        const today = new Date().toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          year: 'numeric' 
-        });
-        document.getElementById('post-date').textContent = today;
-
-        document.getElementById('post-form').addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const btn = e.target.querySelector('button[type="submit"]');
-          btn.disabled = true;
-          btn.textContent = 'Publishing…';
-
-          const formData = new FormData(e.target);
-          const { error } = await supabase.from('posts').insert({
-            category: formData.get('category'),
-            title: formData.get('title'),
-            content: formData.get('content'),
-            created_at: new Date().toISOString(),
-            author_id: session.user.id
-          });
-
-          const statusEl = document.getElementById('post-status');
-          if (error) {
-            statusEl.textContent = error.message;
-            statusEl.classList.add('error');
-            statusEl.classList.remove('success');
-          } else {
-            statusEl.textContent = '✓ Post published successfully!';
-            statusEl.classList.add('success');
-            statusEl.classList.remove('error');
-            e.target.reset();
-            await loadPostsList();
-            setTimeout(() => statusEl.classList.remove('success'), 3000);
-          }
-          btn.disabled = false;
-          btn.textContent = 'Publish Post';
-        });
-
-        // ─── LOAD POSTS LIST ────────────────────────────────────────────
-        async function loadPostsList() {
-          const listEl = document.getElementById('posts-list');
-          const { data, error } = await supabase
-            .from('posts')
-            .select('id, category, title, content, created_at')
-            .order('created_at', { ascending: false })
-            .limit(50);
-
-          if (error) {
-            listEl.innerHTML = `<div style="color: #f4937a; text-align: center; padding: 20px;">${error.message}</div>`;
-            return;
-          }
-
-          if (!data || data.length === 0) {
-            listEl.innerHTML = '<div style="color: var(--muted); text-align: center; padding: 20px;">No posts yet.</div>';
-            return;
-          }
-
-          listEl.innerHTML = data.map((post) => {
-            const date = new Date(post.created_at).toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric'
-            });
-            const excerpt = (post.content || '').toString().trim().slice(0, 140);
-            return `
-              <div class="admin-item post-item">
-                <div class="post-item-main">
-                  <div class="post-item-title">${post.title || 'Untitled post'}</div>
-                  <div class="post-item-meta">${post.category || 'Updates'} • ${date}</div>
-                  <div class="post-item-excerpt">${excerpt}${excerpt.length === 140 ? '…' : ''}</div>
-                </div>
-                <button type="button" class="btn-remove" data-post-id="${post.id}" data-post-title="${(post.title || 'Untitled post').replace(/"/g, '&quot;')}">Delete</button>
-              </div>
-            `;
-          }).join('');
-
-          listEl.querySelectorAll('[data-post-id]').forEach((btn) => {
-            btn.addEventListener('click', async (e) => {
-              const postId = e.currentTarget.dataset.postId;
-              const postTitle = e.currentTarget.dataset.postTitle || 'this post';
-
-              if (!confirm(`Delete post "${postTitle}"?`)) {
-                return;
-              }
-
-              e.currentTarget.disabled = true;
-              const { data: deletedRows, error: deleteError } = await supabase
-                .from('posts')
-                .delete()
-                .eq('id', postId)
-                .select('id');
-
-              const statusEl = document.getElementById('post-status');
-              if (deleteError) {
-                statusEl.textContent = deleteError.message;
-                statusEl.classList.add('error');
-                statusEl.classList.remove('success');
-                e.currentTarget.disabled = false;
-                return;
-              }
-
-              if (!deletedRows || deletedRows.length === 0) {
-                statusEl.textContent = 'Delete was not permitted or the post no longer exists.';
-                statusEl.classList.add('error');
-                statusEl.classList.remove('success');
-                e.currentTarget.disabled = false;
-                return;
-              }
-
-              statusEl.textContent = '✓ Post deleted.';
-              statusEl.classList.add('success');
-              statusEl.classList.remove('error');
-              await loadPostsList();
-              setTimeout(() => statusEl.classList.remove('success'), 3000);
-            });
-          });
-        }
 
         // ─── ADMIN USER FORM ────────────────────────────────────────────
         document.getElementById('admin-user-form').addEventListener('submit', async (e) => {
@@ -1039,143 +832,7 @@
           const optedIn = allSignups.filter((s) => isOptedIn(s)).length;
           document.getElementById('signup-count').textContent = 
             `${total} total signup${total !== 1 ? 's' : ''} • ${optedIn} opted in`;
-          updateCampaignRecipientPreview();
         }
-
-        function getCampaignRecipientCount() {
-          const audience = document.getElementById('campaign-audience').value;
-          const signups = audience === 'all' ? allSignups : allSignups.filter((signup) => isOptedIn(signup));
-          return new Set(signups.map((signup) => (signup.email || '').trim().toLowerCase()).filter(Boolean)).size;
-        }
-
-        function updateCampaignRecipientPreview() {
-          const audience = document.getElementById('campaign-audience').value;
-          const count = getCampaignRecipientCount();
-          const preview = document.getElementById('campaign-recipient-preview');
-          preview.classList.toggle('warning', audience === 'all');
-          preview.textContent = audience === 'all'
-            ? `${count} recipient${count === 1 ? '' : 's'} — use only for beta access or service notices`
-            : `${count} opted-in recipient${count === 1 ? '' : 's'}`;
-        }
-
-        function setCampaignStatus(message, type) {
-          const status = document.getElementById('campaign-status');
-          status.textContent = message;
-          status.classList.remove('success', 'error');
-          status.classList.add(type);
-        }
-
-        async function sendCampaign(testOnly) {
-          const form = document.getElementById('campaign-form');
-          if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-          }
-
-          const formData = new FormData(form);
-          const audience = formData.get('audience');
-          const recipientCount = getCampaignRecipientCount();
-          if (!testOnly && recipientCount === 0) {
-            setCampaignStatus('No recipients match this audience.', 'error');
-            return;
-          }
-
-          if (!testOnly) {
-            const audienceLabel = audience === 'all' ? 'all beta enrollees' : 'email opt-ins';
-            const warning = audience === 'all' ? '\n\nThis audience includes people who did not opt into general updates.' : '';
-            if (!confirm(`Send this email to ${recipientCount} ${audienceLabel}?${warning}`)) {
-              return;
-            }
-          }
-
-          const testButton = document.getElementById('btn-test-campaign');
-          const sendButton = document.getElementById('btn-send-campaign');
-          testButton.disabled = true;
-          sendButton.disabled = true;
-          testButton.textContent = testOnly ? 'Sending Test…' : 'Send Test to Me';
-          sendButton.textContent = testOnly ? 'Send Email' : 'Sending…';
-          setCampaignStatus(testOnly ? 'Sending test email…' : 'Sending campaign…', 'success');
-
-          try {
-            const response = await fetch(CAMPAIGN_FUNCTION_URL, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${session.access_token}`,
-                'apikey': SUPABASE_ANON
-              },
-              body: JSON.stringify({
-                audience,
-                subject: formData.get('subject'),
-                message: formData.get('message'),
-                testOnly
-              })
-            });
-            const result = await response.json().catch(() => ({}));
-            if (!response.ok) {
-              const details = typeof result.details === 'string' ? result.details : '';
-              throw new Error(details ? `${result.error}: ${details}` : result.error || `Email service returned HTTP ${response.status}`);
-            }
-
-            if (testOnly) {
-              setCampaignStatus(`Test email sent to ${userEmail}.`, 'success');
-            } else {
-              const resultType = result.failed > 0 ? 'error' : 'success';
-              setCampaignStatus(`Campaign finished: ${result.sent} sent, ${result.failed} failed.`, resultType);
-              form.reset();
-              updateCampaignRecipientPreview();
-              await loadCampaignHistory();
-            }
-          } catch (error) {
-            setCampaignStatus(error.message || 'The email could not be sent.', 'error');
-          } finally {
-            testButton.disabled = false;
-            sendButton.disabled = false;
-            testButton.textContent = 'Send Test to Me';
-            sendButton.textContent = 'Send Email';
-          }
-        }
-
-        async function loadCampaignHistory() {
-          const history = document.getElementById('campaign-history');
-          const { data, error } = await supabase
-            .from('beta_email_campaigns')
-            .select('subject, audience, recipient_count, sent_count, failed_count, status, created_at')
-            .order('created_at', { ascending: false })
-            .limit(10);
-
-          if (error) {
-            history.innerHTML = '<div style="color: var(--muted); text-align: center; padding: 20px;">Campaign history is unavailable.</div>';
-            return;
-          }
-          if (!data || data.length === 0) {
-            history.innerHTML = '<div style="color: var(--muted); text-align: center; padding: 20px;">No campaigns sent yet.</div>';
-            return;
-          }
-
-          history.innerHTML = data.map((campaign) => {
-            const date = new Date(campaign.created_at).toLocaleString('en-US', {
-              month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit'
-            });
-            const subject = (campaign.subject || '').replace(/[&<>"']/g, (character) => ({
-              '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
-            })[character]);
-            return `
-              <div class="campaign-history-item">
-                <div class="campaign-history-title">${subject}</div>
-                <div class="campaign-history-meta">${campaign.audience === 'all' ? 'All enrollees' : 'Opt-ins'} • ${date}</div>
-                <div class="campaign-history-result">${campaign.sent_count}/${campaign.recipient_count} sent${campaign.failed_count ? `<br>${campaign.failed_count} failed` : ''}</div>
-              </div>
-            `;
-          }).join('');
-        }
-
-        document.getElementById('campaign-audience').addEventListener('change', updateCampaignRecipientPreview);
-        document.getElementById('btn-test-campaign').addEventListener('click', () => sendCampaign(true));
-        document.getElementById('campaign-form').addEventListener('submit', async (event) => {
-          event.preventDefault();
-          await sendCampaign(false);
-        });
 
         // Filter button handlers
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -1189,7 +846,6 @@
 
         // Load signups on page load
         await loadBetaSignups();
-        await loadCampaignHistory();
 
       } else {
         // Not an admin

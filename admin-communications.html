@@ -27,99 +27,178 @@
     </div>
 
     <nav class="admin-nav" aria-label="Admin sections">
-      <a href="admin.html">Overview</a>
+      <a href="admin.html">Management</a>
       <a class="active" href="admin-communications.html">Emails &amp; updates</a>
       <a href="admin-shop-inventory.html">Shop inventory</a>
     </nav>
 
     <section class="admin-card">
-      <h2>Newsletter and update management</h2>
-      <p>Use this page to coordinate release notes, beta emails, and the cadence of public updates.</p>
-      <form class="admin-form" id="update-form">
+      <h2>Post to 20Realms Page</h2>
+      <p>Create a public update post that appears in the 20Realms updates feed.</p>
+      <form class="admin-form" id="post-form">
         <label>
-          Update title
-          <input type="text" id="update-title" placeholder="Example: Patch notes 1.2" required>
-        </label>
-        <label>
-          Audience
-          <select id="update-audience">
-            <option value="all">Everyone</option>
-            <option value="beta">Beta members</option>
-            <option value="shop">Shop subscribers</option>
+          Category
+          <select id="post-category" required>
+            <option value="">Select a category...</option>
+            <option value="Development">Development</option>
+            <option value="Community">Community</option>
+            <option value="Updates">Updates</option>
           </select>
         </label>
         <label>
-          Message
-          <textarea id="update-message" placeholder="Write the update or email summary…" required></textarea>
+          Post title
+          <input type="text" id="post-title" placeholder="Example: Patch notes 1.2" required>
         </label>
-        <button type="submit">Save update draft</button>
-        <div id="update-status" class="status-msg"></div>
+        <label>
+          Post content
+          <textarea id="post-content" placeholder="Write your update post..." required></textarea>
+        </label>
+        <button type="submit">Publish Post</button>
+        <div id="post-status" class="status-msg"></div>
       </form>
     </section>
 
     <section class="admin-card">
-      <h3>Current update drafts</h3>
-      <div id="update-list" class="admin-list">
-        <div class="empty-state">No drafts yet. Add one to start coordinating your rollout.</div>
-      </div>
+      <h3>Send Email to Opted-In Users</h3>
+      <form class="admin-form" id="campaign-form">
+        <label>
+          Subject
+          <input type="text" id="campaign-subject" maxlength="150" placeholder="20Realms beta update" required>
+        </label>
+        <label>
+          Message
+          <textarea id="campaign-message" maxlength="10000" rows="8" placeholder="Write the email message..." required></textarea>
+        </label>
+        <button type="submit" id="send-campaign-btn">Send to Opted-In Users</button>
+        <div id="campaign-status" class="status-msg"></div>
+      </form>
     </section>
   </div>
 
-  <script>
-    const form = document.getElementById('update-form');
-    const titleInput = document.getElementById('update-title');
-    const audienceInput = document.getElementById('update-audience');
-    const messageInput = document.getElementById('update-message');
-    const status = document.getElementById('update-status');
-    const list = document.getElementById('update-list');
+  <script type="module">
+    const SUPABASE_URL = 'https://avcqqazytvvcfraowgsm.supabase.co';
+    const SUPABASE_ANON = 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0';
+    const CAMPAIGN_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/send-beta-campaign`;
 
-    const storageKey = 'admin-communications-drafts';
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-    function loadDrafts() {
-      const drafts = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      if (!drafts.length) {
-        list.innerHTML = '<div class="empty-state">No drafts yet. Add one to start coordinating your rollout.</div>';
+    const postForm = document.getElementById('post-form');
+    const postCategory = document.getElementById('post-category');
+    const postTitle = document.getElementById('post-title');
+    const postContent = document.getElementById('post-content');
+    const postStatus = document.getElementById('post-status');
+
+    const campaignForm = document.getElementById('campaign-form');
+    const campaignSubject = document.getElementById('campaign-subject');
+    const campaignMessage = document.getElementById('campaign-message');
+    const campaignStatus = document.getElementById('campaign-status');
+    const campaignButton = document.getElementById('send-campaign-btn');
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.replace('community.html');
+    }
+
+    function setStatus(element, message, type) {
+      element.textContent = message;
+      element.classList.remove('success', 'error');
+      if (type) element.classList.add(type);
+    }
+
+    let optedInCount = 0;
+
+    function isOptedIn(signup) {
+      if (signup && typeof signup.email_updates_opt_in === 'boolean') {
+        return signup.email_updates_opt_in;
+      }
+      const interestText = (signup?.interest || '').toString().toLowerCase();
+      return interestText.includes('[optin:true]');
+    }
+
+    async function loadOptInCount() {
+      const { data, error } = await supabase
+        .from('beta_signups')
+        .select('email, interest, email_updates_opt_in');
+
+      if (error) {
         return;
       }
 
-      list.innerHTML = drafts.map((item, index) => `
-        <div class="admin-item">
-          <div>
-            <strong>${item.title}</strong>
-            <small>${item.audience} • ${item.message}</small>
-          </div>
-          <button class="delete-btn" data-index="${index}">Remove</button>
-        </div>
-      `).join('');
-
-      list.querySelectorAll('.delete-btn').forEach((button) => {
-        button.addEventListener('click', () => {
-          const index = Number(button.dataset.index);
-          const drafts = JSON.parse(localStorage.getItem(storageKey) || '[]');
-          drafts.splice(index, 1);
-          localStorage.setItem(storageKey, JSON.stringify(drafts));
-          loadDrafts();
-        });
-      });
+      const opted = (data || []).filter((entry) => isOptedIn(entry));
+      optedInCount = new Set(
+        opted.map((entry) => (entry.email || '').trim().toLowerCase()).filter(Boolean)
+      ).size;
     }
 
-    form.addEventListener('submit', (event) => {
+    postForm.addEventListener('submit', async (event) => {
       event.preventDefault();
-      const drafts = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      drafts.unshift({
-        title: titleInput.value.trim(),
-        audience: audienceInput.value,
-        message: messageInput.value.trim()
+
+      const { error } = await supabase.from('posts').insert({
+        category: postCategory.value,
+        title: postTitle.value.trim(),
+        content: postContent.value.trim(),
+        created_at: new Date().toISOString(),
+        author_id: session.user.id
       });
-      localStorage.setItem(storageKey, JSON.stringify(drafts));
-      form.reset();
-      status.textContent = 'Update draft saved.';
-      status.classList.add('success');
-      status.classList.remove('error');
-      loadDrafts();
+
+      if (error) {
+        setStatus(postStatus, error.message, 'error');
+        return;
+      }
+
+      postForm.reset();
+      setStatus(postStatus, 'Post published to 20Realms updates.', 'success');
     });
 
-    loadDrafts();
+    campaignForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      if (optedInCount === 0) {
+        setStatus(campaignStatus, 'No opted-in users available for email.', 'error');
+        return;
+      }
+
+      if (!confirm(`Send this email to ${optedInCount} opted-in user${optedInCount === 1 ? '' : 's'}?`)) {
+        return;
+      }
+
+      campaignButton.disabled = true;
+      campaignButton.textContent = 'Sending...';
+      setStatus(campaignStatus, 'Sending campaign...', 'success');
+
+      try {
+        const response = await fetch(CAMPAIGN_FUNCTION_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+            'apikey': SUPABASE_ANON
+          },
+          body: JSON.stringify({
+            audience: 'opted-in',
+            subject: campaignSubject.value.trim(),
+            message: campaignMessage.value.trim(),
+            testOnly: false
+          })
+        });
+
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(result.error || `Email service returned HTTP ${response.status}`);
+        }
+
+        setStatus(campaignStatus, `Campaign finished: ${result.sent} sent, ${result.failed} failed.`, result.failed > 0 ? 'error' : 'success');
+        campaignForm.reset();
+      } catch (error) {
+        setStatus(campaignStatus, error.message || 'Failed to send campaign.', 'error');
+      } finally {
+        campaignButton.disabled = false;
+        campaignButton.textContent = 'Send to Opted-In Users';
+      }
+    });
+
+    await loadOptInCount();
   </script>
 </body>
 </html>
