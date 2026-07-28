@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Preview upcoming 20Realms apparel, tabletop accessories, prints, and stickers.">
+  <title>Shop | 20Realms</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand-group">
+      <a class="brand" href="index.html" aria-label="Home">20Realms</a>
+      <a class="home-link" href="index.html">Home</a>
+    </div>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="updates.html">Updates</a>
+      <a href="beta.html">Beta Access</a>
+      <a href="features.html">Features</a>
+      <a href="vision.html">Vision</a>
+      <a href="shop.html" aria-current="page">Shop</a>
+      <a href="contact.html">Contact</a>
+      <a href="community.html" class="nav-player-icon" title="Community & Profile">👤</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="shop-hero" aria-labelledby="shop-title">
+      <div class="shop-hero-copy">
+        <p class="eyebrow">Merch from the realms</p>
+        <h1 id="shop-title">Carry the adventure beyond the table.</h1>
+        <p>Apparel, table gear, and art inspired by 20Realms are taking shape. Preview the first collection before the store opens.</p>
+        <a class="button primary" href="beta.html">Get launch updates</a>
+      </div>
+      <div class="shop-hero-art" role="img" aria-label="20Realms fantasy landscape artwork"></div>
+    </section>
+
+    <section class="section shop-catalog" aria-labelledby="catalog-title">
+      <div class="shop-catalog-header">
+        <div>
+          <p class="eyebrow">First collection</p>
+          <h2 id="catalog-title">Choose your gear.</h2>
+        </div>
+        <div class="shop-filters" role="group" aria-label="Filter merchandise">
+          <button class="shop-filter active" type="button" data-shop-filter="all" aria-pressed="true">All</button>
+          <button class="shop-filter" type="button" data-shop-filter="wear" aria-pressed="false">Wear</button>
+          <button class="shop-filter" type="button" data-shop-filter="table" aria-pressed="false">Table</button>
+          <button class="shop-filter" type="button" data-shop-filter="art" aria-pressed="false">Art</button>
+        </div>
+      </div>
+
+      <div class="shop-grid">
+        <article class="shop-product" data-shop-category="wear">
+          <div class="shop-product-image art-hero"><span>Concept preview</span></div>
+          <div class="shop-product-info"><p>Apparel</p><h3>Realms Crest Tee</h3><span>Coming soon</span></div>
+        </article>
+        <article class="shop-product" data-shop-category="wear">
+          <div class="shop-product-image art-sword"><span>Concept preview</span></div>
+          <div class="shop-product-info"><p>Apparel</p><h3>Dungeon Master Hoodie</h3><span>Coming soon</span></div>
+        </article>
+        <article class="shop-product" data-shop-category="wear">
+          <div class="shop-product-image art-die"><span>Concept preview</span></div>
+          <div class="shop-product-info"><p>Headwear</p><h3>D20 Adventure Cap</h3><span>Coming soon</span></div>
+        </article>
+        <article class="shop-product" data-shop-category="table">
+          <div class="shop-product-image art-map"><span>Concept preview</span></div>
+          <div class="shop-product-info"><p>Table gear</p><h3>Realmkeeper Dice Set</h3><span>Coming soon</span></div>
+        </article>
+        <article class="shop-product" data-shop-category="art">
+          <div class="shop-product-image art-book"><span>Concept preview</span></div>
+          <div class="shop-product-info"><p>Wall art</p><h3>Worlds Await Print</h3><span>Coming soon</span></div>
+        </article>
+        <article class="shop-product" data-shop-category="art">
+          <div class="shop-product-image art-feature"><span>Concept preview</span></div>
+          <div class="shop-product-info"><p>Accessories</p><h3>Realm Icons Sticker Pack</h3><span>Coming soon</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="shop-callout" aria-labelledby="shop-callout-title">
+      <p class="eyebrow">Built with the community</p>
+      <h2 id="shop-callout-title">The collection is still being forged.</h2>
+      <p>Product designs, materials, sizes, and availability shown here are previews. Beta members will hear first when the shop is ready.</p>
+      <a class="button secondary" href="beta.html">Join beta access</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-branding">
+      <strong>20Realms</strong>
+      <span>&copy; <span id="year"></span> 20Realms</span>
+      <span>Mobile, PC, and console.</span>
+    </div>
+    <nav class="footer-links" aria-label="Footer links">
+      <a href="vision.html">About</a><a href="shop.html">Shop</a><a href="accessibility.html">Accessibility</a>
+      <a href="help.html">Help</a><a href="https://www.reddit.com/r/20Realms/">Forums</a><a href="legal.html">Legal &amp; Privacy</a>
+      <a href="user-agreement.html">User Agreement</a><a href="privacy-cookies.html">Privacy &amp; Cookie Policy</a><a href="security.html">Security</a>
+    </nav>
+  </footer>
+
+  <script src="script.js"></script>
+  <script type="module" src="auth-nav.js"></script>
+  <script>
+    document.querySelectorAll('[data-shop-filter]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const filter = button.dataset.shopFilter;
+        document.querySelectorAll('[data-shop-filter]').forEach((item) => {
+          const active = item === button;
+          item.classList.toggle('active', active);
+          item.setAttribute('aria-pressed', String(active));
+        });
+        document.querySelectorAll('[data-shop-category]').forEach((product) => {
+          product.hidden = filter !== 'all' && product.dataset.shopCategory !== filter;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
