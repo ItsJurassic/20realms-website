@@ -1593,6 +1593,39 @@ h3 {
   }
 }
 
+@media (min-width: 3200px) and (max-width: 3839px) {
+  .hero {
+    min-height: calc(85vh - 92px);
+    grid-template-columns: minmax(0, 1.1fr) minmax(390px, 0.92fr);
+    gap: 38px;
+    padding: 42px max(34px, calc((100vw - 1400px) / 2)) 60px;
+  }
+
+  h1 {
+    max-width: 680px;
+    font-size: clamp(3.35rem, 3.55vw, 6.3rem);
+  }
+
+  .hero-copy {
+    max-width: 610px;
+    font-size: 1.14rem;
+    line-height: 1.78;
+  }
+
+  .hero-panel {
+    max-width: 470px;
+    padding: 26px;
+  }
+
+  .hero-panel strong {
+    font-size: clamp(1.9rem, 2.1vw, 2.95rem);
+  }
+
+  .nav a {
+    font-size: 1.01rem;
+  }
+}
+
 /* Email opt-in checkbox */
 .email-optin-check {
   display: flex;
