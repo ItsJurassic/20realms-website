@@ -222,11 +222,11 @@
         user_id:  loggedInUser?.id || null
       };
 
-      const { error, data: insertedData } = await supabase.from('beta_signups').insert(payload).select();
+      const { error } = await supabase.from('beta_signups').insert(payload);
       
       // Trigger welcome email for opted-in users. If the opt-in table is unavailable,
       // still send the email so signup flow remains functional.
-      if (!error && emailOptIn && insertedData && insertedData.length > 0) {
+      if (!error && emailOptIn) {
         let emailRecord = { email: payload.email, name: payload.name };
 
         try {
