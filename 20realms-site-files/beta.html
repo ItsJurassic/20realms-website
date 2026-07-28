@@ -142,11 +142,15 @@
       loggedInUser = session.user;
       const username = loggedInUser.user_metadata?.username || loggedInUser.email.split('@')[0];
       const avatarUrl = loggedInUser.user_metadata?.avatar_url;
+      const publicNameInput = document.querySelector('#field-name input[name="name"]');
+      const publicEmailInput = document.querySelector('#field-email input[name="email"]');
 
       document.getElementById('field-name').style.display = 'none';
       document.getElementById('field-name').querySelector('input').removeAttribute('required');
       document.getElementById('field-email').style.display = 'none';
       document.getElementById('field-email').querySelector('input').removeAttribute('required');
+      if (publicNameInput) publicNameInput.disabled = true;
+      if (publicEmailInput) publicEmailInput.disabled = true;
       document.getElementById('field-account').style.display = '';
 
       document.getElementById('beta-account-name').textContent = username;
