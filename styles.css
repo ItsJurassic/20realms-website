@@ -1468,6 +1468,36 @@ h3 {
     font-size: 0.86rem;
   }
 
+
+  @media (min-width: 1600px) {
+    .hero {
+      min-height: calc(88vh - 92px);
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 0.82fr);
+      gap: 32px;
+      padding: 44px max(20px, calc((100vw - 1180px) / 2)) 56px;
+    }
+
+    h1 {
+      max-width: 660px;
+      font-size: clamp(3rem, 5.6vw, 6rem);
+      line-height: 0.94;
+    }
+
+    .hero-copy {
+      max-width: 560px;
+      font-size: 1.04rem;
+      line-height: 1.7;
+    }
+
+    .hero-panel {
+      max-width: 460px;
+      justify-self: start;
+    }
+
+    .hero-panel strong {
+      font-size: clamp(1.8rem, 2.8vw, 3.1rem);
+    }
+  }
   h1 {
     font-size: 3rem;
   }
