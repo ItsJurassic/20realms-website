@@ -112,6 +112,12 @@
       color: var(--muted);
       cursor: pointer;
     }
+    .btn-admin {
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
     .btn-signout:hover {
       border-color: var(--clay);
       color: var(--ink);
@@ -311,6 +317,7 @@
       </div>
 
       <div class="profile-actions">
+        <a class="button btn-admin" id="btn-admin" href="admin-communications.html" style="display:none">Admin</a>
         <button class="button btn-signout" id="btn-signout" type="button">Sign out</button>
       </div>
     </div>
@@ -418,6 +425,21 @@
         document.getElementById('profile-username').textContent = username;
         document.getElementById('profile-email').textContent = user.email;
         document.getElementById('member-since').textContent = joined;
+
+        const userEmail = (user.email || '').trim().toLowerCase();
+        const { data: adminCheck } = await supabase
+          .from('admin_users')
+          .select('id')
+          .ilike('email', userEmail)
+          .maybeSingle();
+
+        if (adminCheck && adminCheck.id) {
+          const adminBtn = document.getElementById('btn-admin');
+          if (adminBtn) {
+            adminBtn.style.display = 'inline-flex';
+          }
+        }
+
         document.getElementById('loading-wrap').style.display = 'none';
         document.getElementById('profile-wrap').style.display = '';
 
