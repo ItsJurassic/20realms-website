@@ -39,11 +39,12 @@
     </section>
 
     <!-- Staged Merchandise Section -->
-    <section class="shop-staged-products" id="staged-products-section" style="display: none; padding: 48px max(16px, calc((100vw - 1100px) / 2)); width: min(1120px, calc(100% - 32px)); margin: 0 auto;">
+    <section class="shop-staged-products" id="staged-products-section" style="display: none;">
       <p class="eyebrow">Staged Merchandise</p>
-      <h2 style="font-family: 'Fraunces', serif; font-size: 2.2rem; margin-bottom: 24px; color: var(--cream);">Previews in the forge</h2>
-      <div id="staged-products-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;"></div>
+      <h2>Previews in the forge</h2>
+      <div class="staged-products-grid" id="staged-products-list"></div>
     </section>
+
 
     <section class="shop-callout" aria-labelledby="shop-callout-title">
 
@@ -88,28 +89,35 @@
 
         if (inventory && inventory.length > 0) {
           section.style.display = 'block';
-          list.innerHTML = inventory.map(item => `
-            <div style="border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 250, 240, 0.04); overflow: hidden; display: flex; flex-direction: column;">
-              ${item.photo ? `
-                <div style="aspect-ratio: 16/10; width: 100%; border-bottom: 1px solid var(--line); background: rgba(255, 250, 240, 0.02);">
-                  <img src="${item.photo}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+          list.innerHTML = inventory.map(item => {
+            let badgeClass = 'coming-soon';
+            if (item.stock === 'In stock') badgeClass = 'in-stock';
+            else if (item.stock === 'Limited') badgeClass = 'limited';
+
+            return `
+              <div class="staged-item-card">
+                ${item.photo ? `
+                  <div class="staged-item-image-wrap">
+                    <img src="${item.photo}" alt="${item.name}">
+                  </div>
+                ` : `
+                  <div class="staged-item-image-wrap">
+                    <div class="staged-item-image-placeholder">No Photo Available</div>
+                  </div>
+                `}
+                <div class="staged-item-content">
+                  <div class="staged-item-header">
+                    <h3 class="staged-item-title">${item.name}</h3>
+                    <span class="staged-item-price">${item.price}</span>
+                  </div>
+                  <span class="staged-item-badge ${badgeClass}">${item.stock}</span>
+                  ${item.notes ? `<p class="staged-item-notes">${item.notes}</p>` : ''}
                 </div>
-              ` : `
-                <div style="aspect-ratio: 16/10; width: 100%; border-bottom: 1px solid var(--line); background: rgba(255, 250, 240, 0.05); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.9rem; font-weight: 600;">
-                  No Photo Available
-                </div>
-              `}
-              <div style="padding: 20px; display: flex; flex-direction: column; flex-grow: 1; gap: 8px;">
-                <div style="display: flex; justify-content: space-between; align-items: start; gap: 8px;">
-                  <h3 style="font-family: 'Fraunces', serif; margin: 0; font-size: 1.28rem; color: var(--cream);">${item.name}</h3>
-                  <span style="font-weight: 700; color: var(--gold); white-space: nowrap;">${item.price}</span>
-                </div>
-                <span style="align-self: start; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--clay);">${item.stock}</span>
-                ${item.notes ? `<p style="margin: 8px 0 0; font-size: 0.9rem; color: var(--muted); line-height: 1.6; word-break: break-word;">${item.notes}</p>` : ''}
               </div>
-            </div>
-          `).join('');
+            `;
+          }).join('');
         } else {
+
           section.style.display = 'none';
         }
       } catch (err) {
