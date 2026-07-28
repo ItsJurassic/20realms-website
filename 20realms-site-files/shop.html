@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Preview upcoming 20Realms apparel, tabletop accessories, prints, and stickers.">
+  <meta name="description" content="The official 20Realms merch shop is coming soon.">
   <title>Shop | 20Realms</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,36 +31,16 @@
       <div class="shop-hero-copy">
         <p class="eyebrow">Merch from the realms</p>
         <h1 id="shop-title">Carry the adventure beyond the table.</h1>
-        <p>Apparel, table gear, and art inspired by 20Realms are taking shape. Preview the first collection before the store opens.</p>
+        <p>The official 20Realms merch shop is coming soon. Join the beta list to hear when the doors open.</p>
         <a class="button primary" href="beta.html">Get launch updates</a>
       </div>
       <div class="shop-hero-art" role="img" aria-label="20Realms fantasy landscape artwork"></div>
     </section>
 
-    <section class="section shop-catalog" aria-labelledby="catalog-title">
-      <div class="shop-catalog-header">
-        <div><p class="eyebrow">First collection</p><h2 id="catalog-title">Choose your gear.</h2></div>
-        <div class="shop-filters" role="group" aria-label="Filter merchandise">
-          <button class="shop-filter active" type="button" data-shop-filter="all" aria-pressed="true">All</button>
-          <button class="shop-filter" type="button" data-shop-filter="wear" aria-pressed="false">Wear</button>
-          <button class="shop-filter" type="button" data-shop-filter="table" aria-pressed="false">Table</button>
-          <button class="shop-filter" type="button" data-shop-filter="art" aria-pressed="false">Art</button>
-        </div>
-      </div>
-      <div class="shop-grid">
-        <article class="shop-product" data-shop-category="wear"><div class="shop-product-image art-hero"><span>Concept preview</span></div><div class="shop-product-info"><p>Apparel</p><h3>Realms Crest Tee</h3><span>Coming soon</span></div></article>
-        <article class="shop-product" data-shop-category="wear"><div class="shop-product-image art-sword"><span>Concept preview</span></div><div class="shop-product-info"><p>Apparel</p><h3>Dungeon Master Hoodie</h3><span>Coming soon</span></div></article>
-        <article class="shop-product" data-shop-category="wear"><div class="shop-product-image art-die"><span>Concept preview</span></div><div class="shop-product-info"><p>Headwear</p><h3>D20 Adventure Cap</h3><span>Coming soon</span></div></article>
-        <article class="shop-product" data-shop-category="table"><div class="shop-product-image art-map"><span>Concept preview</span></div><div class="shop-product-info"><p>Table gear</p><h3>Realmkeeper Dice Set</h3><span>Coming soon</span></div></article>
-        <article class="shop-product" data-shop-category="art"><div class="shop-product-image art-book"><span>Concept preview</span></div><div class="shop-product-info"><p>Wall art</p><h3>Worlds Await Print</h3><span>Coming soon</span></div></article>
-        <article class="shop-product" data-shop-category="art"><div class="shop-product-image art-feature"><span>Concept preview</span></div><div class="shop-product-info"><p>Accessories</p><h3>Realm Icons Sticker Pack</h3><span>Coming soon</span></div></article>
-      </div>
-    </section>
-
     <section class="shop-callout" aria-labelledby="shop-callout-title">
-      <p class="eyebrow">Built with the community</p>
-      <h2 id="shop-callout-title">The collection is still being forged.</h2>
-      <p>Product designs, materials, sizes, and availability shown here are previews. Beta members will hear first when the shop is ready.</p>
+      <p class="eyebrow">Opening later</p>
+      <h2 id="shop-callout-title">The shop is still being forged.</h2>
+      <p>There are no products available yet. Beta members will hear first when official 20Realms merch is ready.</p>
       <a class="button secondary" href="beta.html">Join beta access</a>
     </section>
   </main>
@@ -73,20 +53,5 @@
   </footer>
 
   <script src="script.js"></script>
-  <script>
-    document.querySelectorAll('[data-shop-filter]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const filter = button.dataset.shopFilter;
-        document.querySelectorAll('[data-shop-filter]').forEach((item) => {
-          const active = item === button;
-          item.classList.toggle('active', active);
-          item.setAttribute('aria-pressed', String(active));
-        });
-        document.querySelectorAll('[data-shop-category]').forEach((product) => {
-          product.hidden = filter !== 'all' && product.dataset.shopCategory !== filter;
-        });
-      });
-    });
-  </script>
 </body>
 </html>

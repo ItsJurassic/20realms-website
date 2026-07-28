@@ -804,132 +804,9 @@ h3 {
     url("assets/20realms-hero.png") center / cover no-repeat;
 }
 
-.shop-catalog {
-  padding-top: 92px;
-  padding-bottom: 96px;
-}
-
-.shop-catalog-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 24px;
-  margin-bottom: 30px;
-}
-
-.shop-catalog-header h2 {
-  margin-bottom: 0;
-}
-
-.shop-filters {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.shop-filter {
-  min-height: 42px;
-  padding: 0 16px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  color: var(--cream);
-  background: rgba(255, 250, 240, 0.06);
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.shop-filter:hover,
-.shop-filter.active {
-  border-color: var(--gold);
-  background: rgba(217, 164, 65, 0.18);
-}
-
-.shop-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-}
-
-.shop-product {
-  min-width: 0;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  overflow: hidden;
-  background: rgba(11, 15, 22, 0.78);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.2);
-}
-
-.shop-product[hidden] {
-  display: none;
-}
-
-.shop-product-image {
-  position: relative;
-  aspect-ratio: 4 / 5;
-  background-position: center;
-  background-size: cover;
-}
-
-.shop-product-image::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg, rgba(5, 7, 11, 0.78), transparent 54%);
-}
-
-.shop-product-image span {
-  position: absolute;
-  left: 16px;
-  bottom: 14px;
-  z-index: 1;
-  padding: 6px 9px;
-  border: 1px solid rgba(255, 250, 240, 0.28);
-  border-radius: 4px;
-  color: var(--cream);
-  background: rgba(5, 7, 11, 0.72);
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.art-hero { background-image: url("assets/20realms-hero.png"); }
-.art-sword { background-image: url("assets/vision-sword.png"); }
-.art-die { background-image: url("assets/contact-d20.png"); }
-.art-map { background-image: url("assets/20realms-hero.png"); background-position: 72% center; }
-.art-book { background-image: url("assets/updates-book.jpg"); }
-.art-feature { background-image: url("assets/features-art.png"); }
-
-.shop-product-info {
-  min-height: 142px;
-  padding: 20px;
-}
-
-.shop-product-info p {
-  margin: 0 0 8px;
-  color: var(--gold);
-  font-size: 0.74rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.shop-product-info h3 {
-  margin: 0 0 14px;
-  font-family: "Fraunces", serif;
-  font-size: 1.45rem;
-  line-height: 1.15;
-}
-
-.shop-product-info span {
-  color: var(--muted);
-  font-size: 0.86rem;
-  font-weight: 700;
-}
-
 .shop-callout {
   width: min(1120px, calc(100% - 32px));
-  margin: 0 auto 96px;
+  margin: 72px auto 96px;
   padding: clamp(34px, 6vw, 66px);
   border-block: 1px solid var(--line);
   text-align: center;
@@ -1216,9 +1093,6 @@ h3 {
     background-position: center 62%;
   }
 
-  .shop-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 780px) {
@@ -1310,15 +1184,6 @@ h3 {
     justify-content: flex-start;
   }
 
-  .shop-catalog-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .shop-filters {
-    justify-content: flex-start;
-  }
-
   .page-hero.contact::after {
     display: none;
   }
@@ -1361,14 +1226,6 @@ h3 {
 
   .shop-hero-art {
     min-height: 330px;
-  }
-
-  .shop-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .shop-product-image {
-    aspect-ratio: 5 / 4;
   }
 
 }
