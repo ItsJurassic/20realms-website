@@ -209,6 +209,17 @@
       const emailOptIn = document.getElementById('beta-email-optin')?.checked === true;
       let emailTriggerFailed = false;
       let emailTriggerError = '';
+      const normalizedEmail = (data.get('email') || '').toString().trim().toLowerCase();
+      const emailPattern = /^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$/i;
+
+      if (!emailPattern.test(normalizedEmail)) {
+        btn.disabled = false;
+        btn.textContent = 'Request beta access';
+        statusEl.textContent = 'Please enter a valid email address.';
+        statusEl.style.color = '#f4937a';
+        return;
+      }
+
       const rawInterest = data.get('interest') || '';
       const interestWithOptIn = emailOptIn
         ? `${rawInterest}${rawInterest ? '\n' : ''}[optin:true]`
@@ -216,7 +227,7 @@
       
       const payload = {
         name:     data.get('name'),
-        email:    (data.get('email') || '').toString().trim().toLowerCase(),
+        email:    normalizedEmail,
         role:     data.get('role'),
         interest: interestWithOptIn || null,
         user_id:  loggedInUser?.id || null
