@@ -106,9 +106,73 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 32px;
+      margin-bottom: 24px;
       padding-bottom: 20px;
       border-bottom: 1px solid var(--line);
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .admin-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .admin-nav a {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 700;
+      transition: all 160ms;
+    }
+
+    .admin-nav a:hover,
+    .admin-nav a.active {
+      border-color: var(--gold);
+      color: var(--cream);
+      background: rgba(217, 164, 65, 0.12);
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .workspace-card {
+      display: block;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: linear-gradient(160deg, rgba(255,250,240,0.07), rgba(255,250,240,0.02));
+      text-decoration: none;
+      color: var(--cream);
+      transition: transform 160ms ease, border-color 160ms ease;
+    }
+
+    .workspace-card:hover {
+      transform: translateY(-1px);
+      border-color: var(--clay);
+    }
+
+    .workspace-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    .workspace-card span {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
     }
 
     .admin-user {
@@ -514,6 +578,23 @@
           Logged in as <strong id="admin-email"></strong>
         </div>
         <button class="btn-signout" id="btn-admin-signout">Sign out</button>
+      </div>
+
+      <nav class="admin-nav" aria-label="Admin sections">
+        <a class="active" href="admin.html">Overview</a>
+        <a href="admin-communications.html">Emails &amp; updates</a>
+        <a href="admin-shop-inventory.html">Shop inventory</a>
+      </nav>
+
+      <div class="workspace-grid">
+        <a class="workspace-card" href="admin-communications.html">
+          <strong>Emails &amp; updates</strong>
+          <span>Draft update notes, coordinate launches, and plan message sends.</span>
+        </a>
+        <a class="workspace-card" href="admin-shop-inventory.html">
+          <strong>Shop inventory</strong>
+          <span>Track products, pricing, stock status, and launch notes.</span>
+        </a>
       </div>
 
       <!-- Post Update Section -->
