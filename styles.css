@@ -36,8 +36,8 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(circle at 16% 18%, rgba(181, 76, 47, 0.2), transparent 28%),
-    radial-gradient(circle at 84% 12%, rgba(217, 164, 65, 0.12), transparent 24%),
+    radial-gradient(circle at 16% 40%, rgba(181, 76, 47, 0.16), transparent 32%),
+    radial-gradient(circle at 84% 35%, rgba(217, 164, 65, 0.1), transparent 28%),
     radial-gradient(circle at 78% 82%, rgba(31, 81, 58, 0.22), transparent 34%),
     radial-gradient(circle at 50% 58%, rgba(247, 239, 226, 0.05), transparent 42%),
     linear-gradient(135deg, #05070b 0%, #0d0b09 46%, #121008 100%);
@@ -59,6 +59,17 @@ a {
 
 .site-header {
   padding: 24px 0 12px;
+}
+
+/* Float absolute overlay headers exclusively on Home and Shop pages */
+.home-page-body .site-header,
+.shop-page-body .site-header {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1120px, calc(100% - 32px));
+  z-index: 100;
 }
 
 .brand-group {
@@ -816,6 +827,132 @@ h3 {
   margin-bottom: 32px;
   color: var(--cream);
   line-height: 1.05;
+}
+
+/* Shop Hero Customized Styles */
+.shop-hero-full {
+  margin-top: 0 !important;
+  min-height: calc(100vh - 92px);
+  width: 100%;
+  max-width: none;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(circle, rgba(5, 7, 11, 0.4) 0%, rgba(5, 7, 11, 0.7) 100%),
+    url("assets/magic_wallpaper.jpg") center center / cover no-repeat !important;
+  text-align: center;
+}
+
+.shop-hero-center {
+  animation: rise 650ms ease both;
+  z-index: 10;
+}
+
+.shop-hero-center h1 {
+  font-family: "Fraunces", serif;
+  font-size: clamp(4rem, 10vw, 8.5rem);
+  color: var(--cream);
+  margin: 0;
+  line-height: 1;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.8), 0 2px 8px rgba(0, 0, 0, 0.6);
+  letter-spacing: -0.01em;
+}
+
+.shop-hero-full + .shop-staged-products {
+  margin-top: 72px;
+}
+
+@media (max-width: 960px) {
+  .shop-hero-full {
+    min-height: 480px;
+  }
+}
+
+@media (max-width: 780px) {
+  .shop-hero-full {
+    min-height: 380px;
+  }
+}
+
+/* Shop Sidebar & Layout styling matching Screenshot 2026-07-28 125240 */
+.shop-main-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 48px;
+  width: min(1120px, calc(100% - 32px));
+  margin: 64px auto 96px;
+  align-items: start;
+}
+
+.shop-sidebar {
+  background: rgba(11, 15, 22, 0.4);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.sidebar-title {
+  font-family: "Fraunces", serif;
+  font-size: 1.5rem;
+  color: var(--cream);
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+
+.shop-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shop-sidebar-nav a {
+  display: block;
+  padding: 10px 16px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.96rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 150ms ease;
+  border-left: 2px solid transparent;
+}
+
+.shop-sidebar-nav a:hover {
+  color: var(--cream);
+  background: rgba(255, 250, 240, 0.05);
+}
+
+.shop-sidebar-nav a.active {
+  color: var(--gold);
+  background: rgba(217, 164, 65, 0.08);
+  border-left-color: var(--gold);
+}
+
+.shop-content-area {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Adjust staged & callout to fit nicely in content-area without duplicating margin constraints */
+.shop-staged-products {
+  width: 100% !important;
+  margin: 0 0 48px 0 !important;
+}
+
+.shop-callout {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+@media (max-width: 860px) {
+  .shop-main-layout {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    margin: 48px auto 72px;
+  }
 }
 
 .staged-products-grid {

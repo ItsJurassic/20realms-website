@@ -8,9 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="shop-page-body">
   <header class="site-header">
     <div class="brand-group">
       <a class="brand" href="index.html" aria-label="Home">20Realms</a>
@@ -22,36 +22,167 @@
       <a href="features.html">Features</a>
       <a href="vision.html">Vision</a>
       <a href="shop.html" aria-current="page">Shop</a>
-      <a href="community.html">Community</a><a href="contact.html">Contact</a>
+      <a href="contact.html">Contact</a>
+      <a href="community.html" class="nav-player-icon" title="Community & Profile">👤</a>
     </nav>
   </header>
 
   <main>
-    <section class="shop-hero" aria-labelledby="shop-title">
-      <div class="shop-hero-copy">
-        <p class="eyebrow">Merch from the realms</p>
-        <h1 id="shop-title">Carry the adventure beyond the table.</h1>
-        <p>The official 20Realms merch shop is coming soon. Join the beta list to hear when the doors open.</p>
-        <a class="button primary" href="beta.html">Get launch updates</a>
+    <section class="shop-hero shop-hero-full" aria-labelledby="shop-title">
+      <div class="shop-hero-center">
+        <h1 id="shop-title">Shop</h1>
       </div>
-      <div class="shop-hero-art" role="img" aria-label="20Realms fantasy landscape artwork"></div>
     </section>
 
-    <section class="shop-callout" aria-labelledby="shop-callout-title">
-      <p class="eyebrow">Opening later</p>
-      <h2 id="shop-callout-title">The shop is still being forged.</h2>
-      <p>There are no products available yet. Beta members will hear first when official 20Realms merch is ready.</p>
-      <a class="button secondary" href="beta.html">Join beta access</a>
-    </section>
+    <div class="shop-main-layout">
+      <aside class="shop-sidebar">
+        <h2 class="sidebar-title">Categories</h2>
+        <nav class="shop-sidebar-nav" aria-label="Shop Categories">
+          <a class="active" href="#" data-category="Apparel">Apparel</a>
+          <a href="#" data-category="Accessories">Accessories</a>
+          <a href="#" data-category="Art">Art</a>
+          <a href="#" data-category="Collaborations">Collaborations</a>
+          <a href="#" data-category="Clearance">Clearance</a>
+        </nav>
+      </aside>
+
+      <div class="shop-content-area">
+        <!-- Staged Merchandise Section -->
+        <section class="shop-staged-products" id="staged-products-section" style="display: none;">
+          <p class="eyebrow">Staged Merchandise</p>
+          <h2>Previews in the forge</h2>
+          <div class="staged-products-grid" id="staged-products-list"></div>
+        </section>
+
+        <section class="shop-callout" aria-labelledby="shop-callout-title">
+          <p class="eyebrow">Opening later</p>
+          <h2 id="shop-callout-title">The shop is still being forged.</h2>
+          <p>There are no products available yet. Beta members will hear first when official 20Realms merch is ready.</p>
+          <a class="button secondary" href="beta.html">Join beta access</a>
+        </section>
+      </div>
+    </div>
   </main>
 
   <footer class="site-footer">
-    <div class="footer-branding"><strong>20Realms</strong><span>&copy; <span id="year"></span> 20Realms</span><span>Mobile, PC, and console.</span></div>
+    <div class="footer-branding">
+      <strong>20Realms</strong>
+      <span>&copy; <span id="year"></span> 20Realms</span>
+      <span>Mobile, PC, and console.</span>
+    </div>
     <nav class="footer-links" aria-label="Footer links">
-      <a href="vision.html">About</a><a href="shop.html">Shop</a><a href="accessibility.html">Accessibility</a><a href="help.html">Help</a><a href="https://www.reddit.com/r/20Realms/">Forums</a><a href="legal.html">Legal &amp; Privacy</a><a href="user-agreement.html">User Agreement &amp; EULA</a><a href="privacy-cookies.html">Privacy &amp; Cookie Policy</a><a href="updates.html">Online Service Updates</a><a href="security.html">Security</a>
+      <a href="vision.html">About</a><a href="shop.html">Shop</a><a href="accessibility.html">Accessibility</a>
+      <a href="help.html">Help</a><a href="https://www.reddit.com/r/20Realms/">Forums</a><a href="legal.html">Legal &amp; Privacy</a>
+      <a href="user-agreement.html">User Agreement</a><a href="privacy-cookies.html">Privacy &amp; Cookie Policy</a><a href="security.html">Security</a>
     </nav>
   </footer>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const SUPABASE_URL  = 'https://avcqqazytvvcfraowgsm.supabase.co';
+      const SUPABASE_ANON = 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0';
+
+      const section = document.getElementById('staged-products-section');
+      const list = document.getElementById('staged-products-list');
+      const categoryLinks = document.querySelectorAll('.shop-sidebar-nav a');
+
+      let allItems = [];
+
+      // Add Category filtering functionality
+      categoryLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          categoryLinks.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+          const targetCategory = link.getAttribute('data-category');
+          renderFilteredItems(targetCategory);
+        });
+      });
+
+      function renderFilteredItems(category) {
+        if (!allItems || allItems.length === 0) {
+          section.style.display = 'none';
+          return;
+        }
+
+        // Filter item based on selected category (matches exactly or fuzzy category matches)
+        const filtered = allItems.filter(item => {
+          if (!category) return true;
+          // Matches field 'category' if it exists in Supabase. Or optionally Fuzzy/notes containment.
+          const itemCat = item.category ? item.category.trim().toLowerCase() : '';
+          const targetCat = category.trim().toLowerCase();
+          
+          if (itemCat === targetCat) return true;
+          
+          // Fallback if category field is empty: check in descriptive notes or product title of the staged merch
+          const itemNotes = item.notes ? item.notes.toLowerCase() : '';
+          const itemName = item.name ? item.name.toLowerCase() : '';
+          return itemNotes.includes(targetCat) || itemName.includes(targetCat);
+        });
+
+        if (filtered.length > 0) {
+          section.style.display = 'block';
+          list.innerHTML = filtered.map(item => {
+            let badgeClass = 'coming-soon';
+            if (item.stock === 'In stock') badgeClass = 'in-stock';
+            else if (item.stock === 'Limited') badgeClass = 'limited';
+
+            return `
+              <div class="staged-item-card">
+                ${item.photo ? `
+                  <div class="staged-item-image-wrap">
+                    <img src="${item.photo}" alt="${item.name}">
+                  </div>
+                ` : `
+                  <div class="staged-item-image-wrap">
+                    <div class="staged-item-image-placeholder">No Photo Available</div>
+                  </div>
+                `}
+                <div class="staged-item-content">
+                  <div class="staged-item-header">
+                    <h3 class="staged-item-title">${item.name}</h3>
+                    <span class="staged-item-price">${item.price}</span>
+                  </div>
+                  <span class="staged-item-badge ${badgeClass}">${item.stock}</span>
+                  ${item.notes ? `<p class="staged-item-notes">${item.notes}</p>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          list.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 48px 24px; border: 1px dashed var(--line); border-radius: 12px;">No items currently available in ${category}. Previews coming soon!</div>`;
+          section.style.display = 'block';
+        }
+      }
+
+      try {
+        const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+        const { data: inventory, error } = await supabase
+          .from('shop_inventory')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (inventory && inventory.length > 0) {
+          allItems = inventory;
+          // Initially filter by active category (Apparel is active first)
+          const activeSidebar = document.querySelector('.shop-sidebar-nav a.active');
+          const defaultCategory = activeSidebar ? activeSidebar.getAttribute('data-category') : 'Apparel';
+          renderFilteredItems(defaultCategory);
+        } else {
+          section.style.display = 'none';
+        }
+      } catch (err) {
+        console.error('Error loading inventory from Supabase:', err);
+        section.style.display = 'none';
+      }
+    });
+  </script>
+
   <script src="script.js"></script>
+  <script type="module" src="auth-nav.js"></script>
 </body>
 </html>
