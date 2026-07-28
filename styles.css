@@ -1474,38 +1474,6 @@ h3 {
   .button {
     width: 100%;
   }
-
-
-  @media (min-width: 1200px) {
-    .hero {
-      min-height: calc(80vh - 92px);
-      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.82fr);
-      gap: 26px;
-      padding: 30px max(20px, calc((100vw - 1120px) / 2)) 44px;
-    }
-
-    h1 {
-      max-width: 560px;
-      font-size: clamp(2.65rem, 4.6vw, 5rem);
-      line-height: 0.92;
-    }
-
-    .hero-copy {
-      max-width: 520px;
-      font-size: 1rem;
-      line-height: 1.65;
-    }
-
-    .hero-panel {
-      max-width: 410px;
-      padding: 22px;
-      justify-self: start;
-    }
-
-    .hero-panel strong {
-      font-size: clamp(1.6rem, 2.2vw, 2.6rem);
-    }
-  }
   .beta-form .button {
     width: 100%;
   }
@@ -1530,6 +1498,37 @@ h3 {
     min-height: 330px;
   }
 
+}
+
+@media (min-width: 1200px) {
+  .hero {
+    min-height: calc(80vh - 92px);
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.82fr);
+    gap: 26px;
+    padding: 30px max(20px, calc((100vw - 1120px) / 2)) 44px;
+  }
+
+  h1 {
+    max-width: 560px;
+    font-size: clamp(2.65rem, 4.6vw, 5rem);
+    line-height: 0.92;
+  }
+
+  .hero-copy {
+    max-width: 520px;
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .hero-panel {
+    max-width: 410px;
+    padding: 22px;
+    justify-self: start;
+  }
+
+  .hero-panel strong {
+    font-size: clamp(1.6rem, 2.2vw, 2.6rem);
+  }
 }
 
 /* Email opt-in checkbox */
