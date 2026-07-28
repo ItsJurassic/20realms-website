@@ -76,7 +76,13 @@
     </section>
   </div>
 
-  <script>
+  <script type="module">
+    const SUPABASE_URL  = 'https://avcqqazytvvcfraowgsm.supabase.co';
+    const SUPABASE_ANON = 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0';
+
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
     const form = document.getElementById('inventory-form');
     const nameInput = document.getElementById('product-name');
     const priceInput = document.getElementById('product-price');
@@ -89,66 +95,108 @@
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
 
-    const storageKey = 'admin-shop-inventory';
+    // ─── CHECK AUTH & ADMIN STATUS ───────────────────────────────────────
+    const { data: { session } } = await supabase.auth.getSession();
 
+    if (!session) {
+      status.textContent = 'Please sign in to manage shop inventory.';
+      status.classList.add('error');
+      form.querySelector('button[type="submit"]').disabled = true;
+      list.innerHTML = '<div style="color: var(--muted); text-align: center; padding: 20px;">Please sign in.</div>';
+    } else {
+      const { data: adminCheck } = await supabase
+        .from('admin_users')
+        .select('id')
+        .eq('email', session.user.email)
+        .single();
 
-    function loadInventory() {
-      const inventory = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      if (!inventory.length) {
+      if (!adminCheck || !adminCheck.id) {
+        status.textContent = 'Your account does not have admin access.';
+        status.classList.add('error');
+        form.querySelector('button[type="submit"]').disabled = true;
+        list.innerHTML = '<div style="color: var(--muted); text-align: center; padding: 20px;">Access Denied.</div>';
+      } else {
+        // Authenticated admin can use the page fully
+        await loadInventory();
+
+        form.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          const btn = form.querySelector('button[type="submit"]');
+          btn.disabled = true;
+          btn.textContent = 'Saving…';
+
+          const { error } = await supabase.from('shop_inventory').insert({
+            name: nameInput.value.trim(),
+            price: priceInput.value.trim(),
+            stock: stockInput.value,
+            photo: photoInput.value.trim(),
+            notes: notesInput.value.trim()
+          });
+
+          if (error) {
+            status.textContent = error.message;
+            status.classList.add('error');
+            status.classList.remove('success');
+          } else {
+            status.textContent = 'Inventory item saved.';
+            status.classList.add('success');
+            status.classList.remove('error');
+            form.reset();
+            updatePhotoPreview();
+            await loadInventory();
+            setTimeout(() => status.classList.remove('success'), 3000);
+          }
+          btn.disabled = false;
+          btn.textContent = 'Save inventory item';
+        });
+      }
+    }
+
+    async function loadInventory() {
+      const { data, error } = await supabase
+        .from('shop_inventory')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        list.innerHTML = `<div class="empty-state">Error: ${error.message}</div>`;
+        return;
+      }
+
+      if (!data || !data.length) {
         list.innerHTML = '<div class="empty-state">No inventory items saved yet.</div>';
         return;
       }
 
-      list.innerHTML = inventory.map((item, index) => `
+      list.innerHTML = data.map((item) => `
         <div class="admin-item">
           ${item.photo ? `<img class="admin-item-media" src="${item.photo}" alt="${item.name}">` : ''}
           <div style="flex: 1; min-width: 0;">
             <strong>${item.name}</strong>
             <small>${item.price} • ${item.stock} • ${item.notes || 'No notes'}</small>
           </div>
-          <button class="delete-btn" data-index="${index}">Remove</button>
+          <button class="delete-btn" data-id="${item.id}">Remove</button>
         </div>
       `).join('');
 
       list.querySelectorAll('.delete-btn').forEach((button) => {
-        button.addEventListener('click', () => {
-          const index = Number(button.dataset.index);
-          const inventory = JSON.parse(localStorage.getItem(storageKey) || '[]');
-          inventory.splice(index, 1);
-          localStorage.setItem(storageKey, JSON.stringify(inventory));
-          loadInventory();
+        button.addEventListener('click', async () => {
+          if (!confirm(`Delete this inventory item?`)) return;
+          button.disabled = true;
+          const itemId = button.dataset.id;
+          const { error } = await supabase
+            .from('shop_inventory')
+            .delete()
+            .eq('id', itemId);
+
+          if (error) {
+            alert(error.message);
+            button.disabled = false;
+          } else {
+            await loadInventory();
+          }
         });
       });
-    }
-
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const inventory = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      inventory.unshift({
-        name: nameInput.value.trim(),
-        price: priceInput.value.trim(),
-        stock: stockInput.value,
-        photo: photoInput.value.trim(),
-        notes: notesInput.value.trim()
-      });
-      localStorage.setItem(storageKey, JSON.stringify(inventory));
-      form.reset();
-      status.textContent = 'Inventory item saved.';
-      status.classList.add('success');
-      status.classList.remove('error');
-      loadInventory();
-    });
-
-    function updatePhotoPreview() {
-      const url = photoInput.value.trim();
-      if (!url) {
-        photoPreview.innerHTML = '';
-        photoPreview.style.display = 'none';
-        return;
-      }
-
-      photoPreview.innerHTML = `<img src="${url}" alt="Inventory preview">`;
-      photoPreview.style.display = 'block';
     }
 
     // Drag and Drop implementation
@@ -194,8 +242,19 @@
       reader.readAsDataURL(file);
     }
 
+    function updatePhotoPreview() {
+      const url = photoInput.value.trim();
+      if (!url) {
+        photoPreview.innerHTML = '';
+        photoPreview.style.display = 'none';
+        return;
+      }
+
+      photoPreview.innerHTML = `<img src="${url}" alt="Inventory preview">`;
+      photoPreview.style.display = 'block';
+    }
+
     photoInput.addEventListener('input', updatePhotoPreview);
-    loadInventory();
     updatePhotoPreview();
   </script>
 

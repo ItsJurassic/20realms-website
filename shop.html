@@ -68,40 +68,57 @@
   </footer>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const storageKey = 'admin-shop-inventory';
+    document.addEventListener('DOMContentLoaded', async () => {
+      const SUPABASE_URL  = 'https://avcqqazytvvcfraowgsm.supabase.co';
+      const SUPABASE_ANON = 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0';
+
       const section = document.getElementById('staged-products-section');
       const list = document.getElementById('staged-products-list');
-      
-      const inventory = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      if (inventory.length > 0) {
-        section.style.display = 'block';
-        list.innerHTML = inventory.map(item => `
-          <div style="border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 250, 240, 0.04); overflow: hidden; display: flex; flex-direction: column;">
-            ${item.photo ? `
-              <div style="aspect-ratio: 16/10; width: 100%; border-bottom: 1px solid var(--line); background: rgba(255, 250, 240, 0.02);">
-                <img src="${item.photo}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+
+      try {
+        const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+        const { data: inventory, error } = await supabase
+          .from('shop_inventory')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (inventory && inventory.length > 0) {
+          section.style.display = 'block';
+          list.innerHTML = inventory.map(item => `
+            <div style="border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 250, 240, 0.04); overflow: hidden; display: flex; flex-direction: column;">
+              ${item.photo ? `
+                <div style="aspect-ratio: 16/10; width: 100%; border-bottom: 1px solid var(--line); background: rgba(255, 250, 240, 0.02);">
+                  <img src="${item.photo}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                </div>
+              ` : `
+                <div style="aspect-ratio: 16/10; width: 100%; border-bottom: 1px solid var(--line); background: rgba(255, 250, 240, 0.05); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.9rem; font-weight: 600;">
+                  No Photo Available
+                </div>
+              `}
+              <div style="padding: 20px; display: flex; flex-direction: column; flex-grow: 1; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: start; gap: 8px;">
+                  <h3 style="font-family: 'Fraunces', serif; margin: 0; font-size: 1.28rem; color: var(--cream);">${item.name}</h3>
+                  <span style="font-weight: 700; color: var(--gold); white-space: nowrap;">${item.price}</span>
+                </div>
+                <span style="align-self: start; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--clay);">${item.stock}</span>
+                ${item.notes ? `<p style="margin: 8px 0 0; font-size: 0.9rem; color: var(--muted); line-height: 1.6; word-break: break-word;">${item.notes}</p>` : ''}
               </div>
-            ` : `
-              <div style="aspect-ratio: 16/10; width: 100%; border-bottom: 1px solid var(--line); background: rgba(255, 250, 240, 0.05); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.9rem; font-weight: 600;">
-                No Photo Available
-              </div>
-            `}
-            <div style="padding: 20px; display: flex; flex-direction: column; flex-grow: 1; gap: 8px;">
-              <div style="display: flex; justify-content: space-between; align-items: start; gap: 8px;">
-                <h3 style="font-family: 'Fraunces', serif; margin: 0; font-size: 1.28rem; color: var(--cream);">${item.name}</h3>
-                <span style="font-weight: 700; color: var(--gold); white-space: nowrap;">${item.price}</span>
-              </div>
-              <span style="align-self: start; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--clay);">${item.stock}</span>
-              ${item.notes ? `<p style="margin: 8px 0 0; font-size: 0.9rem; color: var(--muted); line-height: 1.6; word-break: break-word;">${item.notes}</p>` : ''}
             </div>
-          </div>
-        `).join('');
-      } else {
+          `).join('');
+        } else {
+          section.style.display = 'none';
+        }
+      } catch (err) {
+        console.error('Error loading inventory from Supabase:', err);
         section.style.display = 'none';
       }
     });
   </script>
+
   <script src="script.js"></script>
   <script type="module" src="auth-nav.js"></script>
 </body>
