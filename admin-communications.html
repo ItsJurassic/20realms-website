@@ -183,26 +183,17 @@
 
     let optedInCount = 0;
 
-    function isOptedIn(signup) {
-      if (signup && typeof signup.email_updates_opt_in === 'boolean') {
-        return signup.email_updates_opt_in;
-      }
-      const interestText = (signup?.interest || '').toString().toLowerCase();
-      return interestText.includes('[optin:true]');
-    }
-
     async function loadOptInCount() {
       const { data, error } = await supabase
-        .from('beta_signups')
-        .select('email, interest, email_updates_opt_in');
+        .from('beta_email_signups')
+        .select('email');
 
       if (error) {
         return;
       }
 
-      const opted = (data || []).filter((entry) => isOptedIn(entry));
       optedInCount = new Set(
-        opted.map((entry) => (entry.email || '').trim().toLowerCase()).filter(Boolean)
+        (data || []).map((entry) => (entry.email || '').trim().toLowerCase()).filter(Boolean)
       ).size;
     }
 

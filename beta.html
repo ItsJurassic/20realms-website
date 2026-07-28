@@ -171,15 +171,15 @@
     const btn  = document.getElementById('beta-submit-btn');
     const statusEl = document.getElementById('beta-status');
 
-    async function triggerWelcomeEmail(record) {
-      const webhookResponse = await fetch('https://avcqqazytvvcfraowgsm.supabase.co/functions/v1/send-welcome-email', {
+    async function requestEmailVerification(record) {
+      const webhookResponse = await fetch('https://avcqqazytvvcfraowgsm.supabase.co/functions/v1/request-beta-email-verification', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0',
           'apikey': 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0'
         },
-        body: JSON.stringify({ record })
+        body: JSON.stringify(record)
       });
 
       let responseData = null;
@@ -235,30 +235,12 @@
 
       const { error } = await supabase.from('beta_signups').insert(payload);
       
-      // Trigger welcome email for opted-in users. If the opt-in table is unavailable,
-      // still send the email so signup flow remains functional.
+      // Opt-in now requires inbox verification via a tokenized email link.
       if (!error && emailOptIn) {
-        let emailRecord = { email: payload.email, name: payload.name };
-
         try {
-          const optinRecord = await supabase.from('beta_email_signups').insert({
-            email: payload.email,
-            opted_in_at: new Date().toISOString()
-          }).select();
-
-          if (!optinRecord.error && optinRecord.data && optinRecord.data.length > 0) {
-            emailRecord = optinRecord.data[0];
-          } else if (optinRecord.error) {
-            console.error('Email opt-in storage warning:', optinRecord.error);
-          }
-        } catch (err) {
-          console.error('Email opt-in storage warning:', err);
-        }
-
-        try {
-          await triggerWelcomeEmail(emailRecord);
+          await requestEmailVerification({ email: payload.email, name: payload.name });
         } catch (webhookErr) {
-          console.error('Email function call error:', webhookErr);
+          console.error('Verification email function call error:', webhookErr);
           emailTriggerFailed = true;
           emailTriggerError = webhookErr?.message || 'Email function request failed.';
         }
@@ -284,14 +266,15 @@
       } else {
         btn.style.display = 'none';
         if (emailOptIn && emailTriggerFailed) {
-          statusEl.textContent = `You're on the list, but we could not send the welcome email yet (${emailTriggerError}).`;
+          statusEl.textContent = `You're on the list, but we could not send the verification email yet (${emailTriggerError}).`;
           statusEl.style.color = '#f4c27a';
+        } else if (emailOptIn) {
+          statusEl.textContent = "You're on the list. Check your inbox and confirm your email to receive updates.";
+          statusEl.style.color = '#7ec49e';
         } else {
           statusEl.textContent = "You're on the list. We'll be in touch when beta testing opens.";
           statusEl.style.color = '#7ec49e';
         }
-
-        // Welcome email is triggered immediately above when opt-in is checked
       }
     });
   </script>

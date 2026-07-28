@@ -164,9 +164,7 @@ serve(async (request) => {
 
 function isOptedIn(signup: Signup, explicitOptIns: Set<string>) {
   const email = signup.email?.toLowerCase() || ""
-  return signup.email_updates_opt_in === true ||
-    explicitOptIns.has(email) ||
-    (signup.interest || "").toLowerCase().includes("[optin:true]")
+  return explicitOptIns.has(email)
 }
 
 function deduplicateRecipients(signups: Signup[]) {

@@ -22,7 +22,8 @@
       <a href="features.html">Features</a>
       <a href="vision.html">Vision</a>
       <a href="shop.html">Shop</a>
-      <a href="community.html">Community</a><a href="contact.html">Contact</a>
+      <a href="contact.html">Contact</a>
+      <a href="community.html" class="nav-player-icon" title="Community & Profile">👤</a>
     </nav>
   </header>
 
@@ -39,17 +40,33 @@
         <h2 id="beta-form-title">Tell us where you fit at the table.</h2>
         <p>Send a quick beta request and tell us where you want to play 20Realms when early testing opens: mobile, PC, console, or all three.</p>
       </div>
-      <form class="beta-form" id="beta-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <form class="beta-form" id="beta-form" novalidate>
         <input type="hidden" name="_replyto" value="">
         <input type="hidden" name="_subject" value="20Realms Beta Waitlist Request">
-        <label>
+
+        <!-- Shown to logged-out users -->
+        <label id="field-name">
           <span>Name</span>
           <input type="text" name="name" autocomplete="name" placeholder="Your adventuring name" required>
         </label>
-        <label>
+        <label id="field-email">
           <span>Email</span>
           <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
         </label>
+
+        <!-- Shown to logged-in users instead -->
+        <div id="field-account" style="display:none">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid rgba(247,239,226,0.18);border-radius:8px;background:rgba(255,250,240,0.04);margin-bottom:2px">
+            <div id="beta-avatar-initial" style="width:40px;height:40px;min-width:40px;border-radius:50%;border:1px solid rgba(247,239,226,0.18);background:linear-gradient(135deg,rgba(181,76,47,0.3),rgba(31,81,58,0.3));display:flex;align-items:center;justify-content:center;font-family:Fraunces,serif;font-size:1.1rem;font-weight:700;color:#fffaf0;overflow:hidden"></div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <span id="beta-account-name" style="font-weight:700;color:#f7efe2;font-size:0.95rem"></span>
+              <span id="beta-account-email" style="font-size:0.82rem;color:#c9beb0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
+            </div>
+          </div>
+          <input type="hidden" name="name" id="hidden-name">
+          <input type="hidden" name="email" id="hidden-email">
+        </div>
+
         <label>
           <span>I am mostly a</span>
           <select name="role" required>
@@ -63,6 +80,10 @@
           <span>What are you hoping to test?</span>
           <textarea name="interest" rows="3" placeholder="Maps, campaigns, homebrew tools, console play..."></textarea>
         </label>
+        <div class="email-optin-check">
+          <input type="checkbox" id="beta-email-optin" name="email_updates_opt_in" value="true">
+          <label for="beta-email-optin">Email me news and playtest updates</label>
+        </div>
         <button class="button primary" type="submit" id="beta-submit-btn">Request beta access</button>
         <p class="beta-note" id="beta-status"></p>
       </form>
@@ -110,43 +131,152 @@
   </footer>
 
   <script src="script.js"></script>
-  <script>
-    var form = document.getElementById('beta-form');
-    var btn = document.getElementById('beta-submit-btn');
-    var status = document.getElementById('beta-status');
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const supabase = createClient('https://avcqqazytvvcfraowgsm.supabase.co', 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0');
 
-    form.addEventListener('submit', function (e) {
+    // ── Pre-fill account info if logged in ───────────────────────────────────
+    const { data: { session } } = await supabase.auth.getSession();
+    let loggedInUser = null;
+    if (session) {
+      loggedInUser = session.user;
+      const username = loggedInUser.user_metadata?.username || loggedInUser.email.split('@')[0];
+      const avatarUrl = loggedInUser.user_metadata?.avatar_url;
+
+      document.getElementById('field-name').style.display = 'none';
+      document.getElementById('field-name').querySelector('input').removeAttribute('required');
+      document.getElementById('field-email').style.display = 'none';
+      document.getElementById('field-email').querySelector('input').removeAttribute('required');
+      document.getElementById('field-account').style.display = '';
+
+      document.getElementById('beta-account-name').textContent = username;
+      document.getElementById('beta-account-email').textContent = loggedInUser.email;
+      document.getElementById('hidden-name').value = username;
+      document.getElementById('hidden-email').value = loggedInUser.email;
+
+      const avatarEl = document.getElementById('beta-avatar-initial');
+      if (avatarUrl) {
+        const img = document.createElement('img');
+        img.src = avatarUrl;
+        img.alt = username;
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;display:block';
+        avatarEl.appendChild(img);
+      } else {
+        avatarEl.textContent = username.charAt(0).toUpperCase();
+      }
+    }
+
+    // ── Form submit → Supabase ────────────────────────────────────────────────
+    const form = document.getElementById('beta-form');
+    const btn  = document.getElementById('beta-submit-btn');
+    const statusEl = document.getElementById('beta-status');
+
+    async function requestEmailVerification(record) {
+      const webhookResponse = await fetch('https://avcqqazytvvcfraowgsm.supabase.co/functions/v1/request-beta-email-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0',
+          'apikey': 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0'
+        },
+        body: JSON.stringify(record)
+      });
+
+      let responseData = null;
+      try {
+        responseData = await webhookResponse.json();
+      } catch {
+        responseData = null;
+      }
+
+      if (!webhookResponse.ok) {
+        const detail = responseData?.details?.message || responseData?.error || `HTTP ${webhookResponse.status}`;
+        throw new Error(detail);
+      }
+
+      return responseData;
+    }
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+
       btn.disabled = true;
       btn.textContent = 'Submitting…';
-      status.textContent = '';
-      status.style.color = '';
+      statusEl.textContent = '';
 
-      var data = new FormData(form);
+      const data = new FormData(form);
+      const emailOptIn = document.getElementById('beta-email-optin')?.checked === true;
+      let emailTriggerFailed = false;
+      let emailTriggerError = '';
+      const normalizedEmail = (data.get('email') || '').toString().trim().toLowerCase();
+      const emailPattern = /^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$/i;
 
-      fetch(form.action, {
-        method: 'POST',
-        body: data,
-        headers: { 'Accept': 'application/json' }
-      }).then(function (res) {
-        if (res.ok) {
-          form.reset();
-          btn.style.display = 'none';
-          status.textContent = "You're on the list. We'll be in touch when beta testing opens.";
-          status.style.color = '#7ec49e';
-        } else {
-          btn.disabled = false;
-          btn.textContent = 'Request beta access';
-          status.textContent = 'Something went wrong. Please try again.';
-          status.style.color = '#f4937a';
-        }
-      }).catch(function () {
+      if (!emailPattern.test(normalizedEmail)) {
         btn.disabled = false;
         btn.textContent = 'Request beta access';
-        status.textContent = 'Could not connect. Check your internet and try again.';
-        status.style.color = '#f4937a';
-      });
+        statusEl.textContent = 'Please enter a valid email address.';
+        statusEl.style.color = '#f4937a';
+        return;
+      }
+
+      const rawInterest = data.get('interest') || '';
+      const interestWithOptIn = emailOptIn
+        ? `${rawInterest}${rawInterest ? '\n' : ''}[optin:true]`
+        : rawInterest;
+      
+      const payload = {
+        name:     data.get('name'),
+        email:    normalizedEmail,
+        role:     data.get('role'),
+        interest: interestWithOptIn || null,
+        user_id:  loggedInUser?.id || null
+      };
+
+      const { error } = await supabase.from('beta_signups').insert(payload);
+      
+      // Opt-in now requires inbox verification via a tokenized email link.
+      if (!error && emailOptIn) {
+        try {
+          await requestEmailVerification({ email: payload.email, name: payload.name });
+        } catch (webhookErr) {
+          console.error('Verification email function call error:', webhookErr);
+          emailTriggerFailed = true;
+          emailTriggerError = webhookErr?.message || 'Email function request failed.';
+        }
+      }
+
+      if (error) {
+        console.error(error);
+
+        // Duplicate email: enforce one signup per email.
+        if (error.code === '23505') {
+          statusEl.textContent = 'This email is already on the beta list.';
+          statusEl.style.color = '#f4937a';
+
+          btn.disabled = false;
+          btn.textContent = 'Request beta access';
+          return;
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'Request beta access';
+        statusEl.textContent = 'Something went wrong. Please try again.';
+        statusEl.style.color = '#f4937a';
+      } else {
+        btn.style.display = 'none';
+        if (emailOptIn && emailTriggerFailed) {
+          statusEl.textContent = `You're on the list, but we could not send the verification email yet (${emailTriggerError}).`;
+          statusEl.style.color = '#f4c27a';
+        } else if (emailOptIn) {
+          statusEl.textContent = "You're on the list. Check your inbox and confirm your email to receive updates.";
+          statusEl.style.color = '#7ec49e';
+        } else {
+          statusEl.textContent = "You're on the list. We'll be in touch when beta testing opens.";
+          statusEl.style.color = '#7ec49e';
+        }
+      }
     });
   </script>
-</body>
+  <script type="module" src="auth-nav.js"></script>
 </html>
