@@ -56,6 +56,14 @@
         <button type="submit">Publish Post</button>
         <div id="post-status" class="status-msg"></div>
       </form>
+
+      <div style="margin-top: 20px;">
+        <h3>Manage Published Posts</h3>
+        <div id="post-list" class="admin-list">
+          <div class="empty-state">Loading published posts...</div>
+        </div>
+        <div id="post-manage-status" class="status-msg"></div>
+      </div>
     </section>
 
     <section class="admin-card">
@@ -88,6 +96,8 @@
     const postTitle = document.getElementById('post-title');
     const postContent = document.getElementById('post-content');
     const postStatus = document.getElementById('post-status');
+    const postList = document.getElementById('post-list');
+    const postManageStatus = document.getElementById('post-manage-status');
 
     const campaignForm = document.getElementById('campaign-form');
     const campaignSubject = document.getElementById('campaign-subject');
@@ -104,6 +114,71 @@
       element.textContent = message;
       element.classList.remove('success', 'error');
       if (type) element.classList.add(type);
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    async function loadPosts() {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('id, category, title, created_at')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        postList.innerHTML = `<div class="empty-state">Error loading posts: ${escapeHtml(error.message)}</div>`;
+        return;
+      }
+
+      if (!data || !data.length) {
+        postList.innerHTML = '<div class="empty-state">No published posts yet.</div>';
+        return;
+      }
+
+      postList.innerHTML = data.map((post) => {
+        const date = post.created_at
+          ? new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : 'Unknown date';
+
+        return `
+          <div class="admin-item">
+            <div style="flex: 1; min-width: 0;">
+              <strong>${escapeHtml(post.title)}</strong>
+              <small>${escapeHtml(post.category || 'Updates')} • ${escapeHtml(date)}</small>
+            </div>
+            <button class="delete-btn delete-post-btn" data-id="${escapeHtml(post.id)}">Delete</button>
+          </div>
+        `;
+      }).join('');
+
+      postList.querySelectorAll('.delete-post-btn').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const postId = button.dataset.id;
+          if (!postId) return;
+          if (!confirm('Delete this post from updates?')) return;
+
+          button.disabled = true;
+          const { error: deleteError } = await supabase
+            .from('posts')
+            .delete()
+            .eq('id', postId);
+
+          if (deleteError) {
+            setStatus(postManageStatus, deleteError.message, 'error');
+            button.disabled = false;
+            return;
+          }
+
+          setStatus(postManageStatus, 'Post deleted.', 'success');
+          await loadPosts();
+        });
+      });
     }
 
     let optedInCount = 0;
@@ -149,6 +224,7 @@
 
       postForm.reset();
       setStatus(postStatus, 'Post published to 20Realms updates.', 'success');
+      await loadPosts();
     });
 
     campaignForm.addEventListener('submit', async (event) => {
@@ -198,6 +274,7 @@
       }
     });
 
+    await loadPosts();
     await loadOptInCount();
   </script>
 </body>
