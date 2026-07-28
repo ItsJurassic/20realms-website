@@ -84,6 +84,7 @@
 
       const section = document.getElementById('staged-products-section');
       const list = document.getElementById('staged-products-list');
+      const shopCallout = document.querySelector('.shop-callout');
       const categoryLinks = document.querySelectorAll('.shop-sidebar-nav a');
 
       let allItems = [];
@@ -102,8 +103,11 @@
       function renderFilteredItems(category) {
         if (!allItems || allItems.length === 0) {
           section.style.display = 'none';
+          if (shopCallout) shopCallout.style.display = 'block';
           return;
         }
+
+        if (shopCallout) shopCallout.style.display = 'none';
 
         // Filter item based on selected category (matches exactly or fuzzy category matches)
         const filtered = allItems.filter(item => {
@@ -168,16 +172,19 @@
 
         if (inventory && inventory.length > 0) {
           allItems = inventory;
+          if (shopCallout) shopCallout.style.display = 'none';
           // Initially filter by active category (Apparel is active first)
           const activeSidebar = document.querySelector('.shop-sidebar-nav a.active');
           const defaultCategory = activeSidebar ? activeSidebar.getAttribute('data-category') : 'Apparel';
           renderFilteredItems(defaultCategory);
         } else {
           section.style.display = 'none';
+          if (shopCallout) shopCallout.style.display = 'block';
         }
       } catch (err) {
         console.error('Error loading inventory from Supabase:', err);
         section.style.display = 'none';
+        if (shopCallout) shopCallout.style.display = 'block';
       }
     });
   </script>
