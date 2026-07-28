@@ -1467,6 +1467,13 @@ h3 {
     gap: 10px;
     font-size: 0.86rem;
   }
+  h1 {
+    font-size: 3rem;
+  }
+
+  .button {
+    width: 100%;
+  }
 
 
   @media (min-width: 1200px) {
@@ -1499,14 +1506,6 @@ h3 {
       font-size: clamp(1.6rem, 2.2vw, 2.6rem);
     }
   }
-  h1 {
-    font-size: 3rem;
-  }
-
-  .button {
-    width: 100%;
-  }
-
   .beta-form .button {
     width: 100%;
   }
