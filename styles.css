@@ -999,7 +999,7 @@ h3 {
 }
 
 .staged-item-image-wrap {
-  aspect-ratio: 16/10;
+  aspect-ratio: 1/1;
   width: 100%;
   border-bottom: 1px solid var(--line);
   background: rgba(255, 250, 240, 0.02);
@@ -1027,31 +1027,31 @@ h3 {
 }
 
 .staged-item-content {
-  padding: 24px;
+  padding: 14px 16px 16px;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  gap: 12px;
+  gap: 8px;
 }
 
 .staged-item-header {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: baseline;
   gap: 12px;
 }
 
 .staged-item-title {
   font-family: 'Fraunces', serif;
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.15rem;
   color: var(--cream);
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 .staged-item-price {
   font-family: 'Fraunces', serif;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--gold);
   white-space: nowrap;

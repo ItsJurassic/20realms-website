@@ -127,10 +127,6 @@
         if (filtered.length > 0) {
           section.style.display = 'block';
           list.innerHTML = filtered.map(item => {
-            let badgeClass = 'coming-soon';
-            if (item.stock === 'In stock') badgeClass = 'in-stock';
-            else if (item.stock === 'Limited') badgeClass = 'limited';
-
             return `
               <div class="staged-item-card">
                 ${item.photo ? `
@@ -147,8 +143,6 @@
                     <h3 class="staged-item-title">${item.name}</h3>
                     <span class="staged-item-price">${item.price}</span>
                   </div>
-                  <span class="staged-item-badge ${badgeClass}">${item.stock}</span>
-                  ${item.notes ? `<p class="staged-item-notes">${item.notes}</p>` : ''}
                 </div>
               </div>
             `;
