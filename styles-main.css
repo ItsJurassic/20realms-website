@@ -729,7 +729,7 @@ h3 {
 }
 
 .support-header {
-  margin-bottom: 34px;
+  margin-bottom: 48px;
 }
 
 .support-header h2 {
@@ -741,11 +741,12 @@ h3 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
+  margin-top: 6px;
 }
 
 .support-card {
   display: grid;
-  gap: 10px;
+  gap: 14px;
   padding: 24px;
   text-align: center;
   border: 1px solid var(--line);
