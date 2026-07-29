@@ -1260,14 +1260,11 @@ h3 {
 }
 
 .product-shell {
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background:
-    radial-gradient(circle at 14% 12%, rgba(217, 164, 65, 0.06), transparent 36%),
-    linear-gradient(160deg, rgba(255, 250, 240, 0.05), rgba(255, 250, 240, 0.01)),
-    rgba(11, 15, 22, 0.86);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.24);
-  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
 }
 
 .product-layout {
