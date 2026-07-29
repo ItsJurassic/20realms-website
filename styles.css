@@ -648,7 +648,6 @@ h3 {
   display: flex;
   width: 100%;
   transition: transform 320ms ease;
-  will-change: transform;
 }
 
 .roadmap-bubble {
@@ -661,12 +660,8 @@ h3 {
   border-radius: 34px;
   overflow: hidden;
   box-sizing: border-box;
-  background: linear-gradient(170deg, rgba(30, 34, 42, 0.94), rgba(18, 22, 30, 0.94));
-  box-shadow:
-    0 14px 30px rgba(0, 0, 0, 0.18),
-    0 0 0 1px rgba(247, 239, 226, 0.08);
-  backface-visibility: hidden;
-  transform: translateZ(0);
+  background: rgba(24, 29, 39, 0.96);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
 }
 
 .roadmap-bubble.active {
