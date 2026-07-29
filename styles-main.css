@@ -729,11 +729,12 @@ h3 {
 }
 
 .support-header {
-  margin-bottom: 24px;
+  margin-bottom: 34px;
 }
 
 .support-header h2 {
   max-width: 720px;
+  line-height: 1.08;
 }
 
 .support-grid {
