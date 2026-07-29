@@ -600,6 +600,65 @@ h3 {
   font-size: 1.1rem;
 }
 
+.roadmap-header {
+  margin-bottom: 24px;
+}
+
+.roadmap-header h2 {
+  max-width: 760px;
+}
+
+.roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.roadmap-item {
+  position: relative;
+  padding: 22px 22px 22px 26px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 10% 18%, rgba(217, 164, 65, 0.1), transparent 26%),
+    linear-gradient(170deg, rgba(255, 250, 240, 0.08), rgba(255, 250, 240, 0.03)),
+    rgba(11, 15, 22, 0.72);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.16);
+}
+
+.roadmap-item::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 18px;
+  bottom: 18px;
+  width: 2px;
+  background: linear-gradient(180deg, rgba(217, 164, 65, 0.9), rgba(181, 76, 47, 0.78));
+  border-radius: 999px;
+}
+
+.roadmap-meta {
+  margin: 0 0 12px;
+  color: var(--gold);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.roadmap-item h3 {
+  margin: 0 0 10px;
+  font-family: "Fraunces", serif;
+  font-size: 1.35rem;
+  line-height: 1.15;
+}
+
+.roadmap-item p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 .page-hero.features h1,
 .page-hero.features > p:not(.eyebrow) {
   max-width: 600px;
@@ -1459,6 +1518,10 @@ h3 {
   .split,
   .beta-signup,
   .updates-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .roadmap-grid {
     grid-template-columns: 1fr;
   }
 
