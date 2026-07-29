@@ -1150,6 +1150,16 @@ h3 {
   border-color: var(--gold);
 }
 
+.staged-item-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.staged-item-link:focus-visible {
+  outline: 2px solid rgba(217, 164, 65, 0.45);
+  outline-offset: 2px;
+}
+
 .staged-item-image-wrap {
   aspect-ratio: 1/1;
   width: 100%;
@@ -1228,6 +1238,109 @@ h3 {
   margin: 0 auto 28px;
   color: var(--muted);
   line-height: 1.8;
+}
+
+.product-main {
+  width: min(1120px, calc(100% - 32px));
+  margin: 64px auto 96px;
+}
+
+.product-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 22px;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--muted);
+}
+
+.product-back-link:hover {
+  color: var(--cream);
+}
+
+.product-shell {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 14% 12%, rgba(217, 164, 65, 0.06), transparent 36%),
+    linear-gradient(160deg, rgba(255, 250, 240, 0.05), rgba(255, 250, 240, 0.01)),
+    rgba(11, 15, 22, 0.86);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.24);
+  overflow: hidden;
+}
+
+.product-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr);
+  gap: 0;
+}
+
+.product-image-panel {
+  min-height: 420px;
+  background: rgba(255, 250, 240, 0.02);
+  border-right: 1px solid var(--line);
+}
+
+.product-image-panel img {
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  object-fit: cover;
+  display: block;
+}
+
+.product-image-placeholder {
+  min-height: 420px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.product-info {
+  padding: clamp(24px, 4vw, 40px);
+}
+
+.product-title {
+  margin: 8px 0 14px;
+  font-family: "Fraunces", serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.05;
+}
+
+.product-price {
+  margin: 0 0 18px;
+  font-family: "Fraunces", serif;
+  font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+  color: var(--gold);
+}
+
+.product-meta {
+  margin: 0 0 16px;
+  color: var(--muted);
+}
+
+.product-description {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.product-empty {
+  text-align: center;
+  padding: clamp(40px, 7vw, 84px) clamp(20px, 4vw, 32px);
+}
+
+@media (max-width: 920px) {
+  .product-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .product-image-panel {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
 }
 
 .updates-grid {

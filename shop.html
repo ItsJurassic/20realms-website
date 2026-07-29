@@ -206,8 +206,9 @@
         if (sorted.length > 0) {
           section.style.display = 'block';
           list.innerHTML = sorted.map(item => {
+            const productHref = `product.html?id=${encodeURIComponent(item.id ?? '')}&name=${encodeURIComponent(item.name ?? '')}`;
             return `
-              <div class="staged-item-card">
+              <a class="staged-item-card staged-item-link" href="${productHref}" aria-label="View ${item.name}">
                 ${item.photo ? `
                   <div class="staged-item-image-wrap">
                     <img src="${item.photo}" alt="${item.name}">
@@ -223,7 +224,7 @@
                     <span class="staged-item-price">${formatDisplayPrice(item.price)}</span>
                   </div>
                 </div>
-              </div>
+              </a>
             `;
           }).join('');
         } else {

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="View product details in the 20Realms shop.">
+  <title>Product | 20Realms</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="shop-page-body">
+  <header class="site-header">
+    <div class="brand-group">
+      <a class="brand" href="index.html" aria-label="Home">20Realms</a>
+      <a class="home-link" href="index.html">Home</a>
+    </div>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="updates.html">Updates</a>
+      <a href="beta.html">Beta Access</a>
+      <a href="features.html">Features</a>
+      <a href="vision.html">Vision</a>
+      <a href="shop.html" aria-current="page">Shop</a>
+      <a href="contact.html">Contact</a>
+      <a href="community.html" class="nav-player-icon" title="Community & Profile">👤</a>
+    </nav>
+  </header>
+
+  <main class="product-main" id="product-main">
+    <a class="product-back-link" href="shop.html">&#8592; Back to shop</a>
+
+    <section class="product-shell" id="product-shell" aria-live="polite">
+      <div class="product-empty">
+        <p class="eyebrow">Loading</p>
+        <h1 class="product-title">Loading product details...</h1>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-branding">
+      <strong>20Realms</strong>
+      <span>&copy; <span id="year"></span> 20Realms</span>
+      <span>Mobile, PC, and console.</span>
+    </div>
+    <nav class="footer-links" aria-label="Footer links">
+      <a href="vision.html">About</a><a href="shop.html">Shop</a><a href="accessibility.html">Accessibility</a>
+      <a href="help.html">Help</a><a href="https://www.reddit.com/r/20Realms/">Forums</a><a href="legal.html">Legal &amp; Privacy</a>
+      <a href="user-agreement.html">User Agreement</a><a href="privacy-cookies.html">Privacy &amp; Cookie Policy</a><a href="security.html">Security</a>
+    </nav>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const SUPABASE_URL = 'https://avcqqazytvvcfraowgsm.supabase.co';
+      const SUPABASE_ANON = 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0';
+      const shell = document.getElementById('product-shell');
+      const params = new URLSearchParams(window.location.search);
+      const productId = params.get('id') || '';
+      const productName = params.get('name') || '';
+
+      function parsePrice(value) {
+        const normalized = String(value || '').replace(/[^\d.-]/g, '');
+        const parsed = Number.parseFloat(normalized);
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+
+      function formatDisplayPrice(value) {
+        const raw = String(value || '').trim();
+        if (!raw) return '$0.00';
+        if (/^\$/.test(raw)) return raw;
+        if (/^usd\b/i.test(raw)) return raw.replace(/^usd\b\s*/i, '$');
+
+        const parsed = parsePrice(raw);
+        if (Number.isFinite(parsed)) {
+          return `$${parsed.toFixed(2)}`;
+        }
+
+        return raw;
+      }
+
+      function escapeHtml(value) {
+        return String(value || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/\"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function renderMissing() {
+        shell.innerHTML = `
+          <div class="product-empty">
+            <p class="eyebrow">Not found</p>
+            <h1 class="product-title">Product not found</h1>
+            <p class="product-description">This listing may have been removed or moved.</p>
+          </div>
+        `;
+      }
+
+      function renderProduct(item) {
+        const name = escapeHtml(item.name || 'Unnamed product');
+        const price = escapeHtml(formatDisplayPrice(item.price));
+        const category = escapeHtml(item.category || 'Uncategorized');
+        const notes = escapeHtml(item.notes || item.description || 'No additional details yet.');
+        const photo = item.photo ? escapeHtml(item.photo) : '';
+
+        document.title = `${name} | 20Realms`;
+
+        shell.innerHTML = `
+          <div class="product-layout">
+            <div class="product-image-panel">
+              ${photo
+                ? `<img src="${photo}" alt="${name}">`
+                : '<div class="product-image-placeholder">No Photo Available</div>'}
+            </div>
+            <div class="product-info">
+              <p class="eyebrow">${category}</p>
+              <h1 class="product-title">${name}</h1>
+              <p class="product-price">${price}</p>
+              <p class="product-meta">Staged merchandise listing</p>
+              <p class="product-description">${notes}</p>
+            </div>
+          </div>
+        `;
+      }
+
+      if (!productId && !productName) {
+        renderMissing();
+        return;
+      }
+
+      try {
+        const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+        let item = null;
+
+        if (productId) {
+          const { data, error } = await supabase
+            .from('shop_inventory')
+            .select('*')
+            .eq('id', productId)
+            .limit(1);
+
+          if (error) throw error;
+          item = data && data.length > 0 ? data[0] : null;
+        }
+
+        if (!item && productName) {
+          const { data, error } = await supabase
+            .from('shop_inventory')
+            .select('*')
+            .ilike('name', productName)
+            .limit(1);
+
+          if (error) throw error;
+          item = data && data.length > 0 ? data[0] : null;
+        }
+
+        if (!item) {
+          renderMissing();
+          return;
+        }
+
+        renderProduct(item);
+      } catch (err) {
+        console.error('Error loading product detail:', err);
+        shell.innerHTML = `
+          <div class="product-empty">
+            <p class="eyebrow">Error</p>
+            <h1 class="product-title">Unable to load product</h1>
+            <p class="product-description">Please try again in a moment.</p>
+          </div>
+        `;
+      }
+    });
+  </script>
+
+  <script src="script.js"></script>
+  <script type="module" src="auth-nav.js"></script>
+</body>
+</html>
