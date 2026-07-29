@@ -47,30 +47,43 @@
         <h2 id="roadmap-title">The path to launch and beyond</h2>
       </div>
 
-      <div class="roadmap-grid">
-        <article class="roadmap-item">
-          <p class="roadmap-meta">Phase 1 • In progress</p>
-          <h3>Core foundation</h3>
-          <p>Finalize account systems, cross-platform sessions, and stable board tools for mobile, PC, and console.</p>
-        </article>
+      <div class="roadmap-stage" aria-label="Roadmap navigation">
+        <button class="roadmap-arrow" type="button" id="roadmap-prev" aria-label="Previous roadmap goal">&#8592;</button>
 
-        <article class="roadmap-item">
-          <p class="roadmap-meta">Phase 2 • Next up</p>
-          <h3>World and encounter builder</h3>
-          <p>Expand map editing, encounter setup, and campaign content workflows so groups can run custom worlds faster.</p>
-        </article>
+        <div class="roadmap-bubble-deck" id="roadmap-deck">
+          <article class="roadmap-bubble active" data-roadmap-index="0">
+            <p class="roadmap-meta">Phase 1 • In progress</p>
+            <h3>Core foundation</h3>
+            <p>Finalize account systems, cross-platform sessions, and stable board tools for mobile, PC, and console.</p>
+          </article>
 
-        <article class="roadmap-item">
-          <p class="roadmap-meta">Phase 3 • Planned</p>
-          <h3>Reactive gameplay systems</h3>
-          <p>Ship deeper environmental interactions, survival mechanics, and optional automation that still keeps DM control first.</p>
-        </article>
+          <article class="roadmap-bubble" data-roadmap-index="1">
+            <p class="roadmap-meta">Phase 2 • Next up</p>
+            <h3>World and encounter builder</h3>
+            <p>Expand map editing, encounter setup, and campaign content workflows so groups can run custom worlds faster.</p>
+          </article>
 
-        <article class="roadmap-item">
-          <p class="roadmap-meta">Phase 4 • Vision</p>
-          <h3>Live service expansion</h3>
-          <p>Grow social play features, creator content support, and continuous quality updates guided by community feedback.</p>
-        </article>
+          <article class="roadmap-bubble" data-roadmap-index="2">
+            <p class="roadmap-meta">Phase 3 • Planned</p>
+            <h3>Reactive gameplay systems</h3>
+            <p>Ship deeper environmental interactions, survival mechanics, and optional automation that still keeps DM control first.</p>
+          </article>
+
+          <article class="roadmap-bubble" data-roadmap-index="3">
+            <p class="roadmap-meta">Phase 4 • Vision</p>
+            <h3>Live service expansion</h3>
+            <p>Grow social play features, creator content support, and continuous quality updates guided by community feedback.</p>
+          </article>
+        </div>
+
+        <button class="roadmap-arrow" type="button" id="roadmap-next" aria-label="Next roadmap goal">&#8594;</button>
+      </div>
+
+      <div class="roadmap-dots" role="tablist" aria-label="Roadmap steps">
+        <button class="roadmap-dot active" type="button" data-roadmap-go="0" aria-label="Show roadmap phase 1" aria-pressed="true"></button>
+        <button class="roadmap-dot" type="button" data-roadmap-go="1" aria-label="Show roadmap phase 2" aria-pressed="false"></button>
+        <button class="roadmap-dot" type="button" data-roadmap-go="2" aria-label="Show roadmap phase 3" aria-pressed="false"></button>
+        <button class="roadmap-dot" type="button" data-roadmap-go="3" aria-label="Show roadmap phase 4" aria-pressed="false"></button>
       </div>
     </section>
   </main>
@@ -116,5 +129,38 @@
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    const roadmapBubbles = Array.from(document.querySelectorAll('.roadmap-bubble'));
+    const roadmapDots = Array.from(document.querySelectorAll('.roadmap-dot'));
+    const roadmapPrev = document.getElementById('roadmap-prev');
+    const roadmapNext = document.getElementById('roadmap-next');
+    let roadmapIndex = 0;
+
+    function updateRoadmap(index) {
+      roadmapIndex = Math.max(0, Math.min(index, roadmapBubbles.length - 1));
+
+      roadmapBubbles.forEach((bubble, bubbleIndex) => {
+        bubble.classList.toggle('active', bubbleIndex === roadmapIndex);
+      });
+
+      roadmapDots.forEach((dot, dotIndex) => {
+        const isActive = dotIndex === roadmapIndex;
+        dot.classList.toggle('active', isActive);
+        dot.setAttribute('aria-pressed', String(isActive));
+      });
+
+      roadmapPrev.disabled = roadmapIndex === 0;
+      roadmapNext.disabled = roadmapIndex === roadmapBubbles.length - 1;
+    }
+
+    roadmapPrev.addEventListener('click', () => updateRoadmap(roadmapIndex - 1));
+    roadmapNext.addEventListener('click', () => updateRoadmap(roadmapIndex + 1));
+
+    roadmapDots.forEach((dot, dotIndex) => {
+      dot.addEventListener('click', () => updateRoadmap(dotIndex));
+    });
+
+    updateRoadmap(0);
+  </script>
 </body>
 </html>
