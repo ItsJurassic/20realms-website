@@ -101,87 +101,51 @@
         <div class="roadmap-bubble-deck" id="roadmap-deck">
           <div class="roadmap-bubble-track" id="roadmap-track">
             <article class="roadmap-bubble active" data-roadmap-index="0">
-              <p class="roadmap-meta">Phase 1 • Title</p>
-              <h3>20Realms Game Development Roadmap</h3>
-              <p>5e-compatible build plan with beta target in November 2026 and full launch target in Summer 2027.</p>
+              <p class="roadmap-meta">Phase 1 • Technical foundation</p>
+              <h3>Accounts, rules data, and telemetry</h3>
+              <p>Finalize architecture for accounts, characters, campaigns, encounters, and maps, while implementing secure auth, role permissions, and KPI telemetry models.</p>
             </article>
 
             <article class="roadmap-bubble" data-roadmap-index="1">
-              <p class="roadmap-meta">Phase 2 • Vision and outcomes</p>
-              <h3>Stable platform with KPI iteration</h3>
-              <p>Build a stable digital tabletop RPG platform end-to-end, keep mechanics 5e-compatible with open-license content, and iterate from beta using KPI data.</p>
+              <p class="roadmap-meta">Phase 2 • Character core</p>
+              <h3>Creator and sheet v1</h3>
+              <p>Deliver character creation and sheet systems with validation for HP, AC, initiative, saves, proficiency scaling, and versioned save/import flows.</p>
             </article>
 
             <article class="roadmap-bubble" data-roadmap-index="2">
-              <p class="roadmap-meta">Phase 3 • 5e compatibility guardrails</p>
-              <h3>Core rules consistency</h3>
-              <p>Preserve standard 5e math and action economy, consistently implement conditions and saves, and keep all rules content SRD/open-license/original only.</p>
+              <p class="roadmap-meta">Phase 3 • Campaign + session core</p>
+              <h3>DM workspace and table flow</h3>
+              <p>Ship campaign tools, party management, notes, lore, and reusable encounter prep with shared handouts, access controls, and consistent session state handling.</p>
             </article>
 
             <article class="roadmap-bubble" data-roadmap-index="3">
-              <p class="roadmap-meta">Phase 4 • Technical foundation</p>
-              <h3>Architecture, permissions, and schemas</h3>
-              <p>Finalize architecture for accounts, characters, campaigns, encounters, and maps, implement secure auth and audit controls, and define rules/content schemas.</p>
+              <p class="roadmap-meta">Phase 4 • Combat engine</p>
+              <h3>Initiative, resolution, and conditions</h3>
+              <p>Implement turn-state management, attack and save resolution, condition and concentration tracking, rest refresh logic, and multiplayer-safe combat logs.</p>
             </article>
 
             <article class="roadmap-bubble" data-roadmap-index="4">
-              <p class="roadmap-meta">Phase 5 • Character core</p>
-              <h3>Character creator and sheet v1</h3>
-              <p>Deliver class/species/background setup, derived stats, inventory hooks, and validation for HP, AC, initiative, saves, proficiency, and level scaling.</p>
+              <p class="roadmap-meta">Phase 5 • Rules content</p>
+              <h3>Spells, equipment, and policy-safe content</h3>
+              <p>Build spellcasting and equipment rules handling with a publishing pipeline that stays SRD/open-license/original only.</p>
             </article>
 
             <article class="roadmap-bubble" data-roadmap-index="5">
-              <p class="roadmap-meta">Phase 6 • Campaign and session core</p>
-              <h3>Party flow and DM prep</h3>
-              <p>Ship campaign creation, party management, lore and notes tools, reusable encounter templates, shared handouts, and stable session state handling.</p>
+              <p class="roadmap-meta">Phase 6 • Worldbuilding</p>
+              <h3>Maps and Creator Lab</h3>
+              <p>Expand map editing, lore-linked worldbuilding modules, and Creator Lab workflows for upload, attribution, moderation, and homebrew sharing controls.</p>
             </article>
 
             <article class="roadmap-bubble" data-roadmap-index="6">
-              <p class="roadmap-meta">Phase 7 • Combat and encounter engine</p>
-              <h3>Turn-state and resolution logic</h3>
-              <p>Implement initiative tracking, attack/damage/save resolution, conditions and concentration logic, rest refresh systems, and multiplayer-safe combat event logging.</p>
+              <p class="roadmap-meta">Phase 7 • Multiplayer + safety</p>
+              <h3>Community systems before scale</h3>
+              <p>Deliver real-time sync resilience, discovery and creator profile features, abuse reporting, moderation tooling, and privacy hardening.</p>
             </article>
 
             <article class="roadmap-bubble" data-roadmap-index="7">
-              <p class="roadmap-meta">Phase 8 • Spells and equipment</p>
-              <h3>Rules content pipeline</h3>
-              <p>Build spellcasting systems, equipment proficiency handling, and a rules QA pipeline for consistent and legal-safe SRD/open-license/original publishing.</p>
-            </article>
-
-            <article class="roadmap-bubble" data-roadmap-index="8">
-              <p class="roadmap-meta">Phase 9 • Maps and Creator Lab</p>
-              <h3>Worldbuilding systems</h3>
-              <p>Deliver terrain, elevation, walls, lighting, token layers, lore-linked world modules, and Creator Lab workflows with moderation and reporting controls.</p>
-            </article>
-
-            <article class="roadmap-bubble" data-roadmap-index="9">
-              <p class="roadmap-meta">Phase 10 • Multiplayer and safety</p>
-              <h3>Community and moderation hardening</h3>
-              <p>Ship real-time session sync resilience, community discovery, creator profiles, moderation tooling, abuse reporting, and privacy/security hardening.</p>
-            </article>
-
-            <article class="roadmap-bubble" data-roadmap-index="10">
-              <p class="roadmap-meta">Phase 11 • QA and launch ops</p>
-              <h3>Closed beta and KPI patch cadence</h3>
-              <p>Run structured beta onboarding, triage issues weekly, track acquisition/conversion/retention/revenue KPIs, and execute a multi-channel support playbook.</p>
-            </article>
-
-            <article class="roadmap-bubble" data-roadmap-index="11">
-              <p class="roadmap-meta">Phase 12 • Milestones</p>
-              <h3>Release sequence</h3>
-              <p>Complete core and QA baseline, launch beta in November 2026, stabilize after beta, and target full launch in Summer 2027 with ongoing live operations.</p>
-            </article>
-
-            <article class="roadmap-bubble" data-roadmap-index="12">
-              <p class="roadmap-meta">Phase 13 • Build order</p>
-              <h3>First to last implementation path</h3>
-              <p>Build architecture first, then character systems, campaign/session flow, combat mechanics, rules content, worldbuilding, multiplayer safety, and live operations.</p>
-            </article>
-
-            <article class="roadmap-bubble" data-roadmap-index="13">
-              <p class="roadmap-meta">Phase 14 • Dependencies and risks</p>
-              <h3>Scope, legal, community, and platform controls</h3>
-              <p>Maintain SRD/open-license/original-only content policy, phase-gate advanced scope, prepare moderation before scale, and keep KPI strategy adaptable by platform.</p>
+              <p class="roadmap-meta">Phase 8 • Beta and launch ops</p>
+              <h3>Beta November 2026 • Full launch Summer 2027</h3>
+              <p>Run closed beta onboarding and weekly patch cadence, track KPI performance by channel, then stabilize and expand content for full release.</p>
             </article>
           </div>
         </div>
@@ -198,12 +162,6 @@
         <button class="roadmap-dot" type="button" data-roadmap-go="5" aria-label="Show roadmap phase 6" aria-pressed="false"></button>
         <button class="roadmap-dot" type="button" data-roadmap-go="6" aria-label="Show roadmap phase 7" aria-pressed="false"></button>
         <button class="roadmap-dot" type="button" data-roadmap-go="7" aria-label="Show roadmap phase 8" aria-pressed="false"></button>
-        <button class="roadmap-dot" type="button" data-roadmap-go="8" aria-label="Show roadmap phase 9" aria-pressed="false"></button>
-        <button class="roadmap-dot" type="button" data-roadmap-go="9" aria-label="Show roadmap phase 10" aria-pressed="false"></button>
-        <button class="roadmap-dot" type="button" data-roadmap-go="10" aria-label="Show roadmap phase 11" aria-pressed="false"></button>
-        <button class="roadmap-dot" type="button" data-roadmap-go="11" aria-label="Show roadmap phase 12" aria-pressed="false"></button>
-        <button class="roadmap-dot" type="button" data-roadmap-go="12" aria-label="Show roadmap phase 13" aria-pressed="false"></button>
-        <button class="roadmap-dot" type="button" data-roadmap-go="13" aria-label="Show roadmap phase 14" aria-pressed="false"></button>
       </div>
     </section>
   </main>
