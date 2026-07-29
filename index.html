@@ -170,25 +170,32 @@
     }
 
     // Filter functionality
-    document.addEventListener('DOMContentLoaded', function () {
-      const tabs = document.querySelectorAll('[data-update-filter]');
-      const cards = document.querySelectorAll('[data-update-type]');
+    const tabs = document.querySelectorAll('[data-update-filter]');
 
-      tabs.forEach(function (tab) {
-        tab.addEventListener('click', function () {
-          const filter = tab.dataset.updateFilter;
-          tabs.forEach(function (t) {
-            const active = t === tab;
-            t.classList.toggle('active', active);
-            t.setAttribute('aria-pressed', String(active));
-          });
-          cards.forEach(function (card) {
-            const shouldHide = filter !== 'all' && card.dataset.updateType !== filter;
-            card.classList.toggle('is-hidden', shouldHide);
-          });
+    function applyUpdateFilter(filter) {
+      const cards = document.querySelectorAll('[data-update-type]');
+      cards.forEach(function (card) {
+        const shouldHide = filter !== 'all' && card.dataset.updateType !== filter;
+        card.classList.toggle('is-hidden', shouldHide);
+      });
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        const filter = tab.dataset.updateFilter;
+        tabs.forEach(function (t) {
+          const active = t === tab;
+          t.classList.toggle('active', active);
+          t.setAttribute('aria-pressed', String(active));
         });
+        applyUpdateFilter(filter);
       });
     });
+
+    const activeTab = document.querySelector('[data-update-filter].active') || document.querySelector('[data-update-filter="all"]');
+    if (activeTab) {
+      applyUpdateFilter(activeTab.dataset.updateFilter || 'all');
+    }
   </script>
   <script type="module" src="auth-nav.js"></script>
 </body>

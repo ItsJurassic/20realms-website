@@ -119,23 +119,31 @@
 
   <script src="script.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var tabs = document.querySelectorAll('[data-update-filter]');
+    var tabs = document.querySelectorAll('[data-update-filter]');
+
+    function applyUpdateFilter(filter) {
       var cards = document.querySelectorAll('[data-update-type]');
-      tabs.forEach(function (tab) {
-        tab.addEventListener('click', function () {
-          var filter = tab.dataset.updateFilter;
-          tabs.forEach(function (t) {
-            var active = t === tab;
-            t.classList.toggle('active', active);
-            t.setAttribute('aria-pressed', String(active));
-          });
-          cards.forEach(function (card) {
-            card.classList.toggle('is-hidden', filter !== 'all' && card.dataset.updateType !== filter);
-          });
+      cards.forEach(function (card) {
+        card.classList.toggle('is-hidden', filter !== 'all' && card.dataset.updateType !== filter);
+      });
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var filter = tab.dataset.updateFilter;
+        tabs.forEach(function (t) {
+          var active = t === tab;
+          t.classList.toggle('active', active);
+          t.setAttribute('aria-pressed', String(active));
         });
+        applyUpdateFilter(filter);
       });
     });
+
+    var activeTab = document.querySelector('[data-update-filter].active') || document.querySelector('[data-update-filter="all"]');
+    if (activeTab) {
+      applyUpdateFilter(activeTab.dataset.updateFilter || 'all');
+    }
   </script>
 </body>
 </html>
