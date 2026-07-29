@@ -108,6 +108,20 @@
         return Number.isFinite(parsed) ? parsed : 0;
       }
 
+      function formatDisplayPrice(value) {
+        const raw = String(value || '').trim();
+        if (!raw) return '$0.00';
+        if (/^\$/.test(raw)) return raw;
+        if (/^usd\b/i.test(raw)) return raw.replace(/^usd\b\s*/i, '$');
+
+        const parsed = parsePrice(raw);
+        if (Number.isFinite(parsed)) {
+          return `$${parsed.toFixed(2)}`;
+        }
+
+        return raw;
+      }
+
       function getBestSellingScore(item) {
         const score = item.units_sold ?? item.sold_count ?? item.sales ?? item.best_selling ?? 0;
         return Number.isFinite(Number(score)) ? Number(score) : 0;
@@ -206,7 +220,7 @@
                 <div class="staged-item-content">
                   <div class="staged-item-header">
                     <h3 class="staged-item-title">${item.name}</h3>
-                    <span class="staged-item-price">${item.price}</span>
+                    <span class="staged-item-price">${formatDisplayPrice(item.price)}</span>
                   </div>
                 </div>
               </div>
