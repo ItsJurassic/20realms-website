@@ -656,14 +656,11 @@ h3 {
   display: block;
   position: relative;
   padding: 28px 34px;
-  border: 1px solid var(--line);
-  border-radius: 20px;
+  border: 1px solid rgba(247, 239, 226, 0.12);
+  border-radius: 34px;
   box-sizing: border-box;
-  background:
-    radial-gradient(circle at 16% 22%, rgba(217, 164, 65, 0.1), transparent 26%),
-    linear-gradient(170deg, rgba(255, 250, 240, 0.08), rgba(255, 250, 240, 0.03)),
-    rgba(11, 15, 22, 0.72);
-  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.16), inset 0 0 0 1px rgba(217, 164, 65, 0.08);
+  background: linear-gradient(170deg, rgba(30, 34, 42, 0.94), rgba(18, 22, 30, 0.94));
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
 }
 
 .roadmap-bubble.active {
@@ -1589,7 +1586,7 @@ h3 {
 
   .roadmap-bubble {
     padding: 22px 24px;
-    border-radius: 16px;
+    border-radius: 26px;
   }
 
   .updates-header {
