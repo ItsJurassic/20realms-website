@@ -657,7 +657,7 @@ h3 {
   position: relative;
   padding: 28px 34px;
   border: 1px solid var(--line);
-  border-radius: 46px;
+  border-radius: 20px;
   box-sizing: border-box;
   background:
     radial-gradient(circle at 16% 22%, rgba(217, 164, 65, 0.1), transparent 26%),
@@ -668,19 +668,6 @@ h3 {
 
 .roadmap-bubble.active {
   animation: rise 220ms ease;
-}
-
-.roadmap-bubble::after {
-  content: "";
-  position: absolute;
-  left: 40px;
-  bottom: -9px;
-  width: 20px;
-  height: 20px;
-  background: rgba(26, 22, 17, 0.95);
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  transform: rotate(45deg);
 }
 
 .roadmap-dots {
@@ -1602,11 +1589,7 @@ h3 {
 
   .roadmap-bubble {
     padding: 22px 24px;
-    border-radius: 28px;
-  }
-
-  .roadmap-bubble::after {
-    left: 26px;
+    border-radius: 16px;
   }
 
   .updates-header {
