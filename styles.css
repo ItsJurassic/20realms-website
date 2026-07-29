@@ -931,6 +931,36 @@ h3 {
   border-left-color: var(--gold);
 }
 
+.shop-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 22px;
+}
+
+.shop-toolbar label {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.shop-sort-select {
+  min-width: 220px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(11, 15, 22, 0.9);
+  color: var(--cream);
+  font: inherit;
+}
+
+.shop-sort-select:focus {
+  outline: 2px solid rgba(217, 164, 65, 0.4);
+  outline-offset: 1px;
+}
+
 .shop-content-area {
   display: flex;
   flex-direction: column;
@@ -976,6 +1006,16 @@ h3 {
 @media (max-width: 960px) {
   .staged-products-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .shop-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .shop-sort-select {
+    min-width: 0;
+    width: 100%;
   }
 }
 

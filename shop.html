@@ -51,6 +51,16 @@
         <section class="shop-staged-products" id="staged-products-section" style="display: none;">
           <p class="eyebrow">Staged Merchandise</p>
           <h2>Previews in the forge</h2>
+          <div class="shop-toolbar">
+            <label for="shop-sort-select">Sort by</label>
+            <select id="shop-sort-select" class="shop-sort-select">
+              <option value="best-selling">Best selling</option>
+              <option value="price-asc">Price ascending</option>
+              <option value="price-desc">Price descending</option>
+              <option value="name-asc">Name A-Z</option>
+              <option value="name-desc">Name Z-A</option>
+            </select>
+          </div>
           <div class="staged-products-grid" id="staged-products-list"></div>
         </section>
 
@@ -86,8 +96,51 @@
       const list = document.getElementById('staged-products-list');
       const shopCallout = document.querySelector('.shop-callout');
       const categoryLinks = document.querySelectorAll('.shop-sidebar-nav a');
+      const sortSelect = document.getElementById('shop-sort-select');
 
       let allItems = [];
+      let currentCategory = 'Apparel';
+      let currentSort = 'best-selling';
+
+      function parsePrice(value) {
+        const normalized = String(value || '').replace(/[^\d.-]/g, '');
+        const parsed = Number.parseFloat(normalized);
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+
+      function getBestSellingScore(item) {
+        const score = item.units_sold ?? item.sold_count ?? item.sales ?? item.best_selling ?? 0;
+        return Number.isFinite(Number(score)) ? Number(score) : 0;
+      }
+
+      function sortItems(items) {
+        const sorted = [...items];
+
+        switch (currentSort) {
+          case 'price-asc':
+            sorted.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+            break;
+          case 'price-desc':
+            sorted.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+            break;
+          case 'name-asc':
+            sorted.sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base' }));
+            break;
+          case 'name-desc':
+            sorted.sort((a, b) => String(b.name || '').localeCompare(String(a.name || ''), undefined, { sensitivity: 'base' }));
+            break;
+          case 'best-selling':
+          default:
+            sorted.sort((a, b) => {
+              const scoreDelta = getBestSellingScore(b) - getBestSellingScore(a);
+              if (scoreDelta !== 0) return scoreDelta;
+              return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+            });
+            break;
+        }
+
+        return sorted;
+      }
 
       // Add Category filtering functionality
       categoryLinks.forEach(link => {
@@ -96,9 +149,17 @@
           categoryLinks.forEach(l => l.classList.remove('active'));
           link.classList.add('active');
           const targetCategory = link.getAttribute('data-category');
+          currentCategory = targetCategory || 'Apparel';
           renderFilteredItems(targetCategory);
         });
       });
+
+      if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+          currentSort = sortSelect.value;
+          renderFilteredItems(currentCategory);
+        });
+      }
 
       function renderFilteredItems(category) {
         if (!allItems || allItems.length === 0) {
@@ -106,6 +167,8 @@
           if (shopCallout) shopCallout.style.display = 'block';
           return;
         }
+
+        currentCategory = category || currentCategory;
 
         if (shopCallout) shopCallout.style.display = 'none';
 
@@ -124,9 +187,11 @@
           return itemNotes.includes(targetCat) || itemName.includes(targetCat);
         });
 
-        if (filtered.length > 0) {
+        const sorted = sortItems(filtered);
+
+        if (sorted.length > 0) {
           section.style.display = 'block';
-          list.innerHTML = filtered.map(item => {
+          list.innerHTML = sorted.map(item => {
             return `
               <div class="staged-item-card">
                 ${item.photo ? `
@@ -148,7 +213,7 @@
             `;
           }).join('');
         } else {
-          list.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 48px 24px; border: 1px dashed var(--line); border-radius: 12px;">No items currently available in ${category}. Previews coming soon!</div>`;
+          list.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 48px 24px; border: 1px dashed var(--line); border-radius: 12px;">No items currently available in ${currentCategory}. Previews coming soon!</div>`;
           section.style.display = 'block';
         }
       }
@@ -170,6 +235,8 @@
           // Initially filter by active category (Apparel is active first)
           const activeSidebar = document.querySelector('.shop-sidebar-nav a.active');
           const defaultCategory = activeSidebar ? activeSidebar.getAttribute('data-category') : 'Apparel';
+          currentCategory = defaultCategory;
+          currentSort = sortSelect ? sortSelect.value : 'best-selling';
           renderFilteredItems(defaultCategory);
         } else {
           section.style.display = 'none';
