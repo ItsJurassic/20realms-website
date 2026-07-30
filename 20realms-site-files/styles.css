@@ -1799,6 +1799,17 @@ h3 {
     opacity: 0.16;
   }
 
+  .page-hero.updates-page::after {
+    top: auto;
+    left: 50%;
+    right: auto;
+    bottom: 30px;
+    width: 82px;
+    height: 82px;
+    transform: translateX(-50%);
+    opacity: 0.16;
+  }
+
   .page-hero.vision::after {
     display: block;
     top: auto;
