@@ -1791,12 +1791,15 @@ h3 {
   .page-hero.vision::after {
     display: block;
     top: auto;
-    bottom: 6px;
-    left: 50%;
+    bottom: 4px;
+    left: 14px;
     right: auto;
-    width: 176px;
-    height: 92px;
-    transform: translateX(-50%) rotate(28deg);
+    width: calc(100% - 28px);
+    height: 110px;
+    transform: rotate(28deg);
+    transform-origin: center;
+    background-size: contain;
+    background-position: center;
     opacity: 0.2;
   }
 
