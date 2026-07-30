@@ -1791,11 +1791,11 @@ h3 {
   .page-hero.vision::after {
     display: block;
     top: auto;
-    bottom: 4px;
+    bottom: -2px;
     left: 0;
     right: auto;
     width: 100%;
-    height: 110px;
+    height: 98px;
     transform: rotate(28deg);
     transform-origin: center;
     background-size: contain;
@@ -1804,7 +1804,7 @@ h3 {
   }
 
   .page-hero.vision {
-    padding-bottom: 152px;
+    padding-bottom: 118px;
   }
 
   .home-page-body .site-header,
