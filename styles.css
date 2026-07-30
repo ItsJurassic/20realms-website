@@ -1657,16 +1657,20 @@ h3 {
 
   .nav {
     width: 100%;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    flex-wrap: wrap;
+    overflow-x: visible;
     justify-content: flex-start;
     gap: 12px;
-    padding-bottom: 6px;
+    padding-bottom: 0;
   }
 
   .nav a {
     flex: 0 0 auto;
+  }
+
+  .nav-player-icon {
+    width: 24px;
+    height: 24px;
   }
 
   .footer-branding {
@@ -1759,6 +1763,30 @@ h3 {
 
   .page-hero.contact::after {
     display: none;
+  }
+
+  .page-hero.features::after,
+  .page-hero.updates-page::after,
+  .page-hero.contact::after {
+    display: block;
+    top: auto;
+    bottom: 14px;
+    right: 10px;
+    width: 130px;
+    height: 130px;
+    transform: none;
+    opacity: 0.34;
+  }
+
+  .page-hero.vision::after {
+    display: block;
+    top: auto;
+    bottom: 12px;
+    right: 8px;
+    width: 120px;
+    height: 120px;
+    transform: rotate(-28deg);
+    opacity: 0.34;
   }
 
   .home-page-body .site-header,
