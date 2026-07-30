@@ -1788,6 +1788,16 @@ h3 {
     opacity: 0.22;
   }
 
+  .page-hero.features::after {
+    top: 12px;
+    left: 10px;
+    right: auto;
+    bottom: auto;
+    width: 92px;
+    height: 92px;
+    opacity: 0.18;
+  }
+
   .page-hero.vision::after {
     display: block;
     top: auto;
