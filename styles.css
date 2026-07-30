@@ -1624,8 +1624,16 @@ h3 {
 
   .nav {
     width: 100%;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     justify-content: flex-start;
+    gap: 12px;
+    padding-bottom: 6px;
+  }
+
+  .nav a {
+    flex: 0 0 auto;
   }
 
   .footer-branding {
@@ -1680,7 +1688,8 @@ h3 {
   .feature-grid,
   .split,
   .beta-signup,
-  .updates-grid {
+  .updates-grid,
+  .support-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1719,9 +1728,45 @@ h3 {
     display: none;
   }
 
+  .home-page-body .site-header,
+  .shop-page-body .site-header {
+    position: static;
+    left: auto;
+    transform: none;
+    width: min(1120px, calc(100% - 24px));
+    padding-top: 14px;
+  }
+
+  .support-header {
+    margin-bottom: 24px;
+  }
+
+  .support-card {
+    text-align: left;
+    padding: 20px;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
 }
 
 @media (max-width: 460px) {
+  .site-header,
+  .site-footer,
+  .hero,
+  .section,
+  .page-hero,
+  .shop-hero,
+  .shop-main-layout,
+  .shop-staged-products,
+  .shop-callout,
+  .product-main,
+  .legal-content {
+    width: calc(100% - 24px);
+  }
+
   .nav {
     gap: 10px;
     font-size: 0.86rem;
@@ -1755,6 +1800,10 @@ h3 {
 
   .shop-hero-art {
     min-height: 330px;
+  }
+
+  .staged-products-grid {
+    grid-template-columns: 1fr;
   }
 
 }
