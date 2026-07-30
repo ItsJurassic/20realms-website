@@ -1789,7 +1789,7 @@ h3 {
   }
 
   .page-hero.features::after {
-    top: 12px;
+    top: 56px;
     left: auto;
     right: 10px;
     bottom: auto;
