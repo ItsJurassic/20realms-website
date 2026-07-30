@@ -127,6 +127,11 @@
         return Number.isFinite(Number(score)) ? Number(score) : 0;
       }
 
+      function isSeededTestListing(item) {
+        const name = String(item?.name || '').trim();
+        return /^(apparel|accessories|art|collaborations|clearance)\s+item\s+\d+$/i.test(name);
+      }
+
       function sortItems(items) {
         const sorted = [...items];
 
@@ -245,7 +250,15 @@
         if (error) throw error;
 
         if (inventory && inventory.length > 0) {
-          allItems = inventory;
+          // Hide seeded test inventory rows from the public storefront.
+          allItems = inventory.filter(item => !isSeededTestListing(item));
+
+          if (allItems.length === 0) {
+            section.style.display = 'none';
+            if (shopCallout) shopCallout.style.display = 'block';
+            return;
+          }
+
           if (shopCallout) shopCallout.style.display = 'none';
           // Initially filter by active category (Apparel is active first)
           const activeSidebar = document.querySelector('.shop-sidebar-nav a.active');
