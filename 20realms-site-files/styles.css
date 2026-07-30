@@ -717,20 +717,27 @@ h3 {
   max-width: 600px;
 }
 
+.page-hero.features,
+.page-hero.vision,
+.page-hero.updates-page,
+.page-hero.contact {
+  padding-bottom: 120px;
+}
+
 .page-hero.features::after {
-  top: 50%;
-  right: min(4vw, 44px);
-  bottom: auto;
-  transform: translateY(-50%);
-  width: clamp(210px, 24vw, 320px);
-  height: clamp(210px, 24vw, 320px);
+  top: auto;
+  right: 16px;
+  bottom: 12px;
+  transform: none;
+  width: clamp(140px, 18vw, 230px);
+  height: clamp(140px, 18vw, 230px);
   border: 0;
   border-radius: 0;
   background: url("assets/features-art.png") center / contain no-repeat;
   filter:
-    drop-shadow(0 1px 0 rgba(255, 250, 240, 0.65))
-    drop-shadow(0 18px 28px rgba(0, 0, 0, 0.42));
-  opacity: 0.98;
+    drop-shadow(0 1px 0 rgba(255, 250, 240, 0.45))
+    drop-shadow(0 12px 20px rgba(0, 0, 0, 0.36));
+  opacity: 0.28;
 }
 
 .page-hero.vision h1,
@@ -739,22 +746,22 @@ h3 {
 }
 
 .page-hero.vision::after {
-  top: 50%;
-  right: min(3vw, 32px);
-  bottom: auto;
-  width: clamp(260px, 30vw, 420px);
-  height: clamp(260px, 30vw, 420px);
+  top: auto;
+  right: 6px;
+  bottom: -8px;
+  width: clamp(150px, 20vw, 250px);
+  height: clamp(150px, 20vw, 250px);
   border: 0;
   border-radius: 0;
   background: url("assets/vision-sword.png") center / contain no-repeat;
   filter:
-    drop-shadow(0 1px 0 rgba(255, 250, 240, 0.95))
-    drop-shadow(1px 0 0 rgba(255, 250, 240, 0.95))
-    drop-shadow(0 -1px 0 rgba(255, 250, 240, 0.95))
-    drop-shadow(-1px 0 0 rgba(255, 250, 240, 0.95))
-    drop-shadow(0 18px 28px rgba(0, 0, 0, 0.42));
-  opacity: 0.98;
-  transform: translateY(-50%) rotate(-45deg);
+    drop-shadow(0 1px 0 rgba(255, 250, 240, 0.62))
+    drop-shadow(1px 0 0 rgba(255, 250, 240, 0.62))
+    drop-shadow(0 -1px 0 rgba(255, 250, 240, 0.62))
+    drop-shadow(-1px 0 0 rgba(255, 250, 240, 0.62))
+    drop-shadow(0 12px 20px rgba(0, 0, 0, 0.36));
+  opacity: 0.24;
+  transform: rotate(-24deg);
   transform-origin: center;
 }
 
@@ -764,19 +771,19 @@ h3 {
 }
 
 .page-hero.updates-page::after {
-  top: 50%;
-  right: min(4vw, 44px);
-  bottom: auto;
-  transform: translateY(-50%);
-  width: clamp(220px, 26vw, 350px);
-  height: clamp(220px, 26vw, 350px);
+  top: auto;
+  right: 14px;
+  bottom: 10px;
+  transform: none;
+  width: clamp(145px, 19vw, 240px);
+  height: clamp(145px, 19vw, 240px);
   border: 0;
   border-radius: 0;
   background: url("assets/updates-book.jpg") center / contain no-repeat;
   filter:
-    drop-shadow(0 1px 0 rgba(255, 250, 240, 0.55))
-    drop-shadow(0 18px 28px rgba(0, 0, 0, 0.42));
-  opacity: 0.98;
+    drop-shadow(0 1px 0 rgba(255, 250, 240, 0.4))
+    drop-shadow(0 12px 20px rgba(0, 0, 0, 0.36));
+  opacity: 0.26;
 }
 
 .contact {
@@ -784,45 +791,48 @@ h3 {
 }
 
 .page-hero.contact::after {
-  top: 54%;
-  right: clamp(36px, 7vw, 94px);
-  bottom: auto;
-  width: clamp(240px, 25vw, 340px);
-  height: clamp(240px, 25vw, 340px);
+  top: auto;
+  right: 14px;
+  bottom: 8px;
+  width: clamp(145px, 19vw, 230px);
+  height: clamp(145px, 19vw, 230px);
   border: 0;
   border-radius: 0;
   clip-path: none;
   background: url("assets/contact-d20.png") center / contain no-repeat;
   filter:
-    drop-shadow(0 1px 0 rgba(255, 250, 240, 0.55))
-    drop-shadow(0 18px 28px rgba(0, 0, 0, 0.42));
-  opacity: 0.97;
-  transform: translateY(-50%);
+    drop-shadow(0 1px 0 rgba(255, 250, 240, 0.4))
+    drop-shadow(0 12px 20px rgba(0, 0, 0, 0.36));
+  opacity: 0.24;
+  transform: none;
 }
 
 @media (max-width: 1100px) {
+  .page-hero.features,
+  .page-hero.vision,
+  .page-hero.updates-page,
+  .page-hero.contact {
+    padding-bottom: 104px;
+  }
+
   .page-hero.features::after {
-    right: 16px;
-    width: clamp(170px, 28vw, 260px);
-    height: clamp(170px, 28vw, 260px);
+    width: 150px;
+    height: 150px;
   }
 
   .page-hero.vision::after {
-    right: 10px;
-    width: clamp(210px, 32vw, 320px);
-    height: clamp(210px, 32vw, 320px);
+    width: 156px;
+    height: 156px;
   }
 
   .page-hero.updates-page::after {
-    right: 16px;
-    width: clamp(180px, 30vw, 280px);
-    height: clamp(180px, 30vw, 280px);
+    width: 150px;
+    height: 150px;
   }
 
   .page-hero.contact::after {
-    right: 16px;
-    width: clamp(200px, 31vw, 300px);
-    height: clamp(200px, 31vw, 300px);
+    width: 144px;
+    height: 144px;
   }
 }
 
@@ -1772,10 +1782,10 @@ h3 {
     top: auto;
     bottom: 14px;
     right: 10px;
-    width: 130px;
-    height: 130px;
+    width: 110px;
+    height: 110px;
     transform: none;
-    opacity: 0.34;
+    opacity: 0.22;
   }
 
   .page-hero.vision::after {
@@ -1783,10 +1793,10 @@ h3 {
     top: auto;
     bottom: 12px;
     right: 8px;
-    width: 120px;
-    height: 120px;
+    width: 102px;
+    height: 102px;
     transform: rotate(-28deg);
-    opacity: 0.34;
+    opacity: 0.2;
   }
 
   .home-page-body .site-header,
