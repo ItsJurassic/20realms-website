@@ -126,6 +126,29 @@
       line-height: 1.6;
       text-align: center;
     }
+    .email-optin-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: -2px;
+    }
+    .email-optin-check input {
+      width: 18px;
+      height: 18px;
+      min-height: 18px;
+      margin-top: 2px;
+      accent-color: var(--gold);
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+    .email-optin-check label {
+      margin: 0;
+      font-size: 0.84rem;
+      line-height: 1.5;
+      color: var(--muted);
+      font-weight: 600;
+      cursor: pointer;
+    }
     .panel-section {
       display: none;
     }
@@ -213,6 +236,10 @@
             Password
             <input type="password" id="signup-password" placeholder="8+ characters" autocomplete="new-password">
           </label>
+          <div class="email-optin-check">
+            <input type="checkbox" id="signup-email-optin" name="email_updates_opt_in" value="true">
+            <label for="signup-email-optin">Email me updates and news</label>
+          </div>
           <button class="button primary" id="btn-signup" type="button">Create account</button>
           <p class="auth-note">By creating an account you agree to the <a href="user-agreement.html" style="color:var(--muted);text-decoration:underline">User Agreement</a>.</p>
         </div>
@@ -309,6 +336,49 @@
       el.className = 'auth-msg ' + type;
     }
 
+    async function requestEmailVerification(record) {
+      const response = await fetch('https://avcqqazytvvcfraowgsm.supabase.co/functions/v1/request-beta-email-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0',
+          'apikey': 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0'
+        },
+        body: JSON.stringify(record)
+      });
+
+      const responseData = await response.json().catch(() => null);
+      if (!response.ok) {
+        const detail = responseData?.details?.message || responseData?.error || `HTTP ${response.status}`;
+        throw new Error(detail);
+      }
+
+      return responseData;
+    }
+
+    async function submitBetaSignup(payload) {
+      const response = await fetch('https://avcqqazytvvcfraowgsm.supabase.co/functions/v1/submit-beta-signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0',
+          'apikey': 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const responseData = await response.json().catch(() => null);
+      if (response.status === 409 || responseData?.duplicate || responseData?.error === 'duplicate' || responseData?.error === 'duplicate-email' || responseData?.error === 'duplicate-username') {
+        return responseData;
+      }
+
+      if (!response.ok) {
+        throw new Error(responseData?.error || `HTTP ${response.status}`);
+      }
+
+      return responseData;
+    }
+
     // Sign in
     document.getElementById('btn-signin').addEventListener('click', async () => {
       if (!configured) { showMsg('signin-msg', 'Auth is not configured yet. Add your Supabase keys.', 'error'); return; }
@@ -326,18 +396,55 @@
     document.getElementById('btn-signup').addEventListener('click', async () => {
       if (!configured) { showMsg('signup-msg', 'Auth is not configured yet. Add your Supabase keys.', 'error'); return; }
       const username = document.getElementById('signup-username').value.trim();
-      const email = document.getElementById('signup-email').value.trim();
+      const email = document.getElementById('signup-email').value.trim().toLowerCase();
       const password = document.getElementById('signup-password').value;
+      const emailOptIn = document.getElementById('signup-email-optin').checked;
       if (!username || !email || !password) { showMsg('signup-msg', 'Please fill in all fields.', 'error'); return; }
       if (password.length < 8) { showMsg('signup-msg', 'Password must be at least 8 characters.', 'error'); return; }
       const btn = document.getElementById('btn-signup');
       btn.textContent = 'Creating account…'; btn.disabled = true;
-      const { error } = await supabase.auth.signUp({
+      const { data: signUpData, error } = await supabase.auth.signUp({
         email, password,
-        options: { data: { username } }
+        options: { data: { username, email_updates_opt_in: emailOptIn } }
       });
       if (error) { showMsg('signup-msg', error.message, 'error'); btn.textContent = 'Create account'; btn.disabled = false; }
-      else showMsg('signup-msg', 'Account created! Check your email to confirm, then sign in.', 'success');
+      else {
+        let betaSignupMsg = '';
+
+        if (emailOptIn) {
+          const betaPayload = {
+            name: username,
+            email,
+            role: 'Player',
+            interest: '[optin:true]\n[source:community-signup]',
+            user_id: signUpData?.user?.id || null,
+            email_updates_opt_in: true
+          };
+
+          try {
+            const betaResult = await submitBetaSignup(betaPayload);
+
+            if (betaResult?.ok) {
+              try {
+                await requestEmailVerification({ email, name: username });
+                betaSignupMsg = ' You were also added to beta signup. Check your inbox to confirm update emails.';
+              } catch (verificationError) {
+                console.error('Beta verification email error:', verificationError);
+                betaSignupMsg = ' You were added to beta signup, but verification email could not be sent yet.';
+              }
+            } else if (betaResult?.duplicate || betaResult?.error === 'duplicate' || betaResult?.error === 'duplicate-email' || betaResult?.error === 'duplicate-username') {
+              betaSignupMsg = ' Your account exists, and this email or username is already on the beta list.';
+            }
+          } catch (betaSignupError) {
+            console.error('Beta signup creation error:', betaSignupError);
+            betaSignupMsg = ' Account created, but beta signup could not be recorded right now.';
+          }
+        }
+
+        showMsg('signup-msg', `Account created! Check your email to confirm, then sign in.${betaSignupMsg}`, 'success');
+        btn.textContent = 'Create account';
+        btn.disabled = false;
+      }
     });
 
     // Forgot password
