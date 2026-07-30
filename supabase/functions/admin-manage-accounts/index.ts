@@ -2,7 +2,6 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || ""
-const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || ""
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || ""
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -21,7 +20,7 @@ serve(async (request) => {
   }
 
   try {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !SUPABASE_SERVICE_ROLE_KEY) {
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
       return jsonResponse({ error: "Account management service is not configured" }, 500)
     }
 
@@ -29,22 +28,18 @@ serve(async (request) => {
     if (!authorization.startsWith("Bearer ")) {
       return jsonResponse({ error: "Authentication required" }, 401)
     }
+    const accessToken = authorization.replace("Bearer ", "").trim()
 
-    const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: { headers: { Authorization: authorization } },
+    const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
       auth: { persistSession: false },
     })
 
-    const { data: userData, error: userError } = await authClient.auth.getUser()
+    const { data: userData, error: userError } = await serviceClient.auth.getUser(accessToken)
     const user = userData.user
 
     if (userError || !user?.id || !user?.email) {
       return jsonResponse({ error: "Invalid session" }, 401)
     }
-
-    const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-      auth: { persistSession: false },
-    })
 
     const { data: adminRows, error: adminError } = await serviceClient
       .from("admin_users")
