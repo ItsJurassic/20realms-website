@@ -1789,13 +1789,13 @@ h3 {
   }
 
   .page-hero.features::after {
-    top: 56px;
+    top: 72px;
     left: auto;
-    right: 10px;
+    right: 18px;
     bottom: auto;
-    width: 92px;
-    height: 92px;
-    opacity: 0.18;
+    width: 82px;
+    height: 82px;
+    opacity: 0.16;
   }
 
   .page-hero.vision::after {
