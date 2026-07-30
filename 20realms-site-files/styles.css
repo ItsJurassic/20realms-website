@@ -1790,8 +1790,8 @@ h3 {
 
   .page-hero.features::after {
     top: 12px;
-    left: 10px;
-    right: auto;
+    left: auto;
+    right: 10px;
     bottom: auto;
     width: 92px;
     height: 92px;
