@@ -1791,7 +1791,7 @@ h3 {
   .page-hero.vision::after {
     display: block;
     top: auto;
-    bottom: -2px;
+    bottom: 14px;
     left: 0;
     right: auto;
     width: 100%;
