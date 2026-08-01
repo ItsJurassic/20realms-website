@@ -154,17 +154,17 @@ serve(async (request) => {
     }
 
     const body = await request.json().catch(() => ({}))
-    const userId = String(body.userId || "").trim()
+    const deleteUserId = String(body.userId || "").trim()
 
-    if (!userId || !/^[0-9a-fA-F-]{36}$/.test(userId)) {
+    if (!deleteUserId || !/^[0-9a-fA-F-]{36}$/.test(deleteUserId)) {
       return jsonResponse({ error: "A valid userId is required" }, 400)
     }
 
-    if (userId === user.id) {
+    if (deleteUserId === user.id) {
       return jsonResponse({ error: "You cannot delete your own account" }, 400)
     }
 
-    const { data: targetData, error: targetError } = await serviceClient.auth.admin.getUserById(userId)
+    const { data: targetData, error: targetError } = await serviceClient.auth.admin.getUserById(deleteUserId)
     if (targetError) {
       throw targetError
     }
@@ -172,7 +172,7 @@ serve(async (request) => {
     const targetEmail = targetData?.user?.email?.toLowerCase() || ""
 
     // Clean up public data tied to this account where possible.
-    await serviceClient.from("beta_signups").delete().eq("user_id", userId)
+    await serviceClient.from("beta_signups").delete().eq("user_id", deleteUserId)
     if (targetEmail) {
       await serviceClient.from("beta_signups").delete().eq("email", targetEmail)
       await serviceClient.from("beta_email_signups").delete().eq("email", targetEmail)
@@ -180,12 +180,12 @@ serve(async (request) => {
       await serviceClient.from("admin_users").delete().eq("email", targetEmail)
     }
 
-    const { error: deleteError } = await serviceClient.auth.admin.deleteUser(userId)
+    const { error: deleteError } = await serviceClient.auth.admin.deleteUser(deleteUserId)
     if (deleteError) {
       throw deleteError
     }
 
-    return jsonResponse({ ok: true, deletedUserId: userId, deletedEmail: targetEmail || null }, 200)
+    return jsonResponse({ ok: true, deletedUserId: deleteUserId, deletedEmail: targetEmail || null }, 200)
   } catch (error) {
     console.error("Admin account management error:", error)
     return jsonResponse({ error: error instanceof Error ? error.message : "Unexpected server error" }, 500)
