@@ -13,6 +13,17 @@ const CORS_HEADERS = {
   "Content-Type": "application/json",
 }
 
+const LEGACY_ACCOUNT_NAME_MAP: Record<string, { first_name: string; last_name: string }> = {
+  "rpowell": { first_name: "Jason", last_name: "Powell" },
+  "keenerka": { first_name: "Kaleena", last_name: "Caldwell" },
+  "drewdallas": { first_name: "Drew", last_name: "Dallas" },
+  "misty.amburgey": { first_name: "Misty", last_name: "Amburgey" },
+  "dungeon.master": { first_name: "Joseph", last_name: "Caldwell" },
+  "gabriel.salvatori": { first_name: "Gabriel", last_name: "Salvatori" },
+  "josephcaldwell": { first_name: "Joseph", last_name: "Caldwell" },
+  "nootdoot63": { first_name: "Gabriel", last_name: "Salvatori" },
+}
+
 serve(async (request) => {
   if (request.method === "OPTIONS") {
     return new Response("ok", { headers: CORS_HEADERS })
@@ -75,15 +86,42 @@ serve(async (request) => {
         throw error
       }
 
-      const accounts = (data?.users || []).map((account) => ({
-        id: account.id,
-        email: account.email || "",
-        first_name: String(account.user_metadata?.first_name || "").trim(),
-        last_name: String(account.user_metadata?.last_name || "").trim(),
-        username: String(account.user_metadata?.username || "").trim(),
-        created_at: account.created_at || null,
-        last_sign_in_at: account.last_sign_in_at || null,
-        email_confirmed_at: account.email_confirmed_at || null,
+      const accounts = await Promise.all((data?.users || []).map(async (account) => {
+        const userMetadata = (account.user_metadata || {}) as Record<string, unknown>
+        const username = String(userMetadata.username || "").trim()
+        const usernameKey = username.toLowerCase()
+        const fallbackName = LEGACY_ACCOUNT_NAME_MAP[usernameKey]
+
+        const firstName = String(userMetadata.first_name || fallbackName?.first_name || "").trim()
+        const lastName = String(userMetadata.last_name || fallbackName?.last_name || "").trim()
+        const fullName = String(userMetadata.full_name || "").trim() || [firstName, lastName].filter(Boolean).join(" ")
+
+        const shouldBackfill = Boolean(account.id && fallbackName && (!userMetadata.first_name || !userMetadata.last_name))
+        if (shouldBackfill) {
+          const { error: updateError } = await serviceClient.auth.admin.updateUserById(account.id, {
+            user_metadata: {
+              ...userMetadata,
+              first_name: firstName,
+              last_name: lastName,
+              full_name: fullName,
+            },
+          })
+
+          if (updateError) {
+            console.warn(`Legacy name backfill failed for ${username}:`, updateError.message)
+          }
+        }
+
+        return {
+          id: account.id,
+          email: account.email || "",
+          first_name: firstName,
+          last_name: lastName,
+          username,
+          created_at: account.created_at || null,
+          last_sign_in_at: account.last_sign_in_at || null,
+          email_confirmed_at: account.email_confirmed_at || null,
+        }
       }))
 
       accounts.sort((a, b) => {
