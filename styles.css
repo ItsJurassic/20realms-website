@@ -722,7 +722,10 @@ h3 {
 
 .page-hero.features,
 .page-hero.vision,
-.page-hero.updates-page,
+.page-hero.updates-page {
+  padding-bottom: 88px;
+}
+
 .page-hero.contact {
   padding-bottom: 120px;
 }
@@ -824,7 +827,10 @@ h3 {
 @media (max-width: 1100px) {
   .page-hero.features,
   .page-hero.vision,
-  .page-hero.updates-page,
+  .page-hero.updates-page {
+    padding-bottom: 78px;
+  }
+
   .page-hero.contact {
     padding-bottom: 104px;
   }
@@ -1850,8 +1856,10 @@ h3 {
     opacity: 0.2;
   }
 
-  .page-hero.vision {
-    padding-bottom: 92px;
+  .page-hero.features,
+  .page-hero.vision,
+  .page-hero.updates-page {
+    padding-bottom: 64px;
   }
 
   .home-page-body .site-header,
