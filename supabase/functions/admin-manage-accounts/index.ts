@@ -6,6 +6,7 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || ""
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || ""
 const SUPABASE_AUTH_ISSUER = `${SUPABASE_URL}/auth/v1`
 const SUPABASE_JWKS = createRemoteJWKSet(new URL(`${SUPABASE_AUTH_ISSUER}/.well-known/jwks.json`))
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, DELETE, OPTIONS",
@@ -13,7 +14,7 @@ const CORS_HEADERS = {
   "Content-Type": "application/json",
 }
 
-const LEGACY_ACCOUNT_NAME_MAP: Record<string, { first_name: string; last_name: string }> = {
+const LEGACY_ACCOUNT_NAME_MAP = {
   "rpowell": { first_name: "Jason", last_name: "Powell" },
   "keenerka": { first_name: "Kaleena", last_name: "Caldwell" },
   "drewdallas": { first_name: "Drew", last_name: "Dallas" },
@@ -25,24 +26,24 @@ const LEGACY_ACCOUNT_NAME_MAP: Record<string, { first_name: string; last_name: s
 }
 
 function resolveLegacyName(username: string, email: string) {
-  const usernameKey = username.trim().toLowerCase()
+  const usernameKey = String(username || "").trim().toLowerCase()
   const emailLocalKey = String(email || "").split("@")[0]?.trim().toLowerCase() || ""
 
-  if (usernameKey && LEGACY_ACCOUNT_NAME_MAP[usernameKey]) {
-    return LEGACY_ACCOUNT_NAME_MAP[usernameKey]
+  if (usernameKey && LEGACY_ACCOUNT_NAME_MAP[usernameKey as keyof typeof LEGACY_ACCOUNT_NAME_MAP]) {
+    return LEGACY_ACCOUNT_NAME_MAP[usernameKey as keyof typeof LEGACY_ACCOUNT_NAME_MAP]
   }
 
-  if (emailLocalKey && LEGACY_ACCOUNT_NAME_MAP[emailLocalKey]) {
-    return LEGACY_ACCOUNT_NAME_MAP[emailLocalKey]
+  if (emailLocalKey && LEGACY_ACCOUNT_NAME_MAP[emailLocalKey as keyof typeof LEGACY_ACCOUNT_NAME_MAP]) {
+    return LEGACY_ACCOUNT_NAME_MAP[emailLocalKey as keyof typeof LEGACY_ACCOUNT_NAME_MAP]
   }
 
-  // Match prefixes to support usernames/emails that append numeric suffixes.
-  const keys = Object.keys(LEGACY_ACCOUNT_NAME_MAP)
-  const matchedKey = keys.find((key) =>
-    (usernameKey && usernameKey.startsWith(key)) || (emailLocalKey && emailLocalKey.startsWith(key)),
-  )
+  for (const key of Object.keys(LEGACY_ACCOUNT_NAME_MAP)) {
+    if ((usernameKey && usernameKey.startsWith(key)) || (emailLocalKey && emailLocalKey.startsWith(key))) {
+      return LEGACY_ACCOUNT_NAME_MAP[key as keyof typeof LEGACY_ACCOUNT_NAME_MAP]
+    }
+  }
 
-  return matchedKey ? LEGACY_ACCOUNT_NAME_MAP[matchedKey] : undefined
+  return null
 }
 
 serve(async (request) => {
@@ -63,14 +64,15 @@ serve(async (request) => {
     if (!authorization.startsWith("Bearer ")) {
       return jsonResponse({ error: "Authentication required" }, 401)
     }
+
     const accessToken = authorization.replace("Bearer ", "").trim()
     const { payload } = await jwtVerify(accessToken, SUPABASE_JWKS, {
       issuer: SUPABASE_AUTH_ISSUER,
       audience: "authenticated",
     })
 
-    const userId = String(payload.sub || "").trim()
-    if (!userId) {
+    const requesterUserId = String(payload.sub || "").trim()
+    if (!requesterUserId) {
       return jsonResponse({ error: "Invalid session" }, 401)
     }
 
@@ -78,25 +80,19 @@ serve(async (request) => {
       auth: { persistSession: false },
     })
 
-    const { data: authUserData, error: authUserError } = await serviceClient.auth.admin.getUserById(userId)
-    const user = authUserData?.user
+    const { data: requesterData, error: requesterError } = await serviceClient.auth.admin.getUserById(requesterUserId)
+    const requester = requesterData?.user
 
-    if (authUserError || !user?.id || !user?.email) {
+    if (requesterError || !requester?.id || !requester?.email) {
       return jsonResponse({ error: "Invalid session" }, 401)
     }
 
-    const { data: adminRows, error: adminError } = await serviceClient
-      .from("admin_users")
-      .select("email")
-
+    const { data: adminRows, error: adminError } = await serviceClient.from("admin_users").select("email")
     if (adminError) {
       throw adminError
     }
 
-    const isAdmin = (adminRows || []).some((row) =>
-      row.email?.toLowerCase() === user.email?.toLowerCase(),
-    )
-
+    const isAdmin = (adminRows || []).some((row) => row.email?.toLowerCase() === requester.email?.toLowerCase())
     if (!isAdmin) {
       return jsonResponse({ error: "Administrator access required" }, 403)
     }
@@ -107,42 +103,25 @@ serve(async (request) => {
         throw error
       }
 
-      const accounts = await Promise.all((data?.users || []).map(async (account) => {
-        const userMetadata = (account.user_metadata || {}) as Record<string, unknown>
-        const username = String(userMetadata.username || "").trim()
+      const accounts = (data?.users || []).map((account) => {
+        const metadata = account.user_metadata || {}
+        const username = String(metadata.username || "").trim()
         const fallbackName = resolveLegacyName(username, account.email || "")
 
-        const firstName = String(userMetadata.first_name || fallbackName?.first_name || "").trim()
-        const lastName = String(userMetadata.last_name || fallbackName?.last_name || "").trim()
-        const fullName = String(userMetadata.full_name || "").trim() || [firstName, lastName].filter(Boolean).join(" ")
-
-        const shouldBackfill = Boolean(account.id && fallbackName && (!userMetadata.first_name || !userMetadata.last_name))
-        if (shouldBackfill) {
-          const { error: updateError } = await serviceClient.auth.admin.updateUserById(account.id, {
-            user_metadata: {
-              ...userMetadata,
-              first_name: firstName,
-              last_name: lastName,
-              full_name: fullName,
-            },
-          })
-
-          if (updateError) {
-            console.warn(`Legacy name backfill failed for ${username}:`, updateError.message)
-          }
-        }
+        const firstName = String(metadata.first_name || fallbackName?.first_name || "").trim()
+        const lastName = String(metadata.last_name || fallbackName?.last_name || "").trim()
 
         return {
           id: account.id,
           email: account.email || "",
+          username,
           first_name: firstName,
           last_name: lastName,
-          username,
           created_at: account.created_at || null,
           last_sign_in_at: account.last_sign_in_at || null,
           email_confirmed_at: account.email_confirmed_at || null,
         }
-      }))
+      })
 
       accounts.sort((a, b) => {
         const aCreated = new Date(a.created_at || 0).getTime()
@@ -160,7 +139,7 @@ serve(async (request) => {
       return jsonResponse({ error: "A valid userId is required" }, 400)
     }
 
-    if (deleteUserId === user.id) {
+    if (deleteUserId === requester.id) {
       return jsonResponse({ error: "You cannot delete your own account" }, 400)
     }
 
@@ -171,7 +150,6 @@ serve(async (request) => {
 
     const targetEmail = targetData?.user?.email?.toLowerCase() || ""
 
-    // Clean up public data tied to this account where possible.
     await serviceClient.from("beta_signups").delete().eq("user_id", deleteUserId)
     if (targetEmail) {
       await serviceClient.from("beta_signups").delete().eq("email", targetEmail)
@@ -192,7 +170,7 @@ serve(async (request) => {
   }
 })
 
-function jsonResponse(payload: Record<string, unknown>, status = 200) {
+function jsonResponse(payload: unknown, status = 200) {
   return new Response(JSON.stringify(payload), {
     status,
     headers: CORS_HEADERS,
