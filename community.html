@@ -225,6 +225,14 @@
         <div id="signup-msg" class="auth-msg" role="alert"></div>
         <div class="panel-section visible" id="signup-fields">
           <label>
+            First name
+            <input type="text" id="signup-first-name" placeholder="Aria" autocomplete="given-name">
+          </label>
+          <label>
+            Last name
+            <input type="text" id="signup-last-name" placeholder="Stone" autocomplete="family-name">
+          </label>
+          <label>
             Username
             <input type="text" id="signup-username" placeholder="TavernKeeper" autocomplete="username">
           </label>
@@ -392,17 +400,20 @@
     // Sign up
     document.getElementById('btn-signup').addEventListener('click', async () => {
       if (!configured) { showMsg('signup-msg', 'Auth is not configured yet. Add your Supabase keys.', 'error'); return; }
+      const firstName = document.getElementById('signup-first-name').value.trim();
+      const lastName = document.getElementById('signup-last-name').value.trim();
       const username = document.getElementById('signup-username').value.trim();
       const email = document.getElementById('signup-email').value.trim().toLowerCase();
       const password = document.getElementById('signup-password').value;
       const emailOptIn = document.getElementById('signup-email-optin').checked;
-      if (!username || !email || !password) { showMsg('signup-msg', 'Please fill in all fields.', 'error'); return; }
+      if (!firstName || !lastName || !username || !email || !password) { showMsg('signup-msg', 'Please fill in all fields.', 'error'); return; }
       if (password.length < 8) { showMsg('signup-msg', 'Password must be at least 8 characters.', 'error'); return; }
+      const fullName = `${firstName} ${lastName}`;
       const btn = document.getElementById('btn-signup');
       btn.textContent = 'Creating account...'; btn.disabled = true;
       const { data: signUpData, error } = await supabase.auth.signUp({
         email, password,
-        options: { data: { username, email_updates_opt_in: emailOptIn } }
+        options: { data: { username, first_name: firstName, last_name: lastName, full_name: fullName, email_updates_opt_in: emailOptIn } }
       });
       if (error) {
         const msg = (error.message || '').toLowerCase();
@@ -419,7 +430,7 @@
 
         if (emailOptIn) {
           const betaPayload = {
-            name: username,
+            name: fullName,
             email,
             role: 'Player',
             interest: '[optin:true]\n[source:community-signup]',
