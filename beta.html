@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -117,9 +117,9 @@
     </nav>
     <div class="footer-controls">
       <label class="privacy-toggle">
-        <input type="checkbox" aria-label="Your Privacy Choices">
+        <input type="checkbox" aria-label="Privacy toggle">
         <span class="privacy-switch" aria-hidden="true"></span>
-        <span>Your Privacy Choices</span>
+        
       </label>
       <label class="language-select">
         <span>Language</span>
@@ -135,7 +135,7 @@
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
     const supabase = createClient('https://avcqqazytvvcfraowgsm.supabase.co', 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0');
 
-    // ── Pre-fill account info if logged in ───────────────────────────────────
+    // â”€â”€ Pre-fill account info if logged in â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const { data: { session } } = await supabase.auth.getSession();
     let loggedInUser = null;
     if (session) {
@@ -170,7 +170,7 @@
       }
     }
 
-    // ── Form submit → Supabase ────────────────────────────────────────────────
+    // â”€â”€ Form submit â†’ Supabase â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const form = document.getElementById('beta-form');
     const btn  = document.getElementById('beta-submit-btn');
     const statusEl = document.getElementById('beta-status');
@@ -248,7 +248,7 @@
       if (!form.checkValidity()) { form.reportValidity(); return; }
 
       btn.disabled = true;
-      btn.textContent = 'Submitting…';
+      btn.textContent = 'Submittingâ€¦';
       statusEl.textContent = '';
 
       const data = new FormData(form);

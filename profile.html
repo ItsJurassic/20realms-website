@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -277,7 +277,7 @@
           <input type="file" id="avatar-upload" accept="image/*" />
         </label>
         <div class="profile-identity">
-          <h1 id="profile-username">Loading…</h1>
+          <h1 id="profile-username">Loadingâ€¦</h1>
           <p id="profile-email"></p>
         </div>
       </div>
@@ -287,7 +287,7 @@
           <h3>Account</h3>
           <div class="profile-stat">
             <span>Member since</span>
-            <span id="member-since">—</span>
+            <span id="member-since">-</span>
           </div>
           <div class="profile-stat">
             <span>Status</span>
@@ -323,7 +323,7 @@
     </div>
 
     <div id="loading-wrap" style="width:min(480px,calc(100% - 32px));margin:0 auto;padding:120px 0;text-align:center;color:var(--muted);">
-      Loading…
+      Loadingâ€¦
     </div>
 
     <!-- Crop Modal -->
@@ -369,9 +369,9 @@
     </nav>
     <div class="footer-controls">
       <label class="privacy-toggle">
-        <input type="checkbox" aria-label="Your Privacy Choices">
+        <input type="checkbox" aria-label="Privacy toggle">
         <span class="privacy-switch" aria-hidden="true"></span>
-        <span>Your Privacy Choices</span>
+        
       </label>
       <label class="language-select">
         <span>Language</span>
@@ -493,7 +493,7 @@
 
           const btn = document.getElementById('btn-crop-confirm');
           btn.disabled = true;
-          btn.textContent = 'Uploading…';
+          btn.textContent = 'Uploadingâ€¦';
 
           // Get cropped canvas
           const canvas = window.cropperInstance.getCroppedCanvas({
@@ -574,3 +574,4 @@
   <script type="module" src="auth-nav.js"></script>
 </body>
 </html>
+
