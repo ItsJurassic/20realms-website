@@ -1444,6 +1444,32 @@ h3 {
     flex-direction: column;
   }
 
+  .site-header {
+    gap: 12px;
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid rgba(247, 239, 226, 0.16);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(18, 16, 8, 0.86) 0%, rgba(11, 15, 22, 0.92) 100%);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.26);
+  }
+
+  .brand-group {
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .brand {
+    font-size: 1.14rem;
+  }
+
+  .home-link {
+    min-height: 32px;
+    padding: 0 11px;
+    font-size: 0.8rem;
+  }
+
   .site-footer {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto auto auto;
@@ -1455,12 +1481,34 @@ h3 {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     justify-content: flex-start;
-    gap: 12px;
-    padding-bottom: 6px;
+    gap: 10px;
+    padding: 3px 2px 8px;
+    border-top: 1px solid rgba(247, 239, 226, 0.12);
+    scrollbar-width: none;
+  }
+
+  .nav::-webkit-scrollbar {
+    display: none;
   }
 
   .nav a {
     flex: 0 0 auto;
+    border: 1px solid rgba(247, 239, 226, 0.18);
+    border-radius: 999px;
+    padding: 8px 12px;
+    line-height: 1;
+    background: rgba(247, 239, 226, 0.04);
+  }
+
+  .nav a[aria-current="page"] {
+    border-color: var(--gold);
+    background: rgba(217, 164, 65, 0.16);
+  }
+
+  .nav a.nav-player-icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
   }
 
   .footer-branding {
@@ -1580,8 +1628,16 @@ h3 {
   }
 
   .nav {
-    gap: 10px;
-    font-size: 0.86rem;
+    gap: 8px;
+    font-size: 0.82rem;
+  }
+
+  .nav a {
+    padding: 7px 10px;
+  }
+
+  .brand {
+    font-size: 1.05rem;
   }
   h1 {
     font-size: 3rem;
