@@ -807,6 +807,17 @@ h3 {
   transform: none;
 }
 
+@media (min-width: 781px) {
+  .page-hero.features::after,
+  .page-hero.updates-page::after,
+  .page-hero.contact::after,
+  .page-hero.beta-page::after {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+}
+
 @media (max-width: 1100px) {
   .page-hero.features,
   .page-hero.vision,
