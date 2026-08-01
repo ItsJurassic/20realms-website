@@ -277,7 +277,7 @@
           <input type="file" id="avatar-upload" accept="image/*" />
         </label>
         <div class="profile-identity">
-          <h1 id="profile-username">Loadingâ€¦</h1>
+          <h1 id="profile-username">Loading...</h1>
           <p id="profile-email"></p>
         </div>
       </div>
@@ -323,7 +323,7 @@
     </div>
 
     <div id="loading-wrap" style="width:min(480px,calc(100% - 32px));margin:0 auto;padding:120px 0;text-align:center;color:var(--muted);">
-      Loadingâ€¦
+      Loading...
     </div>
 
     <!-- Crop Modal -->
@@ -493,7 +493,7 @@
 
           const btn = document.getElementById('btn-crop-confirm');
           btn.disabled = true;
-          btn.textContent = 'Uploadingâ€¦';
+          btn.textContent = 'Uploading...';
 
           // Get cropped canvas
           const canvas = window.cropperInstance.getCroppedCanvas({
