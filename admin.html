@@ -679,6 +679,8 @@
             <thead>
               <tr>
                 <th>Email</th>
+                <th>First Name</th>
+                <th>Last Name</th>
                 <th>Username</th>
                 <th>Created</th>
                 <th>Last Sign In</th>
@@ -686,7 +688,7 @@
               </tr>
             </thead>
             <tbody id="accounts-tbody">
-              <tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--muted);">Loading…</td></tr>
+              <tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--muted);">Loading…</td></tr>
             </tbody>
           </table>
         </div>
@@ -880,7 +882,7 @@
           countEl.textContent = `${allAccounts.length} account${allAccounts.length !== 1 ? 's' : ''}`;
 
           if (!allAccounts.length) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--muted);">No accounts found.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--muted);">No accounts found.</td></tr>';
             return;
           }
 
@@ -889,6 +891,8 @@
             return `
               <tr>
                 <td class="signup-email">${escapeHtml(account.email || '—')}</td>
+                <td>${escapeHtml(account.first_name || '—')}</td>
+                <td>${escapeHtml(account.last_name || '—')}</td>
                 <td>${escapeHtml(account.username || '—')}</td>
                 <td style="color: var(--muted); font-size: 0.85rem;">${escapeHtml(formatDateTime(account.created_at))}</td>
                 <td style="color: var(--muted); font-size: 0.85rem;">${escapeHtml(formatDateTime(account.last_sign_in_at))}</td>
@@ -935,7 +939,7 @@
         async function loadAccounts() {
           const statusEl = document.getElementById('account-status');
           const tbody = document.getElementById('accounts-tbody');
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--muted);">Loading…</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--muted);">Loading…</td></tr>';
 
           try {
             const payload = await callAdminAccountsApi('GET');
@@ -944,7 +948,7 @@
             statusEl.textContent = '';
             renderAccounts();
           } catch (loadError) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: #f4937a;">${escapeHtml(loadError?.message || 'Unable to load accounts.')}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 40px; color: #f4937a;">${escapeHtml(loadError?.message || 'Unable to load accounts.')}</td></tr>`;
             document.getElementById('account-count').textContent = 'Unable to load accounts';
           }
         }

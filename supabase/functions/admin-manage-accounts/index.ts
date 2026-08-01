@@ -1,8 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { createRemoteJWKSet, jwtVerify } from "https://esm.sh/jose@5.9.6"
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || ""
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || ""
+const SUPABASE_AUTH_ISSUER = `${SUPABASE_URL}/auth/v1`
+const SUPABASE_JWKS = createRemoteJWKSet(new URL(`${SUPABASE_AUTH_ISSUER}/.well-known/jwks.json`))
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, DELETE, OPTIONS",
@@ -29,15 +32,24 @@ serve(async (request) => {
       return jsonResponse({ error: "Authentication required" }, 401)
     }
     const accessToken = authorization.replace("Bearer ", "").trim()
+    const { payload } = await jwtVerify(accessToken, SUPABASE_JWKS, {
+      issuer: SUPABASE_AUTH_ISSUER,
+      audience: "authenticated",
+    })
+
+    const userId = String(payload.sub || "").trim()
+    if (!userId) {
+      return jsonResponse({ error: "Invalid session" }, 401)
+    }
 
     const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
       auth: { persistSession: false },
     })
 
-    const { data: userData, error: userError } = await serviceClient.auth.getUser(accessToken)
-    const user = userData.user
+    const { data: authUserData, error: authUserError } = await serviceClient.auth.admin.getUserById(userId)
+    const user = authUserData?.user
 
-    if (userError || !user?.id || !user?.email) {
+    if (authUserError || !user?.id || !user?.email) {
       return jsonResponse({ error: "Invalid session" }, 401)
     }
 
@@ -66,6 +78,8 @@ serve(async (request) => {
       const accounts = (data?.users || []).map((account) => ({
         id: account.id,
         email: account.email || "",
+        first_name: String(account.user_metadata?.first_name || "").trim(),
+        last_name: String(account.user_metadata?.last_name || "").trim(),
         username: String(account.user_metadata?.username || "").trim(),
         created_at: account.created_at || null,
         last_sign_in_at: account.last_sign_in_at || null,
