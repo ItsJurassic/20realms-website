@@ -1493,6 +1493,7 @@ h3 {
   grid-row: 3;
   justify-self: end;
   align-self: end;
+  margin-top: -56px;
   width: clamp(112px, 14vw, 180px);
   height: auto;
   display: block;
@@ -1716,6 +1717,7 @@ h3 {
     grid-column: 1;
     grid-row: 1;
     justify-self: start;
+    margin-top: 0;
   }
 
   .footer-controls {
