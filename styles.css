@@ -437,7 +437,7 @@ h3 {
   font-weight: 800;
 }
 
-.beta-form input,
+.beta-form input:not([type="checkbox"]),
 .beta-form select,
 .beta-form textarea {
   width: 100%;
@@ -449,7 +449,7 @@ h3 {
   font-weight: 700;
 }
 
-.beta-form input,
+.beta-form input:not([type="checkbox"]),
 .beta-form select {
   min-height: 46px;
   padding: 0 14px;
@@ -461,7 +461,7 @@ h3 {
   resize: vertical;
 }
 
-.beta-form input::placeholder,
+.beta-form input:not([type="checkbox"])::placeholder,
 .beta-form textarea::placeholder {
   color: rgba(247, 239, 226, 0.5);
 }
