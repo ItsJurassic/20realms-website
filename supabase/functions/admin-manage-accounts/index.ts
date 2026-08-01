@@ -108,8 +108,8 @@ serve(async (request) => {
         const username = String(metadata.username || "").trim()
         const fallbackName = resolveLegacyName(username, account.email || "")
 
-        const firstName = String(metadata.first_name || fallbackName?.first_name || "").trim()
-        const lastName = String(metadata.last_name || fallbackName?.last_name || "").trim()
+        const firstName = String(fallbackName?.first_name || metadata.first_name || "").trim()
+        const lastName = String(fallbackName?.last_name || metadata.last_name || "").trim()
 
         return {
           id: account.id,
