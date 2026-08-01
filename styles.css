@@ -1152,8 +1152,10 @@ h3 {
   }
 
   .site-footer {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto auto auto;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto;
+    align-items: center;
+    justify-items: center;
   }
 
   .nav {
@@ -1169,32 +1171,44 @@ h3 {
     align-items: flex-start;
     justify-content: flex-start;
     gap: 4px;
+    text-align: left;
   }
 
   .footer-logo {
-    grid-column: 1;
-    grid-row: 1;
-    justify-self: start;
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: center;
+    margin-top: 0;
+    width: clamp(110px, 30vw, 150px);
   }
 
   .footer-controls {
-    grid-column: 1;
+    grid-column: 1 / -1;
     grid-row: 3;
-    width: min(100%, 280px);
+    width: min(100%, 360px);
+    justify-self: center;
+    align-items: center;
   }
 
   .footer-links {
-    grid-column: 1;
+    grid-column: 1 / -1;
     grid-row: 4;
-    width: 100%;
-    grid-template-columns: 1fr;
+    width: min(100%, 420px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
+    justify-self: center;
+  }
+
+  .footer-links a {
+    width: 100%;
+    text-align: center;
   }
 
   .social-links {
-    grid-column: 1;
-    grid-row: 5;
-    justify-content: flex-start;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    width: 100%;
+    justify-content: center;
   }
 
   .hero {
