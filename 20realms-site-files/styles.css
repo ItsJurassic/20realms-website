@@ -1931,6 +1931,13 @@ h3 {
 
 }
 
+.page-hero.features::after,
+.page-hero.vision::after,
+.page-hero.updates-page::after,
+.page-hero.beta-page::after {
+  display: none !important;
+}
+
 @media (min-width: 1200px) {
   .hero {
     min-height: calc(80vh - 92px);
