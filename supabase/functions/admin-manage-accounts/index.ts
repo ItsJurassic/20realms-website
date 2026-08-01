@@ -9,7 +9,7 @@ const SUPABASE_JWKS = createRemoteJWKSet(new URL(`${SUPABASE_AUTH_ISSUER}/.well-
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, DELETE, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "authorization, apikey, content-type",
   "Content-Type": "application/json",
 }
@@ -51,13 +51,54 @@ serve(async (request) => {
     return new Response("ok", { headers: CORS_HEADERS })
   }
 
-  if (request.method !== "GET" && request.method !== "DELETE") {
+  if (request.method !== "GET" && request.method !== "POST" && request.method !== "DELETE") {
     return jsonResponse({ error: "Method not allowed" }, 405)
   }
 
   try {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
       return jsonResponse({ error: "Account management service is not configured" }, 500)
+    }
+
+    const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      auth: { persistSession: false },
+    })
+
+    if (request.method === "POST") {
+      const body = await request.json().catch(() => ({}))
+      const username = String(body.username || "").trim().toLowerCase()
+
+      if (!username) {
+        return jsonResponse({ ok: false, error: "Username is required" }, 400)
+      }
+
+      let page = 1
+      const perPage = 1000
+
+      while (true) {
+        const { data, error } = await serviceClient.auth.admin.listUsers({ page, perPage })
+        if (error) {
+          throw error
+        }
+
+        const users = data?.users || []
+        const taken = users.some((user) => {
+          const existing = String(user.user_metadata?.username || "").trim().toLowerCase()
+          return existing && existing === username
+        })
+
+        if (taken) {
+          return jsonResponse({ ok: true, available: false }, 200)
+        }
+
+        if (users.length < perPage) {
+          break
+        }
+
+        page += 1
+      }
+
+      return jsonResponse({ ok: true, available: true }, 200)
     }
 
     const authorization = request.headers.get("Authorization") || ""
@@ -75,10 +116,6 @@ serve(async (request) => {
     if (!requesterUserId) {
       return jsonResponse({ error: "Invalid session" }, 401)
     }
-
-    const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-      auth: { persistSession: false },
-    })
 
     const { data: requesterData, error: requesterError } = await serviceClient.auth.admin.getUserById(requesterUserId)
     const requester = requesterData?.user
