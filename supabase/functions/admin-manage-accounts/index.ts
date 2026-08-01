@@ -18,7 +18,7 @@ const LEGACY_ACCOUNT_NAME_MAP = {
   "rpowell": { first_name: "Jason", last_name: "Powell" },
   "keenerka": { first_name: "Kaleena", last_name: "Caldwell" },
   "drewdallas": { first_name: "Drew", last_name: "Dallas" },
-  "misty.amburgey": { first_name: "misty", last_name: "Amburgey" },
+  "misty.amburgey": { first_name: "Misty", last_name: "Amburgey" },
   "dungeon.master": { first_name: "Joseph", last_name: "Caldwell" },
   "gabriel.salvatori": { first_name: "Gabriel", last_name: "Salvatori" },
   "josephcaldwell": { first_name: "Joseph", last_name: "Caldwell" },
