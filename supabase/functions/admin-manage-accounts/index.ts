@@ -24,6 +24,27 @@ const LEGACY_ACCOUNT_NAME_MAP: Record<string, { first_name: string; last_name: s
   "nootdoot63": { first_name: "Gabriel", last_name: "Salvatori" },
 }
 
+function resolveLegacyName(username: string, email: string) {
+  const usernameKey = username.trim().toLowerCase()
+  const emailLocalKey = String(email || "").split("@")[0]?.trim().toLowerCase() || ""
+
+  if (usernameKey && LEGACY_ACCOUNT_NAME_MAP[usernameKey]) {
+    return LEGACY_ACCOUNT_NAME_MAP[usernameKey]
+  }
+
+  if (emailLocalKey && LEGACY_ACCOUNT_NAME_MAP[emailLocalKey]) {
+    return LEGACY_ACCOUNT_NAME_MAP[emailLocalKey]
+  }
+
+  // Match prefixes to support usernames/emails that append numeric suffixes.
+  const keys = Object.keys(LEGACY_ACCOUNT_NAME_MAP)
+  const matchedKey = keys.find((key) =>
+    (usernameKey && usernameKey.startsWith(key)) || (emailLocalKey && emailLocalKey.startsWith(key)),
+  )
+
+  return matchedKey ? LEGACY_ACCOUNT_NAME_MAP[matchedKey] : undefined
+}
+
 serve(async (request) => {
   if (request.method === "OPTIONS") {
     return new Response("ok", { headers: CORS_HEADERS })
@@ -89,8 +110,7 @@ serve(async (request) => {
       const accounts = await Promise.all((data?.users || []).map(async (account) => {
         const userMetadata = (account.user_metadata || {}) as Record<string, unknown>
         const username = String(userMetadata.username || "").trim()
-        const usernameKey = username.toLowerCase()
-        const fallbackName = LEGACY_ACCOUNT_NAME_MAP[usernameKey]
+        const fallbackName = resolveLegacyName(username, account.email || "")
 
         const firstName = String(userMetadata.first_name || fallbackName?.first_name || "").trim()
         const lastName = String(userMetadata.last_name || fallbackName?.last_name || "").trim()
