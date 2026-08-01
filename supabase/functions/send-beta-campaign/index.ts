@@ -5,7 +5,7 @@ const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || ""
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || ""
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || ""
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || ""
-const FROM_EMAIL = "20Realms Beta <betaaccess@20realms.net>"
+const FROM_EMAIL = "20Realms Updates <updates@20realms.net>"
 const BATCH_SIZE = 100
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "https://20realms.net",
@@ -198,7 +198,7 @@ async function sendBatch(
       html: generateCampaignEmail(recipient.name, message, audience),
       text: generatePlainText(recipient.name, message, audience),
       headers: audience === "opted-in"
-        ? { "List-Unsubscribe": "<mailto:support@20realms.net?subject=Unsubscribe%20from%2020Realms>" }
+        ? { "List-Unsubscribe": "<mailto:updates@20realms.net?subject=Unsubscribe%20from%2020Realms>" }
         : undefined,
     }))),
   })
@@ -219,7 +219,7 @@ function generateCampaignEmail(name: string, message: string, audience: "all" | 
     .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
     .join("")
   const unsubscribe = audience === "opted-in"
-    ? '<p class="fine-print">To stop receiving news and playtest updates, email <a href="mailto:support@20realms.net?subject=Unsubscribe%20from%2020Realms">support@20realms.net</a> with the subject "Unsubscribe from 20Realms."</p>'
+    ? '<p class="fine-print">To stop receiving news and playtest updates, email <a href="mailto:updates@20realms.net?subject=Unsubscribe%20from%2020Realms">updates@20realms.net</a> with the subject "Unsubscribe from 20Realms."</p>'
     : ""
 
   return `<!doctype html>
