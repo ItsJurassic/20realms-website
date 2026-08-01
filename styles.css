@@ -524,6 +524,118 @@ h3 {
   font-size: 1.1rem;
 }
 
+.roadmap-header {
+  margin-bottom: 24px;
+}
+
+.roadmap-header h2 {
+  max-width: 760px;
+}
+
+.roadmap-stage {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 56px;
+  align-items: center;
+  gap: 18px;
+}
+
+.roadmap-arrow {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 250, 240, 0.06);
+  color: var(--cream);
+  font-size: 1.45rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+.roadmap-arrow:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--gold);
+  background: rgba(217, 164, 65, 0.18);
+}
+
+.roadmap-arrow:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.roadmap-bubble-deck {
+  width: 100%;
+  overflow: hidden;
+}
+
+.roadmap-bubble-track {
+  display: flex;
+  width: 100%;
+  transition: transform 320ms ease;
+}
+
+.roadmap-bubble {
+  flex: 0 0 100%;
+  min-width: 100%;
+  display: block;
+  position: relative;
+  padding: 28px 34px;
+  border: 0;
+  border-radius: 34px;
+  overflow: hidden;
+  box-sizing: border-box;
+  background: rgba(24, 29, 39, 0.96);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+}
+
+.roadmap-bubble.active {
+  animation: rise 220ms ease;
+}
+
+.roadmap-dots {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.roadmap-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(247, 239, 226, 0.28);
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+.roadmap-dot.active {
+  background: var(--gold);
+  transform: scale(1.12);
+}
+
+.roadmap-meta {
+  margin: 0 0 12px;
+  color: var(--gold);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.roadmap-bubble h3 {
+  margin: 0 0 10px;
+  font-family: "Fraunces", serif;
+  font-size: 1.35rem;
+  line-height: 1.15;
+}
+
+.roadmap-bubble p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 .page-hero.features h1,
 .page-hero.features > p:not(.eyebrow) {
   max-width: 600px;
@@ -1105,6 +1217,22 @@ h3 {
   .updates-grid,
   .legal-content {
     grid-template-columns: 1fr;
+  }
+
+  .roadmap-stage {
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 10px;
+  }
+
+  .roadmap-arrow {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+
+  .roadmap-bubble {
+    padding: 22px 24px;
+    border-radius: 26px;
   }
 
   .legal-link-grid {
