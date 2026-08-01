@@ -1941,6 +1941,10 @@ h3 {
   display: none !important;
 }
 
+.page-hero.contact::after {
+  display: none !important;
+}
+
 .page-hero.features,
 .page-hero.vision,
 .page-hero.updates-page,
