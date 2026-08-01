@@ -1481,7 +1481,7 @@ h3 {
     grid-row: 2;
     justify-self: center;
     margin-top: 0;
-    width: clamp(84px, 24vw, 120px);
+    width: clamp(110px, 30vw, 150px);
   }
 
   .footer-controls {
