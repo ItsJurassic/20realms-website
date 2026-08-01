@@ -1941,6 +1941,34 @@ h3 {
   display: none !important;
 }
 
+.page-hero.features,
+.page-hero.vision,
+.page-hero.updates-page,
+.page-hero.beta-page,
+.page-hero.contact {
+  text-align: center !important;
+}
+
+.page-hero.features .eyebrow,
+.page-hero.vision .eyebrow,
+.page-hero.updates-page .eyebrow,
+.page-hero.beta-page .eyebrow,
+.page-hero.contact .eyebrow,
+.page-hero.features h1,
+.page-hero.vision h1,
+.page-hero.updates-page h1,
+.page-hero.beta-page h1,
+.page-hero.contact h1,
+.page-hero.features > p:not(.eyebrow),
+.page-hero.vision > p:not(.eyebrow),
+.page-hero.updates-page > p:not(.eyebrow),
+.page-hero.beta-page > p:not(.eyebrow),
+.page-hero.contact > p:not(.eyebrow) {
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 @media (min-width: 1200px) {
   .hero {
     min-height: calc(80vh - 92px);
