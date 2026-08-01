@@ -342,6 +342,22 @@
       el.className = 'auth-msg ' + type;
     }
 
+    function getPasswordValidationError(password) {
+      if (password.length < 8) {
+        return 'Password must be at least 8 characters.';
+      }
+      if (!/[A-Z]/.test(password)) {
+        return 'Password must include at least one capital letter.';
+      }
+      if (!/[0-9]/.test(password)) {
+        return 'Password must include at least one number.';
+      }
+      if (!/[!@#$%^&*()_+=,.\/;'\[\]\\<>?:"{}|*-]/.test(password)) {
+        return 'Password must include at least one special character.';
+      }
+      return '';
+    }
+
     async function requestEmailVerification(record) {
       const response = await fetch('https://avcqqazytvvcfraowgsm.supabase.co/functions/v1/request-beta-email-verification', {
         method: 'POST',
@@ -427,7 +443,8 @@
       const password = document.getElementById('signup-password').value;
       const emailOptIn = document.getElementById('signup-email-optin').checked;
       if (!firstName || !lastName || !username || !email || !password) { showMsg('signup-msg', 'Please fill in all fields.', 'error'); return; }
-      if (password.length < 8) { showMsg('signup-msg', 'Password must be at least 8 characters.', 'error'); return; }
+      const passwordError = getPasswordValidationError(password);
+      if (passwordError) { showMsg('signup-msg', passwordError, 'error'); return; }
       const btn = document.getElementById('btn-signup');
       btn.textContent = 'Checking username...'; btn.disabled = true;
 
