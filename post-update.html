@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Post Update — 20Realms Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #0b0f16;
+      --ink: #f7efe2;
+      --muted: #c9beb0;
+      --forest: #1f513a;
+      --clay: #b54c2f;
+      --gold: #d9a441;
+      --cream: #fffaf0;
+      --line: rgba(247, 239, 226, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Manrope", sans-serif;
+      color: var(--ink);
+      background: #05070b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 60px 20px;
+    }
+
+    h1 {
+      font-family: "Fraunces", serif;
+      font-size: 2.4rem;
+      margin: 0 0 8px;
+      color: var(--cream);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0 0 48px;
+      font-size: 0.95rem;
+    }
+
+    form {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+
+    input, textarea, select {
+      font-family: "Manrope", sans-serif;
+      font-size: 1rem;
+      color: var(--ink);
+      background: rgba(247, 239, 226, 0.06);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px 14px;
+      width: 100%;
+      transition: border-color 160ms;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    select option {
+      background: #0d0b09;
+    }
+
+    .date-display {
+      font-size: 1rem;
+      color: var(--gold);
+      font-weight: 700;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(217, 164, 65, 0.06);
+    }
+
+    button[type="submit"] {
+      margin-top: 8px;
+      padding: 14px 28px;
+      border-radius: 999px;
+      border: none;
+      background: var(--forest);
+      color: var(--cream);
+      font-family: "Manrope", sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 160ms, box-shadow 160ms;
+    }
+
+    button[type="submit"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.3);
+    }
+
+    .output-wrap {
+      width: 100%;
+      max-width: 600px;
+      margin-top: 40px;
+      display: none;
+    }
+
+    .output-wrap.visible {
+      display: block;
+    }
+
+    .output-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .output-box {
+      background: rgba(247, 239, 226, 0.04);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      font-family: monospace;
+      font-size: 0.88rem;
+      color: var(--cream);
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.7;
+    }
+
+    .copy-btn {
+      margin-top: 14px;
+      padding: 10px 22px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 250, 240, 0.06);
+      color: var(--cream);
+      font-family: "Manrope", sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 160ms, background 160ms;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--gold);
+      background: rgba(217, 164, 65, 0.14);
+    }
+
+    .copy-btn.copied {
+      border-color: #4caf82;
+      color: #4caf82;
+    }
+
+    .instructions {
+      margin-top: 16px;
+      padding: 14px 18px;
+      border-radius: 8px;
+      border: 1px solid rgba(217, 164, 65, 0.24);
+      background: rgba(217, 164, 65, 0.06);
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .instructions strong {
+      color: var(--gold);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Post an Update</h1>
+  <p class="subtitle">20Realms admin — not linked from the site</p>
+
+  <form id="updateForm">
+    <label>
+      Category
+      <select id="category" required>
+        <option value="development">Development</option>
+        <option value="community">Community</option>
+        <option value="site">Site</option>
+      </select>
+    </label>
+
+    <label>
+      Title
+      <input type="text" id="title" placeholder="e.g. Combat system prototype complete" required>
+    </label>
+
+    <label>
+      Description
+      <textarea id="description" placeholder="Describe what changed or what's new..." required></textarea>
+    </label>
+
+    <label>
+      Date
+      <div class="date-display" id="dateDisplay"></div>
+    </label>
+
+    <button type="submit">Generate HTML</button>
+  </form>
+
+  <div class="output-wrap" id="outputWrap">
+    <div class="output-label">Copy this into updates.html</div>
+    <div class="output-box" id="outputBox"></div>
+    <button class="copy-btn" id="copyBtn">Copy to clipboard</button>
+    <div class="instructions">
+      Open <strong>updates.html</strong>, find the <strong>&lt;section&gt;</strong> with the update cards, and paste this block as the <strong>first</strong> article inside it (newest updates go on top).
+      Then save, commit, and push.
+    </div>
+  </div>
+
+  <script>
+    // Show today's date
+    const now = new Date();
+    const dateISO = now.toISOString().split('T')[0];
+    const dateLong = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    document.getElementById('dateDisplay').textContent = dateLong;
+
+    document.getElementById('updateForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const category = document.getElementById('category').value;
+      const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
+      const title = document.getElementById('title').value.trim();
+      const description = document.getElementById('description').value.trim();
+
+      const html =
+`<article class="update-card featured" data-update-type="${category}">
+  <span class="update-category">${categoryLabel}</span>
+  <h3>${title}</h3>
+  <p>${description}</p>
+  <time datetime="${dateISO}">${dateLong}</time>
+</article>`;
+
+      document.getElementById('outputBox').textContent = html;
+      const wrap = document.getElementById('outputWrap');
+      wrap.classList.add('visible');
+      wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', function() {
+      const text = document.getElementById('outputBox').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        this.textContent = 'Copied!';
+        this.classList.add('copied');
+        setTimeout(() => {
+          this.textContent = 'Copy to clipboard';
+          this.classList.remove('copied');
+        }, 2000);
+      });
+    });
+  </script>
+
+</body>
+</html>

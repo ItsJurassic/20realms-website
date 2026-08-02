@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The vision for 20Realms as a living VTT for remote tabletop RPG groups across mobile, PC, and console.">
+  <title>Vision | 20Realms</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260730r">
+  <style>
+    .egg-dot {
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .egg-dot:hover,
+    .egg-dot:focus-visible {
+      color: inherit;
+      outline: none;
+    }
+
+    .egg-modal[hidden] {
+      display: none;
+    }
+
+    .egg-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      display: grid;
+      place-items: center;
+      background: rgba(0, 0, 0, 0.82);
+      padding: 16px;
+    }
+
+    .egg-modal-card {
+      position: relative;
+      width: min(360px, 92vw);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .egg-modal video {
+      width: 100%;
+      max-height: 80vh;
+      display: block;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand-group">
+      <a class="brand" href="index.html" aria-label="Home">20Realms</a>
+      <a class="home-link" href="index.html">Home</a>
+    </div>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="updates.html">Updates</a>
+      <a href="beta.html">Beta Access</a>
+      <a href="features.html">Features</a>
+      <a href="vision.html" aria-current="page">Vision</a>
+      <a href="shop.html">Shop</a>
+      <a href="contact.html">Contact</a>
+      <a href="community.html" class="nav-player-icon" title="Community & Profile">&#128100;</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero vision" aria-labelledby="vision-title">
+      <p class="eyebrow">Vision</p>
+      <h1 id="vision-title">A VTT that feels alive.</h1>
+      <p>20Realms combines top-down 3D play, optional 2D and immersive camera modes, world-building tools, reactive environments, survival systems, console availability, and flexible rules so groups can keep playing even when they cannot meet in person.</p>
+    </section>
+
+    <section class="section split" aria-label="20Realms design direction">
+      <div>
+        <p class="eyebrow">Design goal</p>
+        <h2>More table, less friction<button id="egg-dot" class="egg-dot" type="button" aria-label="Open easter egg video">.</button></h2>
+      </div>
+      <p>The goal is not to replace the Dungeon Master. It is to give every group a shared space where maps, characters, dice, combat, exploration, and homebrew tools stay connected across mobile, PC, and console without taking the personality out of the game.</p>
+    </section>
+
+    <section class="section roadmap" aria-labelledby="roadmap-title">
+      <div class="roadmap-header">
+        <p class="eyebrow">Roadmap</p>
+        <h2 id="roadmap-title">20Realms Game Development Roadmap</h2>
+      </div>
+
+      <div class="roadmap-stage" aria-label="Roadmap navigation">
+        <button class="roadmap-arrow" type="button" id="roadmap-prev" aria-label="Previous roadmap goal">&#8592;</button>
+
+        <div class="roadmap-bubble-deck" id="roadmap-deck">
+          <div class="roadmap-bubble-track" id="roadmap-track">
+            <article class="roadmap-bubble active" data-roadmap-index="0">
+              <p class="roadmap-meta">Phase 1 - Technical foundation</p>
+              <h3>Accounts, rules data, and telemetry</h3>
+              <p>Finalize architecture for accounts, characters, campaigns, encounters, and maps, while implementing secure auth, role permissions, and KPI telemetry models.</p>
+            </article>
+
+            <article class="roadmap-bubble" data-roadmap-index="1">
+              <p class="roadmap-meta">Phase 2 - Character core</p>
+              <h3>Creator and sheet v1</h3>
+              <p>Deliver character creation and sheet systems with validation for HP, AC, initiative, saves, proficiency scaling, and versioned save/import flows.</p>
+            </article>
+
+            <article class="roadmap-bubble" data-roadmap-index="2">
+              <p class="roadmap-meta">Phase 3 - Campaign + session core</p>
+              <h3>DM workspace and table flow</h3>
+              <p>Ship campaign tools, party management, notes, lore, and reusable encounter prep with shared handouts, access controls, and consistent session state handling.</p>
+            </article>
+
+            <article class="roadmap-bubble" data-roadmap-index="3">
+              <p class="roadmap-meta">Phase 4 - Combat engine</p>
+              <h3>Initiative, resolution, and conditions</h3>
+              <p>Implement turn-state management, attack and save resolution, condition and concentration tracking, rest refresh logic, and multiplayer-safe combat logs.</p>
+            </article>
+
+            <article class="roadmap-bubble" data-roadmap-index="4">
+              <p class="roadmap-meta">Phase 5 - Rules content</p>
+              <h3>Spells, equipment, and policy-safe content</h3>
+              <p>Build spellcasting and equipment rules handling with a publishing pipeline that stays SRD/open-license/original only.</p>
+            </article>
+
+            <article class="roadmap-bubble" data-roadmap-index="5">
+              <p class="roadmap-meta">Phase 6 - Worldbuilding</p>
+              <h3>Maps and Creator Lab</h3>
+              <p>Expand map editing, lore-linked worldbuilding modules, and Creator Lab workflows for upload, attribution, moderation, and homebrew sharing controls.</p>
+            </article>
+
+            <article class="roadmap-bubble" data-roadmap-index="6">
+              <p class="roadmap-meta">Phase 7 - Multiplayer + safety</p>
+              <h3>Community systems before scale</h3>
+              <p>Deliver real-time sync resilience, discovery and creator profile features, abuse reporting, moderation tooling, and privacy hardening.</p>
+            </article>
+
+            <article class="roadmap-bubble" data-roadmap-index="7">
+              <p class="roadmap-meta">Phase 8 - Beta and launch ops</p>
+              <h3>Beta November 2026 - Full launch Summer 2027</h3>
+              <p>Run closed beta onboarding and weekly patch cadence, track KPI performance by channel, then stabilize and expand content for full release.</p>
+            </article>
+
+            <article class="roadmap-bubble" data-roadmap-index="8">
+              <p class="roadmap-meta">Phase 9 - Content expansion</p>
+              <h3>Content, Assets, and Worldbuilding Additions</h3>
+              <p>Expand the asset library with terrain, props, buildings, creatures, emotes, portraits, audio, markers, encounter packs, worldbuilding modules, narrative tools, and Creator Lab sharing pipelines used across sheets, maps, encounters, campaigns, shared worlds, and social play.</p>
+            </article>
+          </div>
+        </div>
+
+        <button class="roadmap-arrow" type="button" id="roadmap-next" aria-label="Next roadmap goal">&#8594;</button>
+      </div>
+
+      <div class="roadmap-dots" role="tablist" aria-label="Roadmap steps">
+        <button class="roadmap-dot active" type="button" data-roadmap-go="0" aria-label="Show roadmap phase 1" aria-pressed="true"></button>
+        <button class="roadmap-dot" type="button" data-roadmap-go="1" aria-label="Show roadmap phase 2" aria-pressed="false"></button>
+        <button class="roadmap-dot" type="button" data-roadmap-go="2" aria-label="Show roadmap phase 3" aria-pressed="false"></button>
+        <button class="roadmap-dot" type="button" data-roadmap-go="3" aria-label="Show roadmap phase 4" aria-pressed="false"></button>
+        <button class="roadmap-dot" type="button" data-roadmap-go="4" aria-label="Show roadmap phase 5" aria-pressed="false"></button>
+        <button class="roadmap-dot" type="button" data-roadmap-go="5" aria-label="Show roadmap phase 6" aria-pressed="false"></button>
+        <button class="roadmap-dot" type="button" data-roadmap-go="6" aria-label="Show roadmap phase 7" aria-pressed="false"></button>
+        <button class="roadmap-dot" type="button" data-roadmap-go="7" aria-label="Show roadmap phase 8" aria-pressed="false"></button>
+        <button class="roadmap-dot" type="button" data-roadmap-go="8" aria-label="Show roadmap phase 9" aria-pressed="false"></button>
+      </div>
+    </section>
+  </main>
+
+  <div id="egg-modal" class="egg-modal" hidden>
+    <div class="egg-modal-card">
+      <video id="egg-video" playsinline preload="metadata" src="assets/sea-lion-scream.mp4"></video>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-branding">
+      <strong>20Realms</strong>
+      <span>&copy; <span id="year"></span> 20Realms</span>
+      <span>Mobile, PC, and console.</span>
+    </div>
+    <nav class="social-links" aria-label="Social media links">
+      <a href="https://www.tiktok.com/@official20realms?_r=1&_t=ZP-98WeZqkASac" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><span class="sr-only">TikTok</span><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 3h3.1c.2 1.4 1 2.6 2.1 3.5.7.5 1.4.8 2.1.9v3.2c-1.4-.1-2.7-.5-3.9-1.2v6.2c0 3.1-2.4 5.4-5.6 5.4-3 0-5.3-2.1-5.3-5 0-3.2 2.7-5.4 6.1-5v3.3c-1.4-.4-2.7.3-2.7 1.6 0 1 .8 1.7 1.9 1.7 1.2 0 2.1-.8 2.1-2.3V3z"/></svg></a>
+      <a href="https://x.com/20_Realms" target="_blank" rel="noopener noreferrer" aria-label="X"><span class="sr-only">X</span><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.2 3h4.4l4.1 5.8L17.7 3H22l-7.2 8.3L22.5 21h-4.4l-5.4-7.1L6.8 21H2.5l8.1-9.3L4.2 3zm3.1 2.3L18.8 18.8h.7L8 5.3h-.7z"/></svg></a>
+      <a href="https://www.facebook.com/share/1FAyCrvvNk/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><span class="sr-only">Facebook</span><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.2 8.6V6.8c0-.8.5-1 1-1H18V2.4c-.5-.1-2.1-.2-3.6-.2-3.5 0-5.2 2-5.2 5.4v1H6v3.8h3.2V22h4.1v-9.6h3.2l.6-3.8h-3z"/></svg></a>
+      <a href="https://www.reddit.com/r/20Realms/s/Ydxfo6GGOH" target="_blank" rel="noopener noreferrer" aria-label="Reddit"><span class="sr-only">Reddit</span><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 10.7c.8.7 1.2 1.6 1.2 2.6 0 3.2-4.3 5.8-9.7 5.8s-9.7-2.6-9.7-5.8c0-1 .4-1.9 1.2-2.6-.2-.4-.4-.8-.4-1.3 0-1.3 1-2.3 2.3-2.3.7 0 1.4.3 1.8.9 1.1-.4 2.4-.7 3.8-.8l1-4.7 5 .9c.2-.7.8-1.1 1.6-1.1.9 0 1.6.7 1.6 1.6s-.7 1.6-1.6 1.6c-.6 0-1.1-.3-1.4-.8l-3.6-.7-.7 3.5c1.5.1 2.9.3 4.1.8.4-.6 1.1-.9 1.8-.9 1.3 0 2.3 1 2.3 2.3 0 .5-.2.9-.5 1.3zM8.8 12.8c0 .8.6 1.4 1.4 1.4s1.4-.6 1.4-1.4-.6-1.4-1.4-1.4-1.4.6-1.4 1.4zm6.7 3.3c.3-.3.3-.7 0-.9-.3-.3-.7-.3-.9 0-.5.5-1.4.8-2.6.8s-2.1-.3-2.6-.8c-.3-.3-.7-.3-.9 0-.3.3-.3.7 0 .9.8.9 2 1.3 3.5 1.3s2.7-.4 3.5-1.3zm-1.7-3.3c0 .8.6 1.4 1.4 1.4s1.4-.6 1.4-1.4-.6-1.4-1.4-1.4-1.4.6-1.4 1.4z"/></svg></a>
+      <a href="https://www.instagram.com/20realmsocials?igsh=NWd5NDNjMnJ6aDRl" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><span class="sr-only">Instagram</span><svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.3 2h9.4C19.6 2 22 4.4 22 7.3v9.4c0 2.9-2.4 5.3-5.3 5.3H7.3C4.4 22 2 19.6 2 16.7V7.3C2 4.4 4.4 2 7.3 2zm0 3C6 5 5 6 5 7.3v9.4C5 18 6 19 7.3 19h9.4c1.3 0 2.3-1 2.3-2.3V7.3C19 6 18 5 16.7 5H7.3zm4.7 2.6a4.4 4.4 0 1 1 0 8.8 4.4 4.4 0 0 1 0-8.8zm0 2.7a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4zm4.8-2.9a1 1 0 1 1 0 2.1 1 1 0 0 1 0-2.1z"/></svg></a>
+    </nav>
+    <nav class="footer-links" aria-label="Footer links">
+      <a href="vision.html">About</a>
+      <a href="shop.html">Shop</a>
+      <a href="accessibility.html">Accessibility</a>
+      <a href="help.html">Help</a>
+      <a href="https://www.reddit.com/r/20Realms/">Forums</a>
+      <a href="legal.html">Legal &amp; Privacy</a>
+      <a href="user-agreement.html">User Agreement</a>
+      <a href="privacy-cookies.html">Privacy &amp; Cookie Policy</a>
+      <a href="updates.html">Online Service Updates</a>
+      <a href="#">Security</a>
+    </nav>
+    <div class="footer-controls">
+      
+      <label class="language-select">
+        <span>Language</span>
+        <select aria-label="Language">
+          <option>English</option>
+        </select>
+      </label>
+    </div>    <img class="footer-logo" src="assets/bloodstone-forge-logo.png" alt="Bloodstone Forge logo">
+  </footer>
+
+<script src="script.js"></script>
+  <script>
+    const eggDot = document.getElementById('egg-dot');
+    const eggModal = document.getElementById('egg-modal');
+    const eggVideo = document.getElementById('egg-video');
+
+    function closeEgg() {
+      eggModal.hidden = true;
+      eggVideo.pause();
+      eggVideo.currentTime = 0;
+      document.body.style.overflow = '';
+    }
+
+    function openEgg() {
+      eggModal.hidden = false;
+      document.body.style.overflow = 'hidden';
+
+      eggVideo.play().catch(() => {
+        // If autoplay is blocked, user can tap the video to play.
+      });
+    }
+
+    eggDot.addEventListener('click', openEgg);
+    eggVideo.addEventListener('ended', closeEgg);
+
+    const roadmapBubbles = Array.from(document.querySelectorAll('.roadmap-bubble'));
+    const roadmapTrack = document.getElementById('roadmap-track');
+    const roadmapDots = Array.from(document.querySelectorAll('.roadmap-dot'));
+    const roadmapPrev = document.getElementById('roadmap-prev');
+    const roadmapNext = document.getElementById('roadmap-next');
+    let roadmapIndex = 0;
+
+    function updateRoadmap(index) {
+      roadmapIndex = Math.max(0, Math.min(index, roadmapBubbles.length - 1));
+
+      roadmapBubbles.forEach((bubble, bubbleIndex) => {
+        bubble.classList.toggle('active', bubbleIndex === roadmapIndex);
+      });
+
+      if (roadmapTrack) {
+        roadmapTrack.style.transform = `translateX(-${roadmapIndex * 100}%)`;
+      }
+
+      roadmapDots.forEach((dot, dotIndex) => {
+        const isActive = dotIndex === roadmapIndex;
+        dot.classList.toggle('active', isActive);
+        dot.setAttribute('aria-pressed', String(isActive));
+      });
+
+      if (roadmapPrev) {
+        roadmapPrev.disabled = roadmapIndex === 0;
+      }
+
+      if (roadmapNext) {
+        roadmapNext.disabled = roadmapIndex === roadmapBubbles.length - 1;
+      }
+    }
+
+    if (roadmapPrev) {
+      roadmapPrev.addEventListener('click', () => updateRoadmap(roadmapIndex - 1));
+    }
+
+    if (roadmapNext) {
+      roadmapNext.addEventListener('click', () => updateRoadmap(roadmapIndex + 1));
+    }
+
+    roadmapDots.forEach((dot, dotIndex) => {
+      dot.addEventListener('click', () => updateRoadmap(dotIndex));
+    });
+
+    updateRoadmap(0);
+  </script>
+  <script type="module" src="auth-nav.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin — 20Realms</title>
+  <script type="module" src="admin-auth-guard.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #0b0f16;
+      --ink: #f7efe2;
+      --muted: #c9beb0;
+      --forest: #1f513a;
+      --clay: #b54c2f;
+      --gold: #d9a441;
+      --cream: #fffaf0;
+      --line: rgba(247, 239, 226, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Manrope", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(135deg, #05070b, #0d0f16);
+      min-height: 100vh;
+      padding: 60px 20px;
+    }
+
+    body.admin-protected {
+      visibility: hidden;
+    }
+
+    .admin-wrap {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-family: "Fraunces", serif;
+      font-size: 2rem;
+      margin: 0 0 8px;
+      color: var(--cream);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0 0 32px;
+      font-size: 0.95rem;
+    }
+
+    /* Auth gate */
+    .auth-gate {
+      display: none;
+      padding: 40px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background:
+        radial-gradient(circle at 16% 20%, rgba(217,164,65,0.1), transparent 28%),
+        linear-gradient(160deg, rgba(255,250,240,0.07), rgba(255,250,240,0.02)),
+        rgba(11,15,22,0.76);
+      text-align: center;
+    }
+
+    .auth-gate.active {
+      display: block;
+    }
+
+    .auth-gate h2 {
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+      color: var(--gold);
+    }
+
+    .auth-gate p {
+      margin: 12px 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .auth-gate a {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 10px 20px;
+      background: var(--clay);
+      color: var(--cream);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: opacity 160ms;
+    }
+
+    .auth-gate a:hover {
+      opacity: 0.9;
+    }
+
+    /* Admin panel */
+    .admin-panel {
+      display: none;
+    }
+
+    .admin-panel.active {
+      display: block;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .admin-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .admin-nav a {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 700;
+      transition: all 160ms;
+    }
+
+    .admin-nav a:hover,
+    .admin-nav a.active {
+      border-color: var(--gold);
+      color: var(--cream);
+      background: rgba(217, 164, 65, 0.12);
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .workspace-card {
+      display: block;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: linear-gradient(160deg, rgba(255,250,240,0.07), rgba(255,250,240,0.02));
+      text-decoration: none;
+      color: var(--cream);
+      transition: transform 160ms ease, border-color 160ms ease;
+    }
+
+    .workspace-card:hover {
+      transform: translateY(-1px);
+      border-color: var(--clay);
+    }
+
+    .workspace-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    .workspace-card span {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .admin-user {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .admin-user strong {
+      color: var(--gold);
+    }
+
+    .btn-signout {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 160ms;
+    }
+
+    .btn-signout:hover {
+      border-color: var(--clay);
+      color: var(--ink);
+    }
+
+    .admin-section {
+      margin-bottom: 40px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(217,164,65,0.08), transparent 32%),
+        linear-gradient(160deg, rgba(255,250,240,0.07), rgba(255,250,240,0.02)),
+        rgba(11,15,22,0.65);
+    }
+
+    .admin-section h3 {
+      margin: 0 0 20px;
+      font-size: 1.1rem;
+      color: var(--clay);
+      font-weight: 700;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    input, textarea, select {
+      font-family: "Manrope", sans-serif;
+      font-size: 1rem;
+      color: var(--ink);
+      background: rgba(247, 239, 226, 0.06);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px 14px;
+      transition: border-color 160ms;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    select option {
+      background: #0d0b09;
+    }
+
+    button[type="submit"] {
+      padding: 12px 24px;
+      background: var(--clay);
+      color: var(--cream);
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: opacity 160ms;
+    }
+
+    button[type="submit"]:hover {
+      opacity: 0.9;
+    }
+
+    button[type="submit"]:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .date-display {
+      font-size: 1rem;
+      color: var(--gold);
+      font-weight: 700;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(217, 164, 65, 0.08);
+    }
+
+    .status-msg {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: none;
+      margin-top: 12px;
+    }
+
+    .status-msg.success {
+      display: block;
+      background: rgba(31, 81, 58, 0.22);
+      border: 1px solid rgba(31, 81, 58, 0.4);
+      color: #7ec49e;
+    }
+
+    .status-msg.error {
+      display: block;
+      background: rgba(181, 76, 47, 0.18);
+      border: 1px solid rgba(181, 76, 47, 0.4);
+      color: #f4937a;
+    }
+
+    .admin-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .admin-item {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 250, 240, 0.04);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-item-email {
+      color: var(--cream);
+      font-weight: 600;
+    }
+
+    .admin-item-date {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .btn-remove {
+      padding: 4px 12px;
+      background: transparent;
+      border: 1px solid rgba(244, 147, 122, 0.5);
+      color: #f4937a;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all 160ms;
+    }
+
+    .btn-remove:hover {
+      background: rgba(244, 147, 122, 0.1);
+      border-color: #f4937a;
+    }
+
+    /* Beta signups table */
+    .beta-filters {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 6px 14px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 160ms;
+    }
+
+    .filter-btn.active {
+      background: var(--clay);
+      color: var(--cream);
+      border-color: var(--clay);
+    }
+
+    .filter-btn:hover {
+      border-color: var(--clay);
+    }
+
+    .signup-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .signup-table thead {
+      background: rgba(217, 164, 65, 0.08);
+      border-bottom: 2px solid var(--line);
+    }
+
+    .signup-table th {
+      padding: 12px;
+      text-align: left;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .signup-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.9rem;
+    }
+
+    .signup-table tbody tr:hover {
+      background: rgba(217, 164, 65, 0.04);
+    }
+
+    .signup-email {
+      color: var(--cream);
+      font-weight: 600;
+    }
+
+    .signup-role {
+      color: var(--gold);
+      font-size: 0.85rem;
+    }
+
+    .optin-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .optin-yes {
+      background: rgba(31, 81, 58, 0.3);
+      color: #7ec49e;
+    }
+
+    .optin-no {
+      background: rgba(244, 147, 122, 0.2);
+      color: #f4937a;
+    }
+
+    .signup-count {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+
+    .account-count {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+
+    .btn-account-delete {
+      padding: 5px 10px;
+      background: transparent;
+      border: 1px solid rgba(244, 147, 122, 0.5);
+      color: #f4937a;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 700;
+      transition: all 160ms;
+      white-space: nowrap;
+    }
+
+    .btn-account-delete:hover {
+      background: rgba(244, 147, 122, 0.1);
+      border-color: #f4937a;
+    }
+
+    .btn-account-delete:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .campaign-recipient-preview {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--gold);
+      background: rgba(217, 164, 65, 0.08);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .campaign-recipient-preview.warning {
+      border-color: rgba(244, 147, 122, 0.5);
+      color: #f4937a;
+      background: rgba(181, 76, 47, 0.12);
+    }
+
+    .campaign-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .campaign-actions button {
+      min-height: 44px;
+      padding: 10px 18px;
+      border-radius: 7px;
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-test-email {
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      background: transparent;
+    }
+
+    .btn-test-email:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .campaign-history {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .campaign-history-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px 16px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 250, 240, 0.04);
+    }
+
+    .campaign-history-title {
+      color: var(--cream);
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .campaign-history-meta,
+    .campaign-history-result {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .campaign-history-result {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      align-self: center;
+      text-align: right;
+    }
+
+    .post-item {
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .post-item-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .post-item-title {
+      color: var(--cream);
+      font-weight: 700;
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+
+    .post-item-meta {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 8px;
+    }
+
+    .post-item-excerpt {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body class="admin-protected">
+  <div class="admin-wrap">
+    <h1>Admin Panel</h1>
+    <p class="subtitle">Manage 20Realms content and settings</p>
+
+    <!-- Auth Gate -->
+    <div id="auth-gate" class="auth-gate active">
+      <h2>Access Denied</h2>
+      <p>This page is for administrators only.</p>
+      <p id="gate-message" style="color: var(--muted); font-size: 0.9rem;"></p>
+      <a href="index.html">← Back to home</a>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="admin-panel">
+      <div class="admin-header">
+        <div class="admin-user">
+          Logged in as <strong id="admin-email"></strong>
+        </div>
+        <button class="btn-signout" id="btn-admin-signout">Sign out</button>
+      </div>
+
+      <nav class="admin-nav" aria-label="Admin sections">
+        <a class="active" href="admin.html">Management</a>
+        <a href="admin-communications.html">Emails &amp; updates</a>
+        <a href="admin-shop-inventory.html">Shop inventory</a>
+      </nav>
+
+      <!-- Admin Users Section -->
+      <div class="admin-section">
+        <h3>🔐 Manage Admin Users</h3>
+        <p style="color: var(--muted); margin-bottom: 20px; font-size: 0.9rem;">
+          Add email addresses that should have admin access to this panel.
+        </p>
+        <form id="admin-user-form" novalidate>
+          <label>
+            Add Admin Email
+            <input type="email" name="admin_email" placeholder="email@example.com" required>
+          </label>
+          <button type="submit">Grant Admin Access</button>
+          <div id="admin-status" class="status-msg"></div>
+        </form>
+
+        <div style="margin-top: 24px;">
+          <h4 style="color: var(--muted); margin: 0 0 12px; font-size: 0.9rem;">Current Admins</h4>
+          <div id="admin-list" class="admin-list">
+            <div style="color: var(--muted); text-align: center; padding: 20px;">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Beta Signups Section -->
+      <div class="admin-section">
+        <h3>📋 Beta Signups</h3>
+        <div class="signup-count" id="signup-count">Loading…</div>
+        <div class="beta-filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="optin-yes">Email Opt-in: Yes</button>
+          <button class="filter-btn" data-filter="optin-no">Email Opt-in: No</button>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="signup-table" id="signup-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Opted In</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="signup-tbody">
+              <tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--muted);">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="admin-section">
+        <h3>👥 All Accounts</h3>
+        <div class="account-count" id="account-count">Loading…</div>
+        <div id="account-status" class="status-msg"></div>
+        <div style="overflow-x: auto;">
+          <table class="signup-table" id="accounts-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+                <th>Created</th>
+                <th>Last Sign In</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="accounts-tbody">
+              <tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--muted);">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const SUPABASE_URL  = 'https://avcqqazytvvcfraowgsm.supabase.co';
+    const SUPABASE_ANON = 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0';
+    const ADMIN_ACCOUNTS_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/admin-manage-accounts`;
+    const LIMITED_COMMUNICATION_ADMINS = new Set([
+      'drewdallas18@outlook.com'
+    ]);
+
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    const authGate = document.getElementById('auth-gate');
+    const adminPanel = document.getElementById('admin-panel');
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatDateTime(value) {
+      if (!value) return '—';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '—';
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      });
+    }
+
+    // ─── CHECK AUTH & ADMIN STATUS ───────────────────────────────────────
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session || !session.user || !session.user.email) {
+      window.location.replace('community.html');
+      throw new Error('Unauthorized admin access attempt: no session.');
+    }
+
+    if (!session) {
+      document.getElementById('gate-message').textContent = 'Please sign in to continue.';
+      const link = document.querySelector('#auth-gate a');
+      link.href = 'community.html';
+      link.textContent = '← Go to sign in';
+    } else {
+      const userEmail = session.user.email;
+      const normalizedUserEmail = userEmail.trim().toLowerCase();
+      
+      // Check if user is in admin_users table
+      const { data: adminCheck, error } = await supabase
+        .from('admin_users')
+        .select('id')
+        .eq('email', userEmail)
+        .single();
+
+      if (adminCheck && adminCheck.id) {
+        if (LIMITED_COMMUNICATION_ADMINS.has(normalizedUserEmail)) {
+          window.location.replace('admin-communications.html');
+          throw new Error('Communications-only admin redirected to limited workspace.');
+        }
+
+        // Admin access granted
+        authGate.classList.remove('active');
+        adminPanel.classList.add('active');
+        document.getElementById('admin-email').textContent = userEmail;
+
+        // Load admin list
+        await loadAdminList();
+
+        // ─── ADMIN USER FORM ────────────────────────────────────────────
+        document.getElementById('admin-user-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const btn = e.target.querySelector('button[type="submit"]');
+          btn.disabled = true;
+          btn.textContent = 'Adding…';
+
+          const newEmail = e.target.querySelector('input[name="admin_email"]').value.trim();
+          const { error } = await supabase.from('admin_users').insert({
+            email: newEmail
+          });
+
+          const statusEl = document.getElementById('admin-status');
+          if (error) {
+            if (error.code === '23505') {
+              statusEl.textContent = 'This email is already an admin.';
+            } else {
+              statusEl.textContent = error.message;
+            }
+            statusEl.classList.add('error');
+            statusEl.classList.remove('success');
+          } else {
+            statusEl.textContent = '✓ Admin access granted!';
+            statusEl.classList.add('success');
+            statusEl.classList.remove('error');
+            e.target.reset();
+            await loadAdminList();
+            setTimeout(() => statusEl.classList.remove('success'), 3000);
+          }
+          btn.disabled = false;
+          btn.textContent = 'Grant Admin Access';
+        });
+
+        // ─── LOAD ADMIN LIST ────────────────────────────────────────────
+        async function loadAdminList() {
+          const { data, error } = await supabase
+            .from('admin_users')
+            .select('email, created_at')
+            .order('created_at', { ascending: false });
+
+          const listEl = document.getElementById('admin-list');
+          if (error || !data || data.length === 0) {
+            listEl.innerHTML = '<div style="color: var(--muted); text-align: center; padding: 20px;">No admins yet.</div>';
+            return;
+          }
+
+          listEl.innerHTML = data.map(admin => {
+            const date = new Date(admin.created_at).toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric', 
+              year: 'numeric' 
+            });
+            return `
+              <div class="admin-item">
+                <div>
+                  <div class="admin-item-email">${admin.email}</div>
+                  <div class="admin-item-date">Added ${date}</div>
+                </div>
+                <button type="button" class="btn-remove" data-email="${admin.email}">Remove</button>
+              </div>
+            `;
+          }).join('');
+
+          // Remove admin handlers
+          listEl.querySelectorAll('.btn-remove').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              const email = e.target.dataset.email;
+              if (confirm(`Remove admin access for ${email}?`)) {
+                await supabase.from('admin_users').delete().eq('email', email);
+                await loadAdminList();
+              }
+            });
+          });
+        }
+
+        // ─── LOAD BETA SIGNUPS ──────────────────────────────────────────
+        let allSignups = [];
+        let currentFilter = 'all';
+        let allAccounts = [];
+
+        async function callAdminAccountsApi(method, body) {
+          const requestApi = async (accessToken) => {
+            const response = await fetch(ADMIN_ACCOUNTS_FUNCTION_URL, {
+              method,
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+                'apikey': SUPABASE_ANON
+              },
+              body: body ? JSON.stringify(body) : undefined
+            });
+
+            const payload = await response.json().catch(() => ({}));
+            return { response, payload };
+          };
+
+          let { response, payload } = await requestApi(session.access_token);
+
+          if (response.status === 401) {
+            const { data: refreshData } = await supabase.auth.refreshSession();
+            const refreshedToken = refreshData?.session?.access_token;
+            if (refreshedToken) {
+              session = refreshData.session;
+              ({ response, payload } = await requestApi(refreshedToken));
+            }
+          }
+
+          if (!response.ok) {
+            throw new Error(payload?.error || `Request failed (${response.status})`);
+          }
+
+          return payload;
+        }
+
+        function renderAccounts() {
+          const tbody = document.getElementById('accounts-tbody');
+          const countEl = document.getElementById('account-count');
+
+          countEl.textContent = `${allAccounts.length} account${allAccounts.length !== 1 ? 's' : ''}`;
+
+          if (!allAccounts.length) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--muted);">No accounts found.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = allAccounts.map((account) => {
+            const isSelf = (account.email || '').toLowerCase() === userEmail.toLowerCase();
+            return `
+              <tr>
+                <td class="signup-email">${escapeHtml(account.email || '—')}</td>
+                <td>${escapeHtml(account.first_name || '—')}</td>
+                <td>${escapeHtml(account.last_name || '—')}</td>
+                <td>${escapeHtml(account.username || '—')}</td>
+                <td style="color: var(--muted); font-size: 0.85rem;">${escapeHtml(formatDateTime(account.created_at))}</td>
+                <td style="color: var(--muted); font-size: 0.85rem;">${escapeHtml(formatDateTime(account.last_sign_in_at))}</td>
+                <td>
+                  <button type="button" class="btn-account-delete" data-user-id="${escapeHtml(account.id || '')}" data-email="${escapeHtml(account.email || '')}" ${isSelf ? 'disabled title="You cannot delete your own admin account"' : ''}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          tbody.querySelectorAll('.btn-account-delete').forEach((button) => {
+            if (button.disabled) return;
+            button.addEventListener('click', async () => {
+              const statusEl = document.getElementById('account-status');
+              const accountEmail = button.dataset.email || 'this account';
+              const accountId = button.dataset.userId;
+              if (!accountId) return;
+
+              if (!confirm(`Delete account for ${accountEmail}? This cannot be undone.`)) {
+                return;
+              }
+
+              button.disabled = true;
+              button.textContent = 'Deleting…';
+              try {
+                await callAdminAccountsApi('DELETE', { userId: accountId });
+                statusEl.textContent = `Deleted account: ${accountEmail}`;
+                statusEl.classList.add('success');
+                statusEl.classList.remove('error');
+                await loadAccounts();
+              } catch (deleteError) {
+                statusEl.textContent = deleteError?.message || 'Failed to delete account.';
+                statusEl.classList.add('error');
+                statusEl.classList.remove('success');
+                button.disabled = false;
+                button.textContent = 'Delete';
+              }
+            });
+          });
+        }
+
+        async function loadAccounts() {
+          const statusEl = document.getElementById('account-status');
+          const tbody = document.getElementById('accounts-tbody');
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--muted);">Loading…</td></tr>';
+
+          try {
+            const payload = await callAdminAccountsApi('GET');
+            allAccounts = Array.isArray(payload?.accounts) ? payload.accounts : [];
+            statusEl.classList.remove('error', 'success');
+            statusEl.textContent = '';
+            renderAccounts();
+          } catch (loadError) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 40px; color: #f4937a;">${escapeHtml(loadError?.message || 'Unable to load accounts.')}</td></tr>`;
+            document.getElementById('account-count').textContent = 'Unable to load accounts';
+          }
+        }
+
+        function isOptedIn(signup) {
+          if (signup && typeof signup.email_updates_opt_in === 'boolean') {
+            return signup.email_updates_opt_in;
+          }
+
+          const interestText = (signup?.interest || '').toString().toLowerCase();
+          return interestText.includes('[optin:true]');
+        }
+
+        async function loadBetaSignups() {
+          const { data, error } = await supabase
+            .from('beta_signups')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (error) {
+            console.error(error);
+            return;
+          }
+
+          allSignups = data || [];
+          renderSignups();
+          updateSignupCount();
+        }
+
+        function renderSignups() {
+          const tbody = document.getElementById('signup-tbody');
+          
+          let filtered = allSignups;
+          if (currentFilter === 'optin-yes') {
+            filtered = allSignups.filter((s) => isOptedIn(s));
+          } else if (currentFilter === 'optin-no') {
+            filtered = allSignups.filter((s) => !isOptedIn(s));
+          }
+
+          if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--muted);">No signups match this filter.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = filtered.map(signup => {
+            const date = new Date(signup.created_at).toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric', 
+              year: 'numeric' 
+            });
+            const optedIn = isOptedIn(signup);
+            const optinBadge = optedIn
+              ? '<span class="optin-badge optin-yes">✓ Yes</span>'
+              : '<span class="optin-badge optin-no">✗ No</span>';
+            
+            return `
+              <tr>
+                <td class="signup-email">${signup.email}</td>
+                <td>${signup.name || '—'}</td>
+                <td class="signup-role">${signup.role || '—'}</td>
+                <td>${optinBadge}</td>
+                <td style="color: var(--muted); font-size: 0.85rem;">${date}</td>
+              </tr>
+            `;
+          }).join('');
+        }
+
+        function updateSignupCount() {
+          const total = allSignups.length;
+          const optedIn = allSignups.filter((s) => isOptedIn(s)).length;
+          document.getElementById('signup-count').textContent = 
+            `${total} total signup${total !== 1 ? 's' : ''} • ${optedIn} opted in`;
+        }
+
+        // Filter button handlers
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            currentFilter = e.target.dataset.filter;
+            renderSignups();
+          });
+        });
+
+        // Load signups on page load
+        await loadBetaSignups();
+        await loadAccounts();
+
+      } else {
+        // Not an admin
+        document.getElementById('gate-message').textContent = `Your account (${userEmail}) does not have admin access.`;
+      }
+    }
+
+    // ─── SIGN OUT ────────────────────────────────────────────────────────
+    document.getElementById('btn-admin-signout').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>
