@@ -7,7 +7,6 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "
 const SUPABASE_AUTH_ISSUER = `${SUPABASE_URL}/auth/v1`
 const LIMITED_COMMUNICATION_ADMINS = new Set([
   "drewdallas18@outlook.com",
-  "gabriel.salvatori@20realms.net",
 ])
 const SUPABASE_JWKS = createRemoteJWKSet(new URL(`${SUPABASE_AUTH_ISSUER}/.well-known/jwks.json`))
 

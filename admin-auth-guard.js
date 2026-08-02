@@ -1,8 +1,7 @@
 const SUPABASE_URL = 'https://avcqqazytvvcfraowgsm.supabase.co';
 const SUPABASE_ANON = 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0';
 const LIMITED_COMMUNICATION_ADMINS = new Set([
-  'drewdallas18@outlook.com',
-  'gabriel.salvatori@20realms.net'
+  'drewdallas18@outlook.com'
 ]);
 
 const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
