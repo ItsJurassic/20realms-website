@@ -5,6 +5,9 @@ import { createRemoteJWKSet, jwtVerify } from "https://esm.sh/jose@5.9.6"
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || ""
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || ""
 const SUPABASE_AUTH_ISSUER = `${SUPABASE_URL}/auth/v1`
+const LIMITED_COMMUNICATION_ADMINS = new Set([
+  "drewdallas18@outlook.com",
+])
 const SUPABASE_JWKS = createRemoteJWKSet(new URL(`${SUPABASE_AUTH_ISSUER}/.well-known/jwks.json`))
 
 const CORS_HEADERS = {
@@ -129,9 +132,14 @@ serve(async (request) => {
       throw adminError
     }
 
-    const isAdmin = (adminRows || []).some((row) => row.email?.toLowerCase() === requester.email?.toLowerCase())
+    const requesterEmail = requester.email?.toLowerCase() || ""
+    const isAdmin = (adminRows || []).some((row) => row.email?.toLowerCase() === requesterEmail)
     if (!isAdmin) {
       return jsonResponse({ error: "Administrator access required" }, 403)
+    }
+
+    if (LIMITED_COMMUNICATION_ADMINS.has(requesterEmail)) {
+      return jsonResponse({ error: "This account has communications-only admin access" }, 403)
     }
 
     if (request.method === "GET") {

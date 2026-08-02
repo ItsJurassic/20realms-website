@@ -1,5 +1,8 @@
 const SUPABASE_URL = 'https://avcqqazytvvcfraowgsm.supabase.co';
 const SUPABASE_ANON = 'sb_publishable_mMzC6t1szSIzhhYZpHOhkA_4oYbwgc0';
+const LIMITED_COMMUNICATION_ADMINS = new Set([
+  'drewdallas18@outlook.com'
+]);
 
 const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
@@ -15,6 +18,8 @@ try {
     redirectTo('community.html');
   } else {
     const userEmail = session.user.email.trim().toLowerCase();
+    const pathname = window.location.pathname.toLowerCase();
+    const onCommunicationsPage = pathname.endsWith('/admin-communications.html') || pathname.endsWith('admin-communications.html');
     const { data: adminCheck } = await supabase
       .from('admin_users')
       .select('id')
@@ -23,6 +28,8 @@ try {
 
     if (!adminCheck || !adminCheck.id) {
       redirectTo('index.html');
+    } else if (LIMITED_COMMUNICATION_ADMINS.has(userEmail) && !onCommunicationsPage) {
+      redirectTo('admin-communications.html');
     } else {
       document.body.classList.remove('admin-protected');
     }
