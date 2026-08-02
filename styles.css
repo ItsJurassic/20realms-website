@@ -188,6 +188,30 @@ a {
   opacity: 0.85;
 }
 
+
+@media (min-width: 781px) {
+  .page-hero.beta-page,
+  .page-hero.features,
+  .page-hero.vision,
+  .page-hero.beta-page h1,
+  .page-hero.features h1,
+  .page-hero.vision h1,
+  .page-hero.beta-page > p:not(.eyebrow),
+  .page-hero.features > p:not(.eyebrow),
+  .page-hero.vision > p:not(.eyebrow) {
+    text-align: center;
+  }
+
+  .page-hero.beta-page h1,
+  .page-hero.features h1,
+  .page-hero.vision h1,
+  .page-hero.beta-page > p:not(.eyebrow),
+  .page-hero.features > p:not(.eyebrow),
+  .page-hero.vision > p:not(.eyebrow) {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
 .page-hero h1 {
   max-width: 900px;
   margin-bottom: 22px;
