@@ -79,10 +79,15 @@ a {
 }
 
 .brand {
-  font-family: "Fraunces", serif;
-  font-size: 1.25rem;
-  font-weight: 700;
+  width: 190px;
+  height: 102px;
+  display: inline-block;
+  flex: 0 0 auto;
   text-decoration: none;
+  background: url("assets/20Realms_logo_white_trnspt.png") left center / contain no-repeat;
+  text-indent: -9999px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .home-link {
@@ -937,6 +942,16 @@ h3 {
 }
 
 @media (max-width: 780px) {
+  .brand {
+    width: 140px;
+    height: 75px;
+  }
+
+  .footer-branding strong {
+    width: 130px;
+    height: 68px;
+  }
+
   .shop-hero-full {
     min-height: 380px;
   }
@@ -1260,9 +1275,15 @@ h3 {
 }
 
 .footer-branding strong {
-  color: var(--cream);
-  font-family: "Fraunces", serif;
-  font-size: 1.1rem;
+  width: 170px;
+  height: 90px;
+  display: inline-block;
+  flex: 0 0 auto;
+  color: transparent;
+  background: url("assets/20Realms_logo_white_trnspt.png") left center / contain no-repeat;
+  text-indent: -9999px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .social-links {
