@@ -79,10 +79,15 @@ a {
 }
 
 .brand {
-  font-family: "Fraunces", serif;
-  font-size: 1.25rem;
-  font-weight: 700;
+  width: 190px;
+  height: 106px;
+  display: inline-block;
+  flex: 0 0 auto;
   text-decoration: none;
+  background: url("assets/bloodstone-forge-logo.png") left center / contain no-repeat;
+  text-indent: -9999px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .home-link {
@@ -1675,6 +1680,11 @@ h3 {
 }
 
 @media (max-width: 780px) {
+  .brand {
+    width: 140px;
+    height: 78px;
+  }
+
   .site-header,
   .site-footer {
     align-items: flex-start;
